@@ -51,3 +51,14 @@ class ToStringOrder<A extends Object> extends Order<A> {
 
 final Order toStringOrder = new ToStringOrder();
 
+class MinSemigroup<A> extends Semigroup<A> {
+  final Order<A> _aOrder;
+  MinSemigroup(this._aOrder);
+  @override A append(A a1, A a2) => _aOrder.lt(a1, a2) ? a1 : a2;
+}
+
+class MaxSemigroup<A> extends Semigroup<A> {
+  final Order<A> _aOrder;
+  MaxSemigroup(this._aOrder);
+  @override A append(A a1, A a2) => _aOrder.gt(a1, a2) ? a1 : a2;
+}

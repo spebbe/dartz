@@ -90,8 +90,6 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
   IList<A> append(IList<A> l2) => new Cons(this, new Cons(l2, Nil)).join();
 
   IList<A> filter(bool predicate(A a)) => flatMap((t) => predicate(t) ? pure(t) : Nil);
-
-  int length() => foldLeft(0, (a, b) => a+1);
 }
 
 class Cons<A> extends IList<A> {

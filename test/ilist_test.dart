@@ -40,6 +40,11 @@ void main() {
 
     expect(IListTr.foldMap(NumSumMi, l1, id), 10);
     expect(IListTr.foldRight(l1, 0, (a, b) => a+b), 10);
+
+    expect(ilist([2,4,6]).any((i) => i%2==0), true);
+    expect(ilist([2,4,6]).any((i) => i%2==1), false);
+    expect(ilist([2,4,6]).all((i) => i < 7), true);
+    expect(ilist([2,4,6]).all((i) => i < 6), false);
   });
 
   test('length', () {

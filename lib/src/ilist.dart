@@ -3,10 +3,9 @@ part of dartz;
 // stack safety - tail call elimination => icky mutating loops
 // everything should be externally RT though and mostly stack safe.
 
-abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A> {
+abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>, MonadPlusOps<IList, A> {
   Option<A> get headOption;
   Option<IList<A>> get tailOption;
-  bool get empty;
 
   IList();
 
@@ -87,9 +86,10 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   IList<A> reverse() => foldLeft(Nil, (a, h) => new Cons(h, a));
 
-  IList<A> append(IList<A> l2) => new Cons(this, new Cons(l2, Nil)).join();
+  @override IList<A> empty() => Nil;
 
-  IList<A> filter(bool predicate(A a)) => flatMap((t) => predicate(t) ? pure(t) : Nil);
+  @override IList<A> plus(IList<A> l2) => new Cons(this, new Cons(l2, Nil)).join();
+
 }
 
 class Cons<A> extends IList<A> {
@@ -102,8 +102,6 @@ class Cons<A> extends IList<A> {
 
   @override Option<IList<A>> get tailOption => some(_tail);
 
-  @override bool get empty => false;
-
   @override String toString() => "${_head}::${_tail}";
 
   @override bool operator ==(other) => other is Cons && other._head == _head && other._tail == _tail;
@@ -114,8 +112,6 @@ class _Nil<A> extends IList<A> {
 
   @override Option<IList<A>> get tailOption => none;
 
-  @override bool get empty => true;
-
   @override String toString() => "Nil";
 
   @override bool operator ==(other) => other is _Nil;
@@ -123,7 +119,9 @@ class _Nil<A> extends IList<A> {
 
 final IList Nil = new _Nil();
 
-final Monad<IList> IListM = new MonadOpsMonad<IList>((a) => new Cons(a, Nil));
+final MonadPlus<IList> IListMP = new MonadPlusOpsMonad<IList>((a) => new Cons(a, Nil), () => Nil);
+final Monad<IList> IListM = IListMP;
+final ApplicativePlus<IList> IListAP = IListMP;
 final Applicative<IList> IListA = IListM;
 final Functor<IList> IListF = IListM;
 final Traversable<IList> IListTr = new TraversableOpsTraversable<IList>();
@@ -131,7 +129,7 @@ final Foldable<IList> IListFo = IListTr;
 
 class IListMonoid extends Monoid<IList> {
   @override IList zero() => Nil;
-  @override IList append(IList l1, IList l2) => l1.append(l2);
+  @override IList append(IList l1, IList l2) => l1.plus(l2);
 }
 
 final Monoid<IList> IListMi = new IListMonoid();
@@ -143,7 +141,7 @@ class IListTMonad<M> extends Monad<M> {
 
   @override M pure(a) => _stackedM.pure(new Cons(a, Nil));
 
-  _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.append(l2)));
+  _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.plus(l2)));
 
   @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (IList l) => l.map(f).foldLeft(_stackedM.pure(Nil), _concat));
 }

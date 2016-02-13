@@ -66,7 +66,7 @@ class ComposedApplicative<F, G> extends Applicative<F> {
   @override F map(F fga, f(_)) => _F.map(fga, (G ga) => _G.map(ga, f));
 }
 
-abstract class ApplicativeOps<F, A> implements FunctorOps<F, A> {
+abstract class ApplicativeOps<F, A> extends FunctorOps<F, A> {
   F pure(a);
   F ap(F ff);
 

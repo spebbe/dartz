@@ -45,6 +45,10 @@ void main() {
     expect(ilist([2,4,6]).any((i) => i%2==1), false);
     expect(ilist([2,4,6]).all((i) => i < 7), true);
     expect(ilist([2,4,6]).all((i) => i < 6), false);
+
+    expect(ilist([1,2,3,4]).filter((i) => i%2==0), ilist([2,4]));
+
+    expect(ilist([1,2,3,4]).map((i) => i%2 == 1 ? some(i) : none).unite(OptionFo), ilist([1,3]));
   });
 
   test('length', () {
@@ -53,7 +57,7 @@ void main() {
 
   test('reverse', () {
     qc.check(forall2(intILists, intILists,
-        (xs, ys) => xs.append(ys).reverse() == ys.reverse().append(xs.reverse())));
+        (xs, ys) => xs.plus(ys).reverse() == ys.reverse().plus(xs.reverse())));
   });
 
   test('bind', () {

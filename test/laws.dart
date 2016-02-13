@@ -33,12 +33,12 @@ void checkFoldableLaws(Foldable F, Enumeration enumeration, {bool equality(a, b)
   group("foldable laws", () {
     test("foldLeft and foldMap consistency", () {
       qc.check(forall(enumeration, (fa) =>
-      equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldLeft(fa, ilist([]), (IList p, a) => p.append(ilist([a]))))));
+      equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldLeft(fa, ilist([]), (IList p, a) => p.plus(ilist([a]))))));
     });
 
     test("foldRight and foldMap consistency", () {
       qc.check(forall(enumeration, (fa) =>
-          equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldRight(fa, ilist([]), (a, IList p) => ilist([a]).append(p)))));
+          equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldRight(fa, ilist([]), (a, IList p) => ilist([a]).plus(p)))));
     });
 
   });

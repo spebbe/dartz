@@ -30,3 +30,7 @@ part 'src/function.dart';
 part 'src/order.dart';
 part 'src/avl_tree.dart';
 part 'src/iset.dart';
+part 'src/plus.dart';
+part 'src/plus_empty.dart';
+part 'src/applicative_plus.dart';
+part 'src/monad_plus.dart';

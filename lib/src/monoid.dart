@@ -1,10 +1,10 @@
 part of dartz;
 
-abstract class Monoid<A> implements Semigroup<A> {
+abstract class Monoid<A> extends Semigroup<A> {
   A zero();
 }
 
-class _AnonymousMonoid implements Monoid {
+class _AnonymousMonoid extends Monoid {
   final _zero;
   final _append;
 

@@ -26,6 +26,16 @@ abstract class Order<A> extends Eq<A> {
   Tuple2<A, A> sort(A a1, A a2) => lte(a1, a2) ? tuple2(a1, a2) : tuple2(a2, a1);
 }
 
+typedef Ordering OrderF(a1, a2);
+class _AnonymousOrder<A> extends Order<A> {
+  final OrderF _f;
+  _AnonymousOrder(this._f);
+  @override Ordering order(A a1, A a2) => _f(a1, a2);
+}
+
+Order order(OrderF f) => new _AnonymousOrder(f);
+Order orderBy(Order o, by(_)) => new _AnonymousOrder((a1, a2) => o.order(by(a1), by(a2)));
+
 class ComparableOrder<A extends Comparable> extends Order<A> {
   @override Ordering order(A a1, A a2) {
     final c = a1.compareTo(a2);

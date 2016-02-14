@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A> {
+abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A> {
   fold(ifNone(), ifSome(A a));
   Option map(f(A a)) => fold(() => none, (A a) => some(f(a)));
   Option flatMap(Option f(A a)) => fold(() => none, (A a) => f(a));
@@ -12,6 +12,10 @@ abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option,
   @override Option bind(Option f(A a)) => flatMap(f);
 
   @override traverse(Applicative gApplicative, f(A a)) => fold(() => gApplicative.pure(none), (a) => gApplicative.map(f(a), some));
+
+  @override Option<A> empty() => none;
+
+  @override Option<A> plus(Option<A> o2) => orElse(o2);
 
   Either<dynamic, A> operator %(ifNone) => fold(() => left(ifNone), right);
   A operator |(A dflt) => fold(() => dflt, (a) => a);
@@ -33,7 +37,9 @@ final Option none = new None();
 Option some(a) => new Some(a);
 Option option(test, value) => test ? some(value) : none;
 
-final Monad<Option> OptionM = new MonadOpsMonad<Option>(some);
+final MonadPlus<Option> OptionMP = new MonadPlusOpsMonad<Option>(some, () => none);
+final Monad<Option> OptionM = OptionMP;
+final ApplicativePlus<Option> OptionAP = OptionMP;
 final Applicative<Option> OptionA = OptionM;
 final Functor<Option> OptionF = OptionM;
 final Traversable<Option> OptionTr = new TraversableOpsTraversable<Option>();

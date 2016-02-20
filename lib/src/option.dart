@@ -2,6 +2,7 @@ part of dartz;
 
 abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A> {
   fold(ifNone(), ifSome(A a));
+  cata(ifNone(), ifSome(A a)) => fold(ifNone, ifSome);
   Option map(f(A a)) => fold(() => none, (A a) => some(f(a)));
   Option flatMap(Option f(A a)) => fold(() => none, (A a) => f(a));
   Option<A> orElse(Option<A> other) => fold(() => other, (_) => this);

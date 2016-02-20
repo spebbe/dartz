@@ -4,7 +4,20 @@ import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
 void main() {
+
   test("demo", () {
+    Option<int> stringToInt(String intString) => catching(() => int.parse(intString)).toOption();
+    final IMap<int, String> intToEnglish = imap({1: "one", 2: "two", 3: "three"});
+    final IMap<String, String> englishToSwedish = imap({"one": "ett", "two": "två"});
+    Option<String> intStringToSwedish(String intString) => (stringToInt(intString) >= intToEnglish.get) >= englishToSwedish.get;
+
+    expect(intStringToSwedish("1"), some("ett"));
+    expect(intStringToSwedish("2"), some("två"));
+    expect(intStringToSwedish("siffra"), none);
+    expect(intStringToSwedish("3"), none);
+  });
+
+  test("transformer demo", () {
     final Monad<List<Option>> M = optionTMonad(ListM);
     final expected = [some("a!"), some("a!!"), none, some("c!"), some("c!!")];
     expect(M.bind([some("a"), none, some("c")], (e) => [some(e + "!"), some(e + "!!")]), expected);

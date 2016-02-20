@@ -5,6 +5,23 @@ import 'dart:async';
 import 'laws.dart';
 
 void main() {
+
+  test("demo", () {
+    final IMap<int, String> intToEnglishMap = imap({1: "one", 2: "two", 3: "three"});
+    final IMap<String, String> englishToSwedishMap = imap({"one": "ett", "two": "två"});
+
+    Either<String, int> stringToInt(String intString) => catching(() => int.parse(intString)).leftMap((_) => "could not parse '$intString' to int");
+    Either<String, String> intToEnglish(int i) => intToEnglishMap.get(i) % "could not translate '$i' to english";
+    Either<String, String> englishToSwedish(String english) => englishToSwedishMap.get(english) % "could not translate '$english' to swedish";
+    Either<String, String> intStringToSwedish(String intString) => (stringToInt(intString) >= intToEnglish) >= englishToSwedish;
+
+    expect(intStringToSwedish("1"), right("ett"));
+    expect(intStringToSwedish("2"), right("två"));
+    expect(intStringToSwedish("fyrtiosjutton"), left("could not parse 'fyrtiosjutton' to int"));
+    expect(intStringToSwedish("3"), left("could not translate 'three' to swedish"));
+    expect(intStringToSwedish("4"), left("could not translate '4' to english"));
+  });
+
   test("transformer demo", () async {
     final Monad<Future<List<Either>>> M = eitherTMonad(listTMonad(FutureM));
     final stacked = M.map(M.bind(M.map(new Future.sync(() => [right("a"), left("b"), right("c")]),

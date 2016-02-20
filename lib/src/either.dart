@@ -6,6 +6,7 @@ abstract class Either<L, R> extends TraversableOps<Either, R> with MonadOps<Eith
   Either flatMap(Either f(R r)) => fold((L l) => this, (R r) => f(r));
   R getOrElse(R dflt) => fold((l) => dflt, (r) => r);
   Either leftMap(f(L l)) => fold((L l) => left(f(l)), (R r) => this);
+  Option<R> toOption() => fold((L l) => none, (R r) => some(r));
 
   @override Either pure(a) => right(a);
   @override Either bind(Either f(R r)) => flatMap(f);
@@ -32,6 +33,13 @@ class Right<L, R> extends Either<L, R> {
 
 Either left(l) => new Left(l);
 Either right(r) => new Right(r);
+Either catching(Thunk thunk) {
+  try {
+    return right(thunk());
+  } catch(e) {
+    return left(e);
+  }
+}
 
 final Monad<Either> EitherM = new MonadOpsMonad<Either>(right);
 final Applicative<Either> EitherA = EitherM;

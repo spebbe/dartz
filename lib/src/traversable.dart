@@ -10,6 +10,10 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   sequence_(Applicative gApplicative, F fa) => traverse_(gApplicative, fa, id);
 
+  F mapWithIndex(F fa, f(int i, a)) => traverse(TStateM, fa, (e) => TStateM.get() >= (i) => TStateM.put(i+1).replace(f(i, e))).value(0).run();
+
+  F zipWithIndex(F fa) => mapWithIndex(fa, tuple2);
+
   @override F map(F fa, f(a)) => traverse(IdM, fa, f);
 
   // def foldMap[A, B](bMonoid: Monoid[B], fa: Option[A], f: A => B): B
@@ -24,6 +28,10 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
   sequence(Applicative gApplicative) => traverse(gApplicative, id);
 
   sequence_(Applicative gApplicative) => traverse_(gApplicative, id);
+
+  F mapWithIndex(f(int i, a)) => traverse(TStateM, (e) => TStateM.get() >= (i) => TStateM.put(i+1).replace(f(i, e))).value(0).run();
+
+  F zipWithIndex() => mapWithIndex(tuple2);
 
   @override F map(f(A a)) => traverse(IdM, f);
 

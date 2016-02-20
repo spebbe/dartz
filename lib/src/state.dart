@@ -55,3 +55,4 @@ class StateTMonad<F, S> extends Monad<StateT> {
   StateT<F, S, Unit> modify(S f(S s)) => get().bind((S s) => put(f(s)));
 }
 
+final StateTMonad<Trampoline, dynamic> TStateM = new StateTMonad(TrampolineM);

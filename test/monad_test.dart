@@ -12,8 +12,8 @@ void main() {
     });
 
     test("fail", () {
-      expect(M.bind(M.pure("hello"), (a) => M.bind(right(ilist(["functor", "applicative", "monad"])), (b) => M.map(left("out of suffixes..."), (c) => a+" "+c))),
-          left("out of suffixes..."));
+      expect(M.bind(M.pure("hello"), (a) => M.bind(right(ilist(["functor", "applicative", "monad"])), (b) => M.map(left("out of exclamation marks..."), (c) => a+" "+c))),
+          left("out of exclamation marks..."));
     });
 
     group("EitherM composed with IListM/IListTr", () => checkMonadLaws(M));

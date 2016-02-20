@@ -13,7 +13,7 @@ abstract class MonadPlusOps<F, A> implements MonadOps<F, A>, ApplicativePlusOps<
 }
 
 class MonadPlusOpsMonad<F extends MonadPlusOps> extends MonadOpsMonad<F> with MonadPlus<F> {
-  final Function _empty;
+  final Thunk _empty;
   MonadPlusOpsMonad(Function pure, this._empty) : super(pure);
   @override F empty() => _empty();
   @override F plus(F f1, F f2) => f1.plus(f2);

@@ -27,3 +27,5 @@ Function flip(f(a, b)) => (b, a) => f(a, b);
 Function composeF(f(b), g(a)) => (a) => f(g(a));
 
 Function constF(b) => (a) => b;
+
+typedef Thunk();

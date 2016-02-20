@@ -11,8 +11,8 @@ void main() {
     });
 
     test("fail 1", () {
-      expect(A.map3(A.pure("hello"), right(some(ilist(["functor", "applicative"]))), left("out of suffixes..."), (a,b,c) => a+" "+b+c),
-          left("out of suffixes..."));
+      expect(A.map3(A.pure("hello"), right(some(ilist(["functor", "applicative"]))), left("out of exclamation marks..."), (a,b,c) => a+" "+b+c),
+          left("out of exclamation marks..."));
     });
 
     test("fail 2", () {

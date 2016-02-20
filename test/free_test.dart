@@ -68,5 +68,5 @@ void main() {
     });
   });
 
-  group("FreeM", () => checkMonadLaws(FreeM));
+  group("FreeM", () => checkMonadLaws(FreeM, equality: (a, b) => a.foldMap(IdM, id) == b.foldMap(IdM, id)));
 }

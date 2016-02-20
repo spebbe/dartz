@@ -2,10 +2,12 @@ import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:propcheck/propcheck.dart';
 import 'package:dartz/dartz.dart';
+import 'laws.dart';
 
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
+  final intSets = intLists.map((il) => new ISet<int>.fromIListWithOrder(IntOrder, ilist(il)));
 
   test("insertion", () {
     qc.check(forall(intLists,
@@ -27,4 +29,7 @@ void main() {
     expect(s.contains("paddle"), false);
     expect(s, iset(ilist(["row", "your", "boat"])));
   });
+
+  group("ISetMonoid", () => checkMonoidLaws(new ISetMonoid(IntOrder), intSets));
+
 }

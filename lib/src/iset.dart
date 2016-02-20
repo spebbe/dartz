@@ -17,9 +17,30 @@ class ISet<A> {
 
   bool contains(A a) => _tree.get(a) != none;
 
+  ISet<A> union(ISet<A> other) => other._tree.foldLeft(this, (ISet<A> p, A a) => p.insert(a));
+  ISet<A> operator |(ISet<A> other) => union(other);
+  ISet<A> operator +(ISet<A> other) => union(other);
+
+  ISet<A> intersection(ISet<A> other) => other._tree.foldLeft(new ISet<A>.emptyWithOrder(_tree._order), (ISet<A> p, A a) => contains(a) ? p.insert(a) : p);
+  ISet<A> operator &(ISet<A> other) => intersection(other);
+
+  ISet<A> difference(ISet<A> other) => other._tree.foldLeft(this, (ISet<A> p, A a) => p.remove(a));
+  ISet<A> operator -(ISet<A> other) => difference(other);
+
   IList<A> toIList() => _tree.toIList();
 
   @override bool operator ==(other) => other is ISet && _tree == other._tree;
+
+  @override String toString() => "ISet<$_tree>";
 }
 
 ISet iset(IList l) => new ISet.fromIList(l);
+
+class ISetMonoid<A> extends Monoid<ISet<A>> {
+  final Order<A> _aOrder;
+
+  ISetMonoid(this._aOrder);
+
+  @override ISet<A> zero() => new ISet<A>.emptyWithOrder(_aOrder);
+  @override ISet<A> append(ISet<A> a1, ISet<A> a2) => a1.union(a2);
+}

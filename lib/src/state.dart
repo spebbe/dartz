@@ -1,6 +1,6 @@
 part of dartz;
 
-// Bind on plain monad is *not* stack safe
+// Bind on plain State is *not* stack safe. Composition of StateT with stack safe monad, such as Trampoline, is.
 
 class State<S, A> extends MonadOps<State, A> {
   final Function _run;
@@ -41,7 +41,7 @@ class StateT<F, S, A> extends MonadOps<StateT, A> {
   }));
 }
 
-class StateTMonad<F, S> extends Monad<StateT> {
+class StateTMonad<F, S> extends Monad<StateT<F, S, dynamic>> {
   final Monad<F> _FM;
 
   StateTMonad(this._FM);

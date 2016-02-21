@@ -1,8 +1,8 @@
 name: dartz
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/spebbe/dartz
 description: Functional Programming in Dart. Heavily inspired by scalaz (https://github.com/scalaz/scalaz).
-author: Björn Sperber <dartz@sperber.se>
+author: Björn Sperber <spebbe@gmail.com>
 
 environment:
   sdk: '>=1.13.0 <2.0.0'

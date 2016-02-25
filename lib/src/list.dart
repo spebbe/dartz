@@ -3,9 +3,12 @@ part of dartz;
 // List is mutable, so use with care.
 // If possible, use IList and its associated instances instead.
 
-class ListMonad extends Monad<List> {
+class ListMonad extends MonadPlus<List> {
   @override List pure(a) => [a];
   @override List bind(List fa, List f(_)) => fa.expand(f).toList();
+  @override List empty() => [];
+
+  @override List plus(List f1, List f2) => new List.from(f1)..addAll(f2);
 }
 
 class ListMonoid extends Monoid<List> {
@@ -13,9 +16,11 @@ class ListMonoid extends Monoid<List> {
   @override List append(List l1, List l2) => new List.from(l1)..addAll(l2);
 }
 
-final Monad<List> ListM = new ListMonad();
-final Applicative<List> ListA = ListM;
-final Functor<List> ListF = ListM;
+final MonadPlus<List> ListMP = new ListMonad();
+final Monad<List> ListM = ListMP;
+final ApplicativePlus<List> ListAP = ListMP;
+final Applicative<List> ListA = ListMP;
+final Functor<List> ListF = ListMP;
 final Monoid<List> ListMi = new ListMonoid();
 
 class ListTMonad<M> extends Monad<M> {

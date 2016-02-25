@@ -8,6 +8,8 @@ Function curry4(f(a, b, c, d)) => (a) => (b) => (c) => (d) => f(a, b, c, d);
 
 Function curry5(f(a, b, c, d, e)) => (a) => (b) => (c) => (d) => (e) => f(a, b, c, d, e);
 
+Function curry6(fun(a, b, c, d, e, f)) => (a) => (b) => (c) => (d) => (e) => (f) => fun(a, b, c, d, e, f);
+
 Function uncurry2(f(_)) => (a, b) => f(a)(b);
 
 Function uncurry3(f(_)) => (a, b, c) => f(a)(b)(c);
@@ -15,6 +17,8 @@ Function uncurry3(f(_)) => (a, b, c) => f(a)(b)(c);
 Function uncurry4(f(_)) => (a, b, c, d) => f(a)(b)(c)(d);
 
 Function uncurry5(f(_)) => (a, b, c, d, e) => f(a)(b)(c)(d)(e);
+
+Function uncurry6(fun(_)) => (a, b, c, d, e, f) => fun(a)(b)(c)(d)(e)(f);
 
 Function tuplize2(f(a, b)) => (Tuple2 t2) => f(t2.value1, t2.value2);
 

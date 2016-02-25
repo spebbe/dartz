@@ -37,11 +37,11 @@ abstract class Applicative<F> extends Functor<F> {
   F replicate_(int n, F fa) => sequenceL_(new IList.from(new List.filled(n, fa)));
 
   lift(f(a)) => (fa) => map(fa, f);
-  lift2(f(a, b)) => (F fa, F fb) => ap(fb, map(fa, (a) => (b) => f(a, b)));
-  lift3(f(a, b, c)) => (F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, (a) => (b) => (c) => f(a, b, c))));
-  lift4(f(a, b, c, d)) => (F fa, F fb, F fc, F fd) => ap(fd, ap(fc, ap(fb, map(fa, (a) => (b) => (c) => (d) => f(a, b, c, d)))));
-  lift5(f(a, b, c, d, e)) => (F fa, F fb, F fc, F fd, F fe) => ap(fe, ap(fd, ap(fc, ap(fb, map(fa, (a) => (b) => (c) => (d) => (e) => f(a, b, c, d, e))))));
-  lift6(fun(a, b, c, d, e, f)) => (F fa, F fb, F fc, F fd, F fe, F ff) => ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, (a) => (b) => (c) => (d) => (e) => (f) => fun(a, b, c, d, e, f)))))));
+  lift2(f(a, b)) => (F fa, F fb) => ap(fb, map(fa, curry2(f)));
+  lift3(f(a, b, c)) => (F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, curry3(f))));
+  lift4(f(a, b, c, d)) => (F fa, F fb, F fc, F fd) => ap(fd, ap(fc, ap(fb, map(fa, curry4(f)))));
+  lift5(f(a, b, c, d, e)) => (F fa, F fb, F fc, F fd, F fe) => ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry5(f))))));
+  lift6(f(a, b, c, d, e, f)) => (F fa, F fb, F fc, F fd, F fe, F ff) => ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry6(f)))))));
 
   F map2(F fa, F fb, f(a, b)) => lift2(f)(fa, fb);
   F map3(F fa, F fb, F fc, f(a, b, c)) => lift3(f)(fa, fb, fc);

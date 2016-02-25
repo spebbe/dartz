@@ -17,7 +17,7 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
   @override F map(F fa, f(a)) => traverse(IdM, fa, f);
 
   // def foldMap[A, B](bMonoid: Monoid[B], fa: Option[A], f: A => B): B
-  @override foldMap(Monoid bMonoid, F fa, f(a)) => traverse(StateM, fa, (a) => State.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero());
+  @override foldMap(Monoid bMonoid, F fa, f(a)) => traverse(TStateM, fa, (a) => TStateM.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run();
 }
 
 abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F, A> {
@@ -35,7 +35,7 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   @override F map(f(A a)) => traverse(IdM, f);
 
-  @override foldMap(Monoid bMonoid, f(A a)) => traverse(StateM, (a) => State.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero());
+  @override foldMap(Monoid bMonoid, f(A a)) => traverse(TStateM, (a) => TStateM.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run();
 }
 
 class TraversableOpsTraversable<F extends TraversableOps> extends Traversable<F> {

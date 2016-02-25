@@ -16,13 +16,17 @@ class State<S, A> extends MonadOps<State, A> {
     final ran = run(s);
     return f(ran.value1).run(ran.value2);
   });
-
-  static final State get = new State((s) => new Tuple2(s, s));
-  static State put(v) => new State((s) => new Tuple2(unit, v));
-  static State modify(f(_)) => get >= (s) => put(f(s));
 }
 
-final Monad<State> StateM = new MonadOpsMonad<State>((a) => new State((s) => new Tuple2(a, s)));
+class StateMonad<S> extends MonadOpsMonad<State<S, dynamic>> {
+  StateMonad() : super((a) => new State((S s) => new Tuple2(a, s)));
+
+  State<S, S> get() => new State((S s) => new Tuple2(s, s));
+  State<S, Unit> put(v) => new State((S s) => new Tuple2(unit, v));
+  State<S, Unit> modify(S f(S s)) => get() >= (S s) => put(f(s));
+}
+
+final StateMonad StateM = new StateMonad();
 
 class StateT<F, S, A> extends MonadOps<StateT, A> {
   final Monad<F> _FM;

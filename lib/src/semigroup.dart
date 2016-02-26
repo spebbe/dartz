@@ -2,6 +2,7 @@ part of dartz;
 
 abstract class Semigroup<A> {
   A append(A a1, A a2);
+  appendC(A a1) => (A a2) => append(a1, a2);
 }
 
 class _AnonymousSemigroup extends Semigroup {

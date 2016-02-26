@@ -24,6 +24,8 @@ abstract class Order<A> extends Eq<A> {
   A max(A a1, A a2) => gte(a1, a2) ? a1 : a2;
 
   Tuple2<A, A> sort(A a1, A a2) => lte(a1, a2) ? tuple2(a1, a2) : tuple2(a2, a1);
+
+  Order<A> reverse() => new _AnonymousOrder(flip(order));
 }
 
 typedef Ordering OrderF(a1, a2);

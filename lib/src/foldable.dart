@@ -23,6 +23,10 @@ abstract class Foldable<F> {
   Option minimum(Order oa, F fa) => concatenateO(new MinSemigroup(oa), fa);
 
   Option maximum(Order oa, F fa) => concatenateO(new MaxSemigroup(oa), fa);
+
+  intercalate(Monoid mi, F fa, a) => foldRight(fa, none, (ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
+
+  collapse(ApplicativePlus ap, F fa) => foldLeft(fa, ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 }
 
 abstract class FoldableOps<F, A> {
@@ -34,9 +38,9 @@ abstract class FoldableOps<F, A> {
 
   foldMapO(Semigroup si, f(A a)) => foldMap(new OptionMonoid(si), composeF(some, f));
 
-  concatenate(Monoid mi) => foldMap(mi, id);
+  A concatenate(Monoid<A> mi) => foldMap(mi, id);
 
-  concatenateO(Semigroup si) => foldMapO(si, id);
+  Option<A> concatenateO(Semigroup<A> si) => foldMapO(si, id);
 
   int length() => foldLeft(0, (a, b) => a+1);
 
@@ -47,6 +51,10 @@ abstract class FoldableOps<F, A> {
   Option<A> minimum(Order<A> oa) => concatenateO(new MinSemigroup<A>(oa));
 
   Option<A> maximum(Order<A> oa) => concatenateO(new MaxSemigroup<A>(oa));
+
+  A intercalate(Monoid<A> mi, A a) => foldRight(none, (A ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
+
+  collapse(ApplicativePlus ap) => foldLeft(ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {

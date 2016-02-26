@@ -149,8 +149,8 @@ class IListTMonad<M> extends Monad<M> {
 Monad ilistTMonad(Monad mmonad) => new IListTMonad(mmonad);
 
 IList<int> iota(int n) {
-  IList<int> go(int i, IList<int> result) => i > 0 ? go(i-1, new Cons(i-1, result)) : result;
-  return go(n, Nil);
+  Trampoline<IList<int>> go(int i, IList<int> result) => i > 0 ? tcall(() => go(i-1, new Cons(i-1, result))) : treturn(result);
+  return go(n, Nil).run();
 }
 
 IList ilist(Iterable iterable) => new IList.from(iterable);

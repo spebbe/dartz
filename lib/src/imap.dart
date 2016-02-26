@@ -29,11 +29,21 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
 
   Option<V> get(K k) => _tree.get(tuple2(k, null)).map((t) => t.value2); // mea culpa...
 
+  IMap<K, V> modify(K k, V f(V v), V dflt) => put(k, get(k).map(f)|dflt);
+
   IMap<K, V> remove(K k) => new IMap(_tree.remove(tuple2(k, null))); // mea maxima culpa...
 
   IList<K> keys() => _tree.foldRight(Nil, (kv, p) => new Cons(kv.value1, p));
 
-  IList<K> values() => _tree.foldRight(Nil, (kv, p) => new Cons(kv.value2, p));
+  IList<V> values() => _tree.foldRight(Nil, (kv, p) => new Cons(kv.value2, p));
+
+  foldLeftKV(z, f(previous, K k, V v)) => _tree.foldLeft(z, (p, Tuple2<K, V> kv) => f(p, kv.value1, kv.value2));
+
+  foldRightKV(z, f(K k, V v, previous)) => _tree.foldRight(z, (Tuple2<K, V> kv, p) => f(kv.value1, kv.value2, p));
+
+  foldMapKV(Monoid mi, f(K k, V v)) => _tree.foldMap(mi, (Tuple2<K, V> kv) => f(kv.value1, kv.value2));
+
+  IMap<K, dynamic> mapWithKey(f(K k, V v)) => foldLeftKV(new IMap(new AVLTree(_tree._order, none)), (IMap<K, dynamic> p, k, v) => p.put(k, f(k, v)));
 
   IList<Tuple2<K, V>> pairs() => _tree.toIList();
 
@@ -42,14 +52,17 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
           new IMap(new AVLTree<Tuple2<K, V>>(_tree._order, none))),
           (prev, Tuple2<K, V> kv) => gApplicative.map2(prev, f(kv.value2), (IMap p, v) => p.put(kv.value1, v)));
 
-  Map<K, V> toMap() => pairs().foldLeft(new Map<K, V>(), (Map<K, V> p, Tuple2<K, V> kv) {
-    p[kv.value1] = kv.value2;
-    return p;
-  });
+  @override foldMap(Monoid bMonoid, f(V v)) => _tree.foldMap(bMonoid, (t) => f(t.value2));
+
+  @override foldLeft(z, f(previous, V v)) => _tree.foldLeft(z, (p, t) => f(p, t.value2));
+
+  @override foldRight(z, f(V v, previous)) => _tree.foldRight(z, (t, p) => f(t.value2, p));
+
+  Map<K, V> toMap() => foldLeftKV(new Map<K, V>(), (Map<K, V> p, K k, V v) => p..[k] = v);
 
   @override bool operator ==(other) => other is IMap && _tree == other._tree;
 
-  @override String toString() => "IMap<${_tree.toString()}>";
+  @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", Nil)).intercalate(StringMi, ", ")}}";
 }
 
 IMap imap(Map m) => new IMap.from(m);

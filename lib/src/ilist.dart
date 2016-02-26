@@ -80,6 +80,8 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
     return result;
   }
 
+  List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
+
   @override foldRight(z, f(A a, p)) => reverse().foldLeft(z, (a, b) => f(b, a));
 
   @override foldMap(Monoid bMonoid, f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
@@ -90,6 +92,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   @override IList<A> plus(IList<A> l2) => new Cons(this, new Cons(l2, Nil)).join();
 
+  @override String toString() => 'ilist[' + map((A a) => a.toString()).intercalate(StringMi, ', ') + ']';
 }
 
 class Cons<A> extends IList<A> {
@@ -102,8 +105,6 @@ class Cons<A> extends IList<A> {
 
   @override Option<IList<A>> get tailOption => some(_tail);
 
-  @override String toString() => "${_head}::${_tail}";
-
   @override bool operator ==(other) => other is Cons && other._head == _head && other._tail == _tail;
 }
 
@@ -111,8 +112,6 @@ class _Nil<A> extends IList<A> {
   @override Option<A> get headOption => none;
 
   @override Option<IList<A>> get tailOption => none;
-
-  @override String toString() => "Nil";
 
   @override bool operator ==(other) => other is _Nil;
 }

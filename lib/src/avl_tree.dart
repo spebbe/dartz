@@ -32,7 +32,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   @override bool operator ==(other) => other is AVLTree<A> && _order == other._order && toIList() == other.toIList();
 
-  @override String toString() => toIList().toString();
+  @override String toString() => 'avltree<${toIList()}>';
 }
 
 class AVLNode<A> {

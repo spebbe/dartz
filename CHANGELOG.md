@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.3
+
+- Default foldMap for Traversable is now trampolined
+- Moved State primitives to StateMonad
+- MonadPlus instance for List
+- reverse operation for Order
+- modify, foldLeftKV, foldRightKV, foldMapKV, mapWithKey and optimized Foldable operations for IMap
+- curried appendC for Semigroup
+
 ## 0.0.2
 
 - Order constructs (order, orderBy, min and max semigroups)

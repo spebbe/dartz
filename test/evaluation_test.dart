@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 //import 'package:propcheck/propcheck.dart';
 import 'package:dartz/dartz.dart';
+import 'dart:async';
 //import 'laws.dart';
 
 void main() {
@@ -35,6 +36,27 @@ void main() {
     final M = new EvaluationMonad(UnitMi);
     final deep = M.replicate_(10000, M.modify((i) => i+1));
     expect(await deep.state(unit, 0), right(10000));
+  });
+
+  test("liftFuture", () async {
+    final M = new EvaluationMonad<Unit, String, Unit, Unit>(UnitMi);
+
+    Future<String> expensiveComputation(String input) => new Future(() => input.toUpperCase());
+
+    final ev = M.ask() >= composeF(M.liftFuture, expensiveComputation);
+
+    expect(await ev.value("hello", unit), right("HELLO"));
+  });
+
+  test("liftEither", () async {
+    final M = new EvaluationMonad<String, IList<int>, Unit, Unit>(UnitMi);
+
+    Either<String, int> first(IList<int> l) => l.headOption % "Empty list";
+
+    final ev = M.ask() >= composeF(M.liftEither, first);
+
+    expect(await ev.value(Nil, unit), left("Empty list"));
+    expect(await ev.value(ilist([1,2,3]), unit), right(1));
   });
 
 }

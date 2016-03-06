@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.4
+
+- Bind Evaluation and Future through microtask queue by default
+- Optimized map implementations for Evaluation and Future
+- Retain more type information in Evaluation and EvaluationMonad operations
+- Added liftEither and handleError operations to Evaluation/EvaluationMonad
+
 ## 0.0.3
 
 - Default foldMap for Traversable is now trampolined

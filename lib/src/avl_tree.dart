@@ -30,7 +30,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   Option<A> max() => _root.map((r) => r.max());
 
-  @override bool operator ==(other) => other is AVLTree<A> && _order == other._order && toIList() == other.toIList();
+  @override bool operator ==(other) => identical(this, other) || (other is AVLTree<A> && _order == other._order && toIList() == other.toIList());
 
   @override String toString() => 'avltree<${toIList()}>';
 }

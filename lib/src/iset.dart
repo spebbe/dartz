@@ -29,9 +29,9 @@ class ISet<A> {
 
   IList<A> toIList() => _tree.toIList();
 
-  @override bool operator ==(other) => other is ISet && _tree == other._tree;
+  @override bool operator ==(other) => identical(this, other) || (other is ISet && _tree == other._tree);
 
-  @override String toString() => "ISet<$_tree>";
+  @override String toString() => "iset<$_tree>";
 }
 
 ISet iset(IList l) => new ISet.fromIList(l);

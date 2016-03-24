@@ -60,7 +60,7 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
 
   Map<K, V> toMap() => foldLeftKV(new Map<K, V>(), (Map<K, V> p, K k, V v) => p..[k] = v);
 
-  @override bool operator ==(other) => other is IMap && _tree == other._tree;
+  @override bool operator ==(other) => identical(this, other) || (other is IMap && _tree == other._tree);
 
   @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", Nil)).intercalate(StringMi, ", ")}}";
 }

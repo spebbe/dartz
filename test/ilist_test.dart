@@ -112,4 +112,20 @@ void main() {
     final IList<int> massive = IdM.replicate(20000, 1);
     expect(massive.concatenate(NumSumMi), 20000);
   });
+
+  test("equality", () {
+    qc.check(forall2(intILists, intILists,
+        (IList<int> l1, IList<int> l2) =>
+        (l1 == l1) &&
+            (l2 == l2) &&
+            (l1 == l1.reverse().reverse()) &&
+            (l2 == l2.reverse().reverse()) &&
+            (new Cons(1, l1) != l1) &&
+            ((l1 == l2) == (l1.toString() == l2.toString()))));
+  });
+
+  test("to/from iterable", () {
+    qc.check(forall(intILists, (IList l) => l == new IList.from(l.toIterable())));
+  });
+
 }

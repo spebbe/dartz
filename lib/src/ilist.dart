@@ -1,6 +1,6 @@
 part of dartz;
 
-// stack safety - tail call elimination => icky mutating loops
+// (stack safety - tail call elimination) => icky mutating loops
 // everything should be externally RT though and mostly stack safe.
 
 abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>, MonadPlusOps<IList, A> {
@@ -82,6 +82,10 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
 
+  Iterable<A> toIterable() => new _IListIterable<A>(this);
+
+  Iterator<A> iterator() => new _IListIterator<A>(this);
+
   @override foldRight(z, f(A a, p)) => reverse().foldLeft(z, (a, b) => f(b, a));
 
   @override foldMap(Monoid bMonoid, f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
@@ -93,6 +97,26 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
   @override IList<A> plus(IList<A> l2) => new Cons(this, new Cons(l2, Nil)).join();
 
   @override String toString() => 'ilist[' + map((A a) => a.toString()).intercalate(StringMi, ', ') + ']';
+
+  @override bool operator ==(other) {
+    var thisCurrent = this;
+    var otherCurrent = other;
+    while(thisCurrent is Cons) {
+      if (otherCurrent is Cons) {
+        if (identical(thisCurrent, otherCurrent)) {
+          return true;
+        } else if (thisCurrent._head == otherCurrent._head) {
+          thisCurrent = thisCurrent._tail;
+          otherCurrent = otherCurrent._tail;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
+    return otherCurrent is _Nil;
+  }
 }
 
 class Cons<A> extends IList<A> {
@@ -104,16 +128,12 @@ class Cons<A> extends IList<A> {
   @override Option<A> get headOption => some(_head);
 
   @override Option<IList<A>> get tailOption => some(_tail);
-
-  @override bool operator ==(other) => other is Cons && other._head == _head && other._tail == _tail;
 }
 
 class _Nil<A> extends IList<A> {
   @override Option<A> get headOption => none;
 
   @override Option<IList<A>> get tailOption => none;
-
-  @override bool operator ==(other) => other is _Nil;
 }
 
 final IList Nil = new _Nil();
@@ -153,3 +173,45 @@ IList<int> iota(int n) {
 }
 
 IList ilist(Iterable iterable) => new IList.from(iterable);
+
+class _IListIterable<A> extends Iterable<A> {
+  final IList<A> _l;
+
+  _IListIterable(this._l);
+
+  @override Iterator<A> get iterator => new _IListIterator<A>(_l);
+}
+
+class _IListIterator<A> extends Iterator<A> {
+  bool started = false;
+  IList<A> _l;
+  A _current = null;
+
+  _IListIterator(this._l);
+
+  @override A get current => _current;
+
+  bool moveNext() {
+    final IList<A> curr = _l;
+    if (curr is Cons<A>) {
+      if (started) {
+        final IList<A> next = curr._tail;
+        _l = next;
+        if (next is Cons<A>) {
+          _current = next._head;
+          return true;
+        } else {
+          _current = null;
+          return false;
+        }
+      } else {
+        _current = curr._head;
+        started = true;
+        return true;
+      }
+    } else {
+      _current = null;
+      return false;
+    }
+  }
+}

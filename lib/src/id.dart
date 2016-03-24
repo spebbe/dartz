@@ -13,4 +13,4 @@ class IdTraversable extends Traversable {
 
 final Traversable IdTr = new IdTraversable();
 
-id(t) => t;
+dynamic id(dynamic t) => t;

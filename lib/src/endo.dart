@@ -1,12 +1,11 @@
 part of dartz;
 
-// type Endo[A] = A => A
-typedef Endo(a);
+typedef A Endo<A>(A a);
 
-class EndoMonoid extends Monoid<Endo> {
-  @override Endo zero() => id;
+class EndoMonoid<A> extends Monoid<Endo<A>> {
+  @override Endo<A> zero() => id;
 
-  @override Endo append(Endo e1, Endo e2) => (a) => e1(e2(a));
+  @override Endo<A> append(Endo<A> e1, Endo<A> e2) => (A a) => e1(e2(a));
 }
 
 final Monoid<Endo> EndoMi = new EndoMonoid();

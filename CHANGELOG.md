@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.5
+
+- toIterable and iterator operations for IList
+- Faster, stack safe equality checks for IList, IMap, ISet and AVLTree
+- Tighter types for id and Endo
+
 ## 0.0.4
 
 - Bind Evaluation and Future through microtask queue by default

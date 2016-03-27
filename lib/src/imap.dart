@@ -17,9 +17,9 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
 
   IMap(this._tree);
 
-  IMap.empty(): _tree = new AVLTree<Tuple2<K, V>>(_imapOrder(comparableOrder), none);
+  IMap.empty(): _tree = new AVLTree<Tuple2<K, V>>(_imapOrder(comparableOrder), emptyAVLNode);
 
-  IMap.emptyWithOrder(Order<K> kOrder): _tree = new AVLTree<Tuple2<K, V>>(_imapOrder(kOrder), none);
+  IMap.emptyWithOrder(Order<K> kOrder): _tree = new AVLTree<Tuple2<K, V>>(_imapOrder(kOrder), emptyAVLNode);
 
   factory IMap.from(Map<K, V> m) => m.keys.fold(new IMap.empty(), (IMap<K, V> p, K k) => p.put(k, m[k]));
 
@@ -43,13 +43,13 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
 
   foldMapKV(Monoid mi, f(K k, V v)) => _tree.foldMap(mi, (Tuple2<K, V> kv) => f(kv.value1, kv.value2));
 
-  IMap<K, dynamic> mapWithKey(f(K k, V v)) => foldLeftKV(new IMap(new AVLTree(_tree._order, none)), (IMap<K, dynamic> p, k, v) => p.put(k, f(k, v)));
+  IMap<K, dynamic> mapWithKey(f(K k, V v)) => foldLeftKV(new IMap(new AVLTree(_tree._order, emptyAVLNode)), (IMap<K, dynamic> p, k, v) => p.put(k, f(k, v)));
 
   IList<Tuple2<K, V>> pairs() => _tree.toIList();
 
   @override traverse(Applicative gApplicative, f(V v)) =>
       _tree.foldLeft(gApplicative.pure(
-          new IMap(new AVLTree<Tuple2<K, V>>(_tree._order, none))),
+          new IMap(new AVLTree<Tuple2<K, V>>(_tree._order, emptyAVLNode))),
           (prev, Tuple2<K, V> kv) => gApplicative.map2(prev, f(kv.value2), (IMap p, v) => p.put(kv.value1, v)));
 
   @override foldMap(Monoid bMonoid, f(V v)) => _tree.foldMap(bMonoid, (t) => f(t.value2));

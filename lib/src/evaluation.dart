@@ -31,7 +31,7 @@ class Evaluation<E, R, W, S, A> extends MonadOps<Evaluation<E, R, W, S, dynamic>
             final w1 = t.value1;
             final s2 = t.value2;
             final a = t.value3;
-            return f(a).run(r, s2).then((Either<E, Tuple3<W, S, A>> leftOrRight2) {
+            return f(a).run(r, s2).then((Either<E, Tuple3<W, S, dynamic>> leftOrRight2) {
               return leftOrRight2.map((t2) {
                 final w2 = t2.value1;
                 final s3 = t2.value2;
@@ -88,7 +88,7 @@ class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>>
 
   Evaluation<E, R, W, S, Unit> put(S s) => new Evaluation(_W, (r, _) => new Future.value(new Right(new Tuple3(_W.zero(), s, unit))));
 
-  Evaluation<E, R, W, S, Unit> modify(S f(S s)) => get() >= ((s)=> put(f(s)));
+  Evaluation<E, R, W, S, Unit> modify(S f(S s)) => get() >= ((S s)=> put(f(s)));
 
   Evaluation<E, R, W, S, Unit> write(W w) => new Evaluation(_W, (_, s) => new Future.value(new Right(new Tuple3(w, s, unit))));
 

@@ -9,7 +9,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   IList();
 
-  factory IList.from(Iterable<A> iterable) => iterable.fold(Nil, (a, h) => new Cons(h, a)).reverse();
+  factory IList.from(Iterable<A> iterable) => iterable.fold(Nil, (IList<A> a, A h) => new Cons(h, a)).reverse();
 
   @override IList pure(a) => new Cons(a, Nil);
 

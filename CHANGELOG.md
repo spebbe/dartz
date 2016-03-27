@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.6
+
+- Significantly faster and lighter AVLTree, IMap and ISet
+- Corrected a couple of type annotations in IList and Evaluation
+
 ## 0.0.5
 
 - toIterable and iterator operations for IList

@@ -24,7 +24,7 @@ final Free<RPNOp, Unit> dup = pop >= (i) => push(i) >> push(i);
 final Free<RPNOp, Unit> multiply = pop >= (a) => pop >= (b) => push(a*b);
 
 void main() {
-  final M = new EvaluationMonad(IListMi);
+  final M = new EvaluationMonad<String, IMap<String, double>, IList<String>, IList<double>>(IListMi);
 
   Evaluation<String, IMap<String, double>, IList<String>, IList<double>, dynamic> rpnInterpreter(RPNOp<dynamic> op) {
     if (op is PushSymbol) {

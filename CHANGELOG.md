@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.7
+
+- Much faster and leaner IMap
+- Significantly faster and leaner ISet and AVLTree
+- Slightly faster IList
+
 ## 0.0.6
 
 - Significantly faster and lighter AVLTree, IMap and ISet

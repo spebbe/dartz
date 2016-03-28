@@ -192,12 +192,12 @@ class _IListIterator<A> extends Iterator<A> {
   @override A get current => _current;
 
   bool moveNext() {
-    final IList<A> curr = _l;
-    if (curr is Cons<A>) {
+    final IList curr = _l;
+    if (curr is Cons) {
       if (started) {
-        final IList<A> next = curr._tail;
+        final IList next = curr._tail;
         _l = next;
-        if (next is Cons<A>) {
+        if (next is Cons) {
           _current = next._head;
           return true;
         } else {

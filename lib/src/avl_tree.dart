@@ -54,14 +54,12 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   final A _a;
   final int _height;
   int get height => _height;
-  final int _balance;
-  int get balance => _balance;
+  int get balance => _right.height - _left.height;
   final _AVLNode<A> _left;
   final _AVLNode<A> _right;
 
   _NonEmptyAVLNode(this._a, _AVLNode<A> left, _AVLNode<A> right)
-      : _height = IntOrder.max(left.height, right.height) + 1,
-        _balance = right.height - left.height,
+      : _height = (left.height > right.height) ? left.height+1 : right.height+1,
         _left = left,
         _right = right;
 
@@ -94,13 +92,14 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
           (rightResult) => some(tuple2(new _NonEmptyAVLNode(_a, _left, rightResult.value1)._rebalance(), rightResult.value2)));
 
   _AVLNode<A> _rebalance() {
-    if (_balance < -1) {
+    final b = balance;
+    if (b < -1) {
       if (_left.balance < 0) {
         return llRotate(_left);
       } else {
         return doubleLrRotate(_left);
       }
-    } else if (_balance > 1) {
+    } else if (b > 1) {
       if (_right.balance > 0) {
         return rrRotate(_right);
       } else {

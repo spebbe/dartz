@@ -30,7 +30,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   Option<A> max() => _root.max();
 
-  @override bool operator ==(other) => identical(this, other) || (other is AVLTree<A> && _order == other._order && toIList() == other.toIList());
+  @override bool operator ==(other) => identical(this, other) || (other is AVLTree && _order == other._order && toIList() == other.toIList());
 
   @override String toString() => 'avltree<${toIList()}>';
 }
@@ -131,14 +131,18 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   }
 
   Option<A> get(Order<A> order, A a) {
-    final Ordering o = order.order(a, _a);
-    if (o == Ordering.EQ) {
-      return some(_a);
-    } else if (o == Ordering.LT) {
-      return _left.get(order, a);
-    } else {
-      return _right.get(order, a);
+    var current = this;
+    while(current is _NonEmptyAVLNode) {
+      final Ordering o = order.order(a, current._a);
+      if (o == Ordering.EQ) {
+        return some(current._a);
+      } else if (o == Ordering.LT) {
+        current = current._left;
+      } else {
+        current = current._right;
+      }
     }
+    return none;
   }
 
   Option<A> min() => _left == emptyAVLNode ? some(_a) : _left.min();

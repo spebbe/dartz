@@ -2,20 +2,19 @@ part of dartz;
 
 // Prestacked Future<Either<E, Reader<R> + Writer<W> + State<S>>> monad.
 // Binds are stack safe but relatively expensive, because of Future chaining.
-class Evaluation<E, R, W, S, A> extends MonadOps<Evaluation<E, R, W, S, dynamic>, A> {
+class Evaluation<E, R, W, S, A> {
   final Monoid<W> _W;
   final Function _run;
 
   Evaluation(this._W, this._run);
 
-  @override Evaluation<E, R, W, S, dynamic> pure(a) {
+  Evaluation<E, R, W, S, dynamic> pure(a) {
     return new Evaluation(_W, (r, s) {
       return new Future.value(new Right(new Tuple3(_W.zero(), s, a)));
     });
   }
 
-
-  @override Evaluation<E, R, W, S, dynamic> map(f(A a)) {
+  Evaluation<E, R, W, S, dynamic> map(f(A a)) {
     return new Evaluation(_W, (r, s) {
       return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
         return leftOrRight.map((t) => new Tuple3(t.value1, t.value2, f(t.value3)));
@@ -23,7 +22,7 @@ class Evaluation<E, R, W, S, A> extends MonadOps<Evaluation<E, R, W, S, dynamic>
     });
   }
 
-  @override Evaluation<E, R, W, S, dynamic> bind(Evaluation<E, R, W, S, dynamic> f(A a)) {
+  Evaluation<E, R, W, S, dynamic> bind(Evaluation<E, R, W, S, dynamic> f(A a)) {
     return new Evaluation(_W, (r, s) {
       return new Future.microtask(() {
         return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
@@ -60,6 +59,22 @@ class Evaluation<E, R, W, S, A> extends MonadOps<Evaluation<E, R, W, S, dynamic>
 
   Future<Either<E, A>> value(R r, S s) => run(r, s).then((e) => e.map((t) => t.value3));
 
+  /* TODO: Should ideally extend MonadOps<Evaluation<E, R, W, S, dynamic>, A>
+           CLI Dart VM, dart2js and dartanalyzer (with and without '--strong') are all OK with this,
+           but Dartium claims it's an 'illegal recursive type'...
+           Dartium has no problem with 'extends MonadOps<Evaluation, A>' though.
+           Rather than doing that and throwing away lots of useful type information,
+           the flesh of MonadOps is manually expanded here for now :-(
+ */
+  Evaluation<E, R, W, S, dynamic> ap(Evaluation<E, R, W, S, dynamic> ff) => ff.bind((f) => map(f));
+  Evaluation<E, R, W, S, dynamic> flatMap(Evaluation<E, R, W, S, dynamic> f(A a)) => bind(f);
+  Evaluation<E, R, W, S, dynamic> andThen(Evaluation<E, R, W, S, dynamic> next) => bind((_) => next);
+  Evaluation<E, R, W, S, dynamic> operator >>(Evaluation<E, R, W, S, dynamic> next) => andThen(next);
+  Evaluation<E, R, W, S, dynamic> operator >=(Evaluation<E, R, W, S, dynamic> f(A a)) => bind(f);
+  Evaluation<E, R, W, S, dynamic> operator <<(Evaluation<E, R, W, S, dynamic> next) => bind((a) => next.map((_) => a));
+  Evaluation<E, R, W, S, dynamic> replace(replacement) => map((_) => replacement);
+  Evaluation<E, R, W, S, dynamic> join() => bind((A a) => a as Evaluation<E, R, W, S, dynamic>);
+  Evaluation<E, R, W, S, dynamic> flatten() => join();
 }
 
 class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>> {

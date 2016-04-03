@@ -3,7 +3,7 @@ part of dartz;
 abstract class Monad<F> extends Applicative<F> {
   F bind(F fa, F f(_));
   
-  F join(F ffa) => bind(ffa, id);
+  F join(F ffa) => bind(ffa, (F f) => f);
 
   @override F map(F fa, f(_)) => bind(fa, (a) => pure(f(a)));
   @override F ap(F fa, F ff) => bind(ff, (f) => map(fa, f));
@@ -36,7 +36,7 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
   F operator >=(F f(A a)) => bind(f);
   F operator <<(F next) => bind((a) => (next as MonadOps).map((_) => a));
   F replace(replacement) => map((_) => replacement);
-  F join() => bind(id);
+  F join() => bind((A a) => a as F);
   F flatten() => join();
 }
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.8
+
+- Improved compatibility with dart2js, Dartium and dart strong mode
+- Proper type parameters for Tuple semigroups and monoids
+
 ## 0.0.7
 
 - Much faster and leaner IMap

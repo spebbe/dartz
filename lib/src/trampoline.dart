@@ -2,7 +2,7 @@ part of dartz;
 
 // TODO: unify with Free?
 
-abstract class Trampoline<A> extends MonadOps<Trampoline, A> {
+abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeOps<Trampoline, A>, MonadOps<Trampoline, A> {
   @override Trampoline pure(a) => new _TPure(a);
   @override Trampoline bind(Trampoline f(A a)) => new _TBind(this, f);
 

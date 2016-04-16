@@ -2,7 +2,7 @@ part of dartz;
 
 // TODO: simplest possible implementation -- neither stack safe nor performant. add codensity/reassociation and trampolining.
 
-abstract class Free<F, A> extends MonadOps<Free, A> {
+abstract class Free<F, A> extends FunctorOps<Free, A> with ApplicativeOps<Free, A>, MonadOps<Free, A> {
   @override Free pure(a) => new Pure(a);
 
   foldMap(Monad G, f(_));

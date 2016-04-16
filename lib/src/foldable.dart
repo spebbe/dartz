@@ -27,6 +27,10 @@ abstract class Foldable<F> {
   intercalate(Monoid mi, F fa, a) => foldRight(fa, none, (ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
   collapse(ApplicativePlus ap, F fa) => foldLeft(fa, ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
+
+  foldLeftM(Monad m, F fa, z, f(previous, a)) => foldRight(fa, m.pure, (a, b) => (w) => m.bind(f(w, a), b))(z);
+
+  foldRightM(Monad m, F fa, z, f(a, previous)) => foldLeft(fa, m.pure, (b, a) => (w) => m.bind(f(a, w), b))(z);
 }
 
 abstract class FoldableOps<F, A> {
@@ -55,6 +59,10 @@ abstract class FoldableOps<F, A> {
   A intercalate(Monoid<A> mi, A a) => foldRight(none, (A ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
   collapse(ApplicativePlus ap) => foldLeft(ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
+
+  foldLeftM(Monad m, z, f(previous, A a)) => foldRight(m.pure, (A a, b) => (w) => m.bind(f(w, a), b))(z);
+
+  foldRightM(Monad m, z, f(A a, previous)) => foldLeft(m.pure, (b, A a) => (w) => m.bind(f(a, w), b))(z);
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {

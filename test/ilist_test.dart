@@ -25,7 +25,7 @@ void main() {
     Tuple4<int, int, int, int> mapper(int i) => new Tuple4(i, 1, i, i);
     final reducer = tuple4Semigroup(NumSumMi, NumSumMi, NumMinSi, NumMaxSi);
     Tuple3<double, int, int> polish(int sum, int count, int min, int max) => new Tuple3(sum / count, min, max);
-    final result = nums.foldMapO(reducer, mapper).map((t) => t.apply(polish));
+    final result = nums.foldMapO(reducer, mapper).map(tuplize4(polish));
     expect(result, some(new Tuple3(516.2, 59, 891)));
 
     IList<int> dup(int i) => new Cons<int>(i, new Cons<int>(i, Nil));
@@ -49,6 +49,9 @@ void main() {
     expect(ilist([1,2,3,4]).filter((i) => i%2==0), ilist([2,4]));
 
     expect(ilist([1,2,3,4]).map((i) => i%2 == 1 ? some(i) : none).unite(OptionFo), ilist([1,3]));
+
+    expect(ilist([1,2,3]).foldLeftM(OptionM, "", (p, i) => some(p+i.toString())), some("123"));
+    expect(ilist([1,2,3]).foldRightM(OptionM, "", (i, p) => some(p+i.toString())), some("321"));
   });
 
   test('length', () {

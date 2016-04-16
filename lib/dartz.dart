@@ -35,3 +35,4 @@ part 'src/plus_empty.dart';
 part 'src/applicative_plus.dart';
 part 'src/monad_plus.dart';
 part 'src/trampoline.dart';
+part 'src/ivector.dart';

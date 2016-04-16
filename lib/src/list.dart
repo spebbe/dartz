@@ -13,7 +13,7 @@ class ListMonad extends MonadPlus<List> {
 
 class ListMonoid extends Monoid<List> {
   @override List zero() => new List();
-  @override List append(List l1, List l2) => new List.from(l1)..addAll(l2);
+  @override List append(List l1, List l2) => l1.isEmpty ? l2 : (l2.isEmpty ? l1 : new List.from(l1)..addAll(l2));
 }
 
 final MonadPlus<List> ListMP = new ListMonad();

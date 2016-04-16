@@ -3,6 +3,10 @@ part of dartz;
 abstract class Functor<F> {
   F map(F fa, f(_));
 
+  F strengthL(F fa, b) => map(fa, (a) => tuple2(b, a));
+
+  F strengthR(F fa, b) => map(fa, (a) => tuple2(a, b));
+
   Functor<F> /*Functor<F<G<_>>> */ composeF(Functor G) => new ComposedFunctor(this, G);
 }
 
@@ -18,4 +22,8 @@ class ComposedFunctor<F, G> extends Functor<F> {
 
 abstract class FunctorOps<F, A> {
   F map(f(A a));
+
+  F strengthL(b) => map((a) => tuple2(b, a));
+
+  F strengthR(b) => map((a) => tuple2(a, b));
 }

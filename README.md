@@ -4,9 +4,9 @@ dartz
 Functional programming in Dart
 
 * Type class hierarchy in the spirit of [scalaz](https://github.com/scalaz/scalaz) and [the standard Haskell libraries](https://wiki.haskell.org/Typeclassopedia)
-* Immutable, persistent collections, including IList, IMap and ISet
+* Immutable, persistent collections, including IVector, IList, IMap and ISet
 * Option, Either, State, Tuple, Free and other tools for programming in a functional style
-* Type class instances (Monoids, Traversable Functors, Monads and so on) for included types as well as for several standard Dart types
+* Type class instances (Monoids, Traversable Functors, Monads and so on) for included types, as well as for several standard Dart types
 
 ##### Status
 

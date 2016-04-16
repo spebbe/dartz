@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.9
+
+- IVector, an immutable and persistent indexed sequence with O(log n) prepend, append, get and set operations
+- MonadPlus, Traversable and Monoid instances for IVector
+- Faster List monoid
+- Faster map and new set operation for IMap
+- strengthL and strengthR operations for Functor
+- foldLeftM and foldRightM operations for Foldable
+
 ## 0.0.8
 
 - Improved compatibility with dart2js, Dartium and dart strong mode
@@ -36,7 +45,7 @@
 - MonadPlus instance for List
 - reverse operation for Order
 - modify, foldLeftKV, foldRightKV, foldMapKV, mapWithKey and optimized Foldable operations for IMap
-- curried appendC for Semigroup
+- Curried appendC for Semigroup
 
 ## 0.0.2
 

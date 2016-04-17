@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.10
+
+- Fixed embarrassing bug in IMap#set. Let's never mention it again.
+
 ## 0.0.9
 
 - IVector, an immutable and persistent indexed sequence with O(log n) prepend, append, get and set operations

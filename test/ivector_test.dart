@@ -29,6 +29,7 @@ void main() {
     final IVector<String> v2 = v.plus(vReversed);
     expect(v2.mapWithIndex((i, s) => v2.get(i) == some(s)).concatenate(BoolAndMi), true);
 
+    expect(v2.set(1, "d"), some(ivector(["a", "d", "c", "c", "b", "a"])));
     expect(v2.set(3, "d"), some(ivector(["a", "b", "c", "d", "b", "a"])));
     expect(v2.set(6, "ö"), none);
   });

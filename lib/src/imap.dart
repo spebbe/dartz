@@ -201,18 +201,14 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   }
 
   @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) {
-    var current = this;
-    while(current is _NonEmptyIMapAVLNode) {
-      final Ordering o = order.order(k, current._k);
-      if (o == Ordering.EQ) {
-        return some(new _NonEmptyIMapAVLNode(current._k, v, current._left, current._right));
-      } else if (o == Ordering.LT) {
-        current = current._left;
-      } else {
-        current = current._right;
-      }
+    final Ordering o = order.order(k, _k);
+    if (o == Ordering.LT) {
+      return _left.set(order, k, v).map((newLeft) => new _NonEmptyIMapAVLNode(_k, _v, newLeft, _right));
+    } else if (o == Ordering.GT) {
+      return _right.set(order, k, v).map((newRight) => new _NonEmptyIMapAVLNode(_k, _v, _left, newRight));
+    } else {
+      return some(new _NonEmptyIMapAVLNode(_k, v, _left, _right));
     }
-    return none;
   }
 }
 

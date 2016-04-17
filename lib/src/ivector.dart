@@ -44,8 +44,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   @override IVector pure(a) => emptyVector.appendElement(a);
 
   @override traverse(Applicative gApplicative, f(A a)) =>
-      _elementsByIndex.foldLeft(gApplicative.pure(
-          new IVector.emptyVector()),
+      _elementsByIndex.foldLeft(gApplicative.pure(emptyVector),
           (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
   @override foldLeft(z, f(previous, A a)) => _elementsByIndex.foldLeft(z, f);

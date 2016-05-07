@@ -111,6 +111,10 @@ class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>>
 
   Evaluation<E, R, W, S, dynamic> asks(f(R r)) => ask().map(f);
 
+  Evaluation<E, R, W, S, dynamic> local(R f(R r), Evaluation<E, R, W, S, dynamic> fa) => new Evaluation(_W, (r, s) => fa.run(f(r), s));
+
+  Evaluation<E, R, W, S, dynamic> scope(R scopedR, Evaluation<E, R, W, S, dynamic> fa) => new Evaluation(_W, (_, s) => fa.run(scopedR, s));
+
   Evaluation<E, R, W, S, dynamic> raiseError(E err) => new Evaluation(_W, (r, s) => new Future.value(new Left(err)));
 
   Evaluation<E, R, W, S, dynamic> handleError(Evaluation<E, R, W, S, dynamic> ev, Evaluation<E, R, W, S, dynamic> onError(E e)) => ev.handleError(onError);

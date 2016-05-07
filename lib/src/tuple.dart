@@ -4,12 +4,14 @@ class Tuple2<T1, T2> {
   final T1 value1;
   final T2 value2;
   Tuple2(this.value1, this.value2);
-  apply(f(T1, T2)) => f(value1, value2);
+  /*=R*/ apply/*<R>*/(Function2/*<T1, T2, R>*/ f) => f(value1, value2);
+  Tuple2/*<NT1, T2>*/ map1/*<NT1>*/(Function1/*<T1, NT1>*/ f) => new Tuple2(f(value1), value2);
+  Tuple2/*<T1, NT2>*/ map2/*<NT2>*/(Function1/*<T2, NT2>*/ f) => new Tuple2(value1, f(value2));
   @override String toString() => '($value1, $value2)';
   @override bool operator ==(other) => other is Tuple2 && other.value1 == value1 && other.value2 == value2;
 }
 
-Tuple2 tuple2(v1, v2) => new Tuple2(v1, v2);
+Tuple2/*<T1, T2>*/ tuple2/*<T1, T2>*/(/*=T1*/ v1, /*=T2*/ v2) => new Tuple2(v1, v2);
 
 class Tuple2Semigroup<T1, T2> extends Semigroup<Tuple2<T1, T2>> {
   final Semigroup<T1> _value1Semigroup;
@@ -42,12 +44,12 @@ class Tuple3<T1, T2, T3> {
   final T2 value2;
   final T3 value3;
   Tuple3(this.value1, this.value2, this.value3);
-  apply(f(T1, T2, T3)) => f(value1, value2, value3);
+  /*=R*/ apply/*<R>*/(Function3/*<T1, T2, T3, R>*/ f) => f(value1, value2, value3);
   @override String toString() => '($value1, $value2, $value3)';
   @override bool operator ==(other) => other is Tuple3 && other.value1 == value1 && other.value2 == value2 && other.value3 == value3;
 }
 
-Tuple3 tuple3(v1, v2, v3) => new Tuple3(v1, v2, v3);
+Tuple3/*<T1, T2, T3>*/ tuple3/*<T1, T2, T3>*/(/*=T1*/ v1, /*=T2*/ v2, /*=T3*/ v3) => new Tuple3(v1, v2, v3);
 
 class Tuple3Semigroup<T1, T2, T3> extends Semigroup<Tuple3<T1, T2, T3>> {
   final Semigroup<T1> _value1Semigroup;
@@ -84,12 +86,12 @@ class Tuple4<T1, T2, T3, T4> {
   final T3 value3;
   final T4 value4;
   Tuple4(this.value1, this.value2, this.value3, this.value4);
-  apply(f(T1, T2, T3, T4)) => f(value1, value2, value3, value4);
+  /*=R*/ apply/*<R>*/(Function4/*<T1, T2, T3, T4, R>*/ f) => f(value1, value2, value3, value4);
   @override String toString() => '($value1, $value2, $value3, $value4)';
   @override bool operator ==(other) => other is Tuple4 && other.value1 == value1 && other.value2 == value2 && other.value3 == value3 && other.value4 == value4;
 }
 
-Tuple4 tuple4(v1, v2, v3, v4) => new Tuple4(v1, v2, v3, v4);
+Tuple4/*<T1, T2, T3, T4>*/ tuple4/*<T1, T2, T3, T4>*/(/*=T1*/ v1, /*=T2*/ v2, /*=T3*/ v3, /*=T4*/ v4) => new Tuple4(v1, v2, v3, v4);
 
 class Tuple4Semigroup<T1, T2, T3, T4> extends Semigroup<Tuple4<T1, T2, T3, T4>> {
   final Semigroup<T1> _value1Semigroup;

@@ -19,19 +19,19 @@ void main() {
 
   test("IVector indexing", () {
     final IVector<String> v = ivector(["a", "b", "c"]);
-    final IVector<String> vReversed = v.foldLeft(emptyVector, (p, e) => p.prependElement(e));
-    expect(vReversed.get(-1), none);
+    final IVector<String> vReversed = v.foldLeft(emptyVector(), (p, e) => p.prependElement(e));
+    expect(vReversed.get(-1), none());
     expect(vReversed.get(0), some("c"));
     expect(vReversed.get(1), some("b"));
     expect(vReversed.get(2), some("a"));
-    expect(vReversed.get(3), none);
+    expect(vReversed.get(3), none());
 
     final IVector<String> v2 = v.plus(vReversed);
     expect(v2.mapWithIndex((i, s) => v2.get(i) == some(s)).concatenate(BoolAndMi), true);
 
     expect(v2.set(1, "d"), some(ivector(["a", "d", "c", "c", "b", "a"])));
     expect(v2.set(3, "d"), some(ivector(["a", "b", "c", "d", "b", "a"])));
-    expect(v2.set(6, "ö"), none);
+    expect(v2.set(6, "ö"), none());
   });
 
 }

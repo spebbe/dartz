@@ -2,9 +2,9 @@ part of dartz;
 
 // TODO: simplest possible implementation -- neither stack safe nor performant. add codensity/reassociation and trampolining.
 
-abstract class Free<F, A> extends FunctorOps<Free, A> with ApplicativeOps<Free, A>, MonadOps<Free, A> {
-  @override Free pure(a) => new Pure(a);
-
+abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with ApplicativeOps<Free/*<F, dynamic>*/, A>, MonadOps<Free/*<F, dynamic>*/, A> {
+  @override Free/*<F, B>*/ pure/*<B>*/(/*=B*/ b) => new Pure(b);
+  @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a));
   foldMap(Monad G, f(_));
 }
 
@@ -12,7 +12,7 @@ class Pure<F, A> extends Free<F, A> {
   final A _a;
   Pure(this._a);
 
-  @override Free bind(Free f(A a)) => f(_a);
+  @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => f(_a);
 
   @override foldMap(Monad G, f(_)) => G.pure(_a);
 
@@ -25,7 +25,7 @@ class Bind<F, I, A> extends Free<F, A> {
 
   Bind(this._i, this._k);
 
-  @override Free bind(Free f(A a)) => new Bind(_i, (i) => _k(i).bind(f));
+  @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => new Bind(_i, (i) => _k(i).bind(f));
 
   @override foldMap(Monad G, f(_)) => G.bind(f(_i), (a) => _k(a).foldMap(G, f));
 
@@ -33,5 +33,6 @@ class Bind<F, I, A> extends Free<F, A> {
 }
 
 final Monad<Free> FreeM = new MonadOpsMonad<Free>((a) => new Pure(a));
+Monad<Free/*<F, A>*/> freeM/*<F, A>*/() => FreeM;
 
-Free liftF(fa) => new Bind(fa, (a) => new Pure(a));
+Free/*<F, A>*/ liftF/*<F, A>*/(/*=F*/ fa) => new Bind(fa, (a) => new Pure(a));

@@ -21,7 +21,7 @@ void main() {
   test("demo", () {
     final AVLTree<num> t = new AVLTree<num>.fromIList(NumOrder, ilist([5,1,6,7,3,6]));
     expect(t.get(3), some(3));
-    expect(t.get(4), none);
+    expect(t.get(4), none());
     expect(t.toIList(), ilist([1,3,5,6,7]));
   });
 

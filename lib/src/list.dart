@@ -24,19 +24,19 @@ final Functor<List> ListF = ListMP;
 final Monoid<List> ListMi = new ListMonoid();
 
 class ListTMonad<M> extends Monad<M> {
-  Monad _stackedM;
+  Monad<M> _stackedM;
   ListTMonad(this._stackedM);
   Monad underlying() => ListM;
 
   @override M pure(a) => _stackedM.pure([a]);
-  concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => new List.from(l1)..addAll(l2)));
-  @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (List l) => (l.length == 0) ? [] : l.map(f).reduce(concat));
+  M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => new List.from(l1)..addAll(l2)));
+  @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map(f).reduce(_concat)));
 }
 
 Monad listTMonad(Monad mmonad) => new ListTMonad(mmonad);
 
 class ListTraversable extends Traversable<List> {
-  @override traverse(Applicative gApplicative, List fas, f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, List fas, /*=G*/ f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
     return gApplicative.lift2((List a, b) {
       final r = new List.from(a);
       r.add(b);

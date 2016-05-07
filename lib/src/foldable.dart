@@ -2,11 +2,11 @@ part of dartz;
 
 abstract class Foldable<F> {
   // def foldMap[A, B: Monoid](fa: Option[A], f: A => B): B
-  foldMap(Monoid bMonoid, F fa, f(a));
+  /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a));
 
-  foldRight(F fa, z, f(a, previous)) => foldMap(EndoMi, fa, curry2(f))(z);
+  /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, fa, curry2(f))(z);
 
-  foldLeft(F fa, z, f(previous, a)) => foldMap(DualEndoMi, fa, curry2(flip(f)))(z);
+  /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => foldMap/*<Endo<B>>*/(DualEndoMi, fa, curry2(flip(f)))(z);
 
   foldMapO(Semigroup si, F fa, f(a)) => foldMap(new OptionMonoid(si), fa, composeF(some, f));
 
@@ -24,7 +24,7 @@ abstract class Foldable<F> {
 
   Option maximum(Order oa, F fa) => concatenateO(new MaxSemigroup(oa), fa);
 
-  intercalate(Monoid mi, F fa, a) => foldRight(fa, none, (ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
+  intercalate(Monoid mi, F fa, a) => foldRight(fa, none(), (ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
   collapse(ApplicativePlus ap, F fa) => foldLeft(fa, ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 
@@ -34,13 +34,13 @@ abstract class Foldable<F> {
 }
 
 abstract class FoldableOps<F, A> {
-  foldMap(Monoid bMonoid, f(A a));
+  /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a));
 
-  foldRight(z, f(A a, previous)) => foldMap(EndoMi, curry2(f))(z);
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, curry2(f))(z);
 
-  foldLeft(z, f(previous, A a)) => foldMap(DualEndoMi, curry2(flip(f)))(z);
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => foldMap/*<Endo<B>>*/(DualEndoMi, curry2(flip(f)))(z);
 
-  foldMapO(Semigroup si, f(A a)) => foldMap(new OptionMonoid(si), composeF(some, f));
+  /*=Option<B>*/ foldMapO/*<B>*/(Semigroup/*<B>*/ si, /*=B*/ f(A a)) => foldMap/*<Option<B>>*/(new OptionMonoid/*<B>*/(si), composeF(some, f));
 
   A concatenate(Monoid<A> mi) => foldMap(mi, id);
 
@@ -56,7 +56,7 @@ abstract class FoldableOps<F, A> {
 
   Option<A> maximum(Order<A> oa) => concatenateO(new MaxSemigroup<A>(oa));
 
-  A intercalate(Monoid<A> mi, A a) => foldRight(none, (A ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
+  A intercalate(Monoid<A> mi, A a) => foldRight(none/*<A>*/(), (A ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
   collapse(ApplicativePlus ap) => foldLeft(ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 
@@ -66,7 +66,7 @@ abstract class FoldableOps<F, A> {
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {
-  @override foldMap(Monoid bMonoid, F fa, f(a)) => fa.foldMap(bMonoid, f);
-  @override foldRight(F fa, z, f(a, previous)) => fa.foldRight(z, f);
-  @override foldLeft(F fa, z, f(previous, a)) => fa.foldLeft(z, f);
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a)) => fa.foldMap(bMonoid, f);
+  @override /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => fa.foldRight(z, f);
+  @override /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => fa.foldLeft(z, f);
 }

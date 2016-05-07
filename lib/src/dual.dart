@@ -20,4 +20,4 @@ class DualMonoid<A> extends Monoid<A> {
   @override A append(A a1, A a2) => _aMonoid.append(a2, a1);
 }
 
-Monoid dualMonoid(Monoid mi) => new DualMonoid(mi);
+Monoid/*<A>*/ dualMonoid/*<A>*/(Monoid/*<A>*/ mi) => new DualMonoid(mi);

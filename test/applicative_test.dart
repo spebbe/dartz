@@ -16,8 +16,8 @@ void main() {
     });
 
     test("fail 2", () {
-      expect(A.map3(A.pure("hello"), right(some(ilist(["functor", "applicative"]))), right(none), (a,b,c) => a+" "+b+c),
-          right(none));
+      expect(A.map3(A.pure("hello"), right(some(ilist(["functor", "applicative"]))), right(none()), (a,b,c) => a+" "+b+c),
+          right(none()));
     });
   });
 }

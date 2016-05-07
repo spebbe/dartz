@@ -13,14 +13,14 @@ void main() {
 
     expect(intStringToSwedish("1"), some("ett"));
     expect(intStringToSwedish("2"), some("två"));
-    expect(intStringToSwedish("siffra"), none);
-    expect(intStringToSwedish("3"), none);
+    expect(intStringToSwedish("siffra"), none());
+    expect(intStringToSwedish("3"), none());
   });
 
   test("transformer demo", () {
     final Monad<List<Option>> M = optionTMonad(ListM);
-    final expected = [some("a!"), some("a!!"), none, some("c!"), some("c!!")];
-    expect(M.bind([some("a"), none, some("c")], (e) => [some(e + "!"), some(e + "!!")]), expected);
+    final expected = [some("a!"), some("a!!"), none(), some("c!"), some("c!!")];
+    expect(M.bind([some("a"), none(), some("c")], (e) => [some(e + "!"), some(e + "!!")]), expected);
   });
 
   test("sequencing", () {
@@ -28,9 +28,9 @@ void main() {
     expect(l.sequence(OptionM), some(ilist([1,2])));
     expect(l.sequence(OptionM).sequence(IListM), l);
 
-    final IList<Option<int>> l2 = ilist([some(1), none, some(2)]);
-    expect(l2.sequence(OptionM), none);
-    expect(l2.sequence(OptionM).sequence(IListM), ilist([none]));
+    final IList<Option<int>> l2 = ilist([some(1), none(), some(2)]);
+    expect(l2.sequence(OptionM), none());
+    expect(l2.sequence(OptionM).sequence(IListM), ilist([none()]));
   });
 
   group("OptionM", () => checkMonadLaws(OptionM));
@@ -43,7 +43,7 @@ void main() {
 
   group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), c.ints.map(some)));
 
-  final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none);
+  final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none());
 
   group("OptionTr", () => checkTraversableLaws(OptionTr, intOptions));
 }

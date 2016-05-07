@@ -45,10 +45,11 @@ class ComparableOrder<A extends Comparable> extends Order<A> {
   }
 }
 
-final Order comparableOrder = new ComparableOrder();
+final Order _comparableOrder = new ComparableOrder();
+Order/*<A>*/ comparableOrder/*<A>*/() => _comparableOrder as Order/*<A>*/;
 
 class ToStringOrder<A extends Object> extends Order<A> {
-  Ordering order(A a1, A a2) => comparableOrder.order(a1.toString(), a2.toString());
+  Ordering order(A a1, A a2) => _comparableOrder.order(a1.toString(), a2.toString());
 }
 
 final Order toStringOrder = new ToStringOrder();

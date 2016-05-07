@@ -1,17 +1,16 @@
 part of dartz;
 
-abstract class Either<L, R> extends TraversableOps<Either, R> with MonadOps<Either, R> {
-  fold(ifLeft(L l), ifRight(R r));
-  Either map(f(R r)) => fold((L l) => this, (R r) => right(f(r)));
-  Either flatMap(Either f(R r)) => fold((L l) => this, (R r) => f(r));
-  R getOrElse(R dflt) => fold((l) => dflt, (r) => r);
+abstract class Either<L, R> extends TraversableOps<Either<L, dynamic>, R> with MonadOps<Either<L, dynamic>, R> {
+  /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r));
+  R getOrElse(R dflt) => fold/*<R, R>*/((l) => dflt, (r) => r);
   Either leftMap(f(L l)) => fold((L l) => left(f(l)), (R r) => this);
-  Option<R> toOption() => fold((L l) => none, (R r) => some(r));
+  Option<R> toOption() => fold/*<Option<R>, Option<R>>*/((L l) => none(), (R r) => some(r));
 
-  @override Either pure(a) => right(a);
-  @override Either bind(Either f(R r)) => flatMap(f);
+  @override Either/*<L, R2>*/ pure/*<R2>*/(/*=R2*/ a) => right(a);
+  @override Either/*<L, R2>*/ map/*<R2>*/(/*=R2*/ f(R r)) => fold((L l) => left(l), (R r) => right(f(r)));
+  @override Either/*<L, R2>*/ bind/*<R2>*/(Either/*<L, R2>*/ f(R r)) => fold((L l) => left(l), (R r) => f(r));
 
-  @override traverse(Applicative gApplicative, f(R r)) => fold((L l) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(R r)) => fold((L l) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 }
@@ -19,21 +18,21 @@ abstract class Either<L, R> extends TraversableOps<Either, R> with MonadOps<Eith
 class Left<L, R> extends Either<L, R> {
   final L _l;
   Left(this._l);
-  @override fold(ifLeft(L l), ifRight(R r)) => ifLeft(_l);
+  @override /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r)) => ifLeft(_l);
   @override bool operator ==(other) => other is Left && other._l == _l;
 }
 
 class Right<L, R> extends Either<L, R> {
   final R _r;
   Right(this._r);
-  @override fold(ifLeft(L l), ifRight(R r)) => ifRight(_r);
+  @override /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r)) => ifRight(_r);
   @override bool operator ==(other) => other is Right && other._r == _r;
 }
 
 
-Either left(l) => new Left(l);
-Either right(r) => new Right(r);
-Either catching(Thunk thunk) {
+Either/*<L, R>*/ left/*<L, R>*/(/*=L*/ l) => new Left(l);
+Either/*<L, R>*/ right/*<L, R>*/(/*=R*/ r) => new Right(r);
+Either/*<dynamic, A>*/ catching/*<A>*/(Function0/*<A>*/ thunk) {
   try {
     return right(thunk());
   } catch(e) {
@@ -53,8 +52,8 @@ class EitherTMonad<M> extends Monad<M> {
   EitherTMonad(this._stackedM);
   Monad underlying() => EitherM;
 
-  @override M pure(a) => _stackedM.pure(right(a));
-  @override M bind(M mea, M f(_)) => _stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), f));
+  @override M pure(a) => _stackedM.pure(right(a)) as M;
+  @override M bind(M mea, M f(_)) => _stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), f)) as M;
 }
 
 Monad eitherTMonad(Monad mmonad) => new EitherTMonad(mmonad);

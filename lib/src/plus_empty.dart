@@ -7,6 +7,6 @@ abstract class PlusEmpty<F> implements Plus<F> {
   F empty();
 }
 
-abstract class PlusEmptyOps<F, A> extends PlusOps<F, A> {
+abstract class PlusEmptyOps<F, A> implements PlusOps<F, A> {
   F empty(); // () => F[A]
 }

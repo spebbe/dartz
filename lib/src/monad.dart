@@ -21,20 +21,20 @@ class ComposedMonad<F, G> extends Monad<F> {
 
   @override F pure(a) => _F.pure(_G.pure(a));
 
-  @override F bind(F fga, F f(_)) => _F.bind(fga, (ga) => _F.map(_GT.traverse(_F, ga, f), _G.join));
+  @override F bind(F fga, F f(_)) => _F.bind(fga, (G ga) => _F.map(_GT.traverse(_F, ga, f), _G.join));
 }
 
 abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
-  F pure(a);
+  F pure/*<B>*/(/*=B*/ b);
   F bind(F f(A a));
 
-  @override F map(f(A a)) => bind((a) => pure(f(a)));
-  @override F ap(F ff) => (ff as MonadOps<F, dynamic>).bind((f) => map(f));
+  @override F map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
+  @override F ap/*<B>*/(F ff) => (ff as MonadOps/*<F, Function1<A, B>>*/).bind((f) => map(f));
   F flatMap(F f(A a)) => bind(f);
   F andThen(F next) => bind((_) => next);
   F operator >>(F next) => andThen(next);
   F operator >=(F f(A a)) => bind(f);
-  F operator <<(F next) => bind((a) => (next as MonadOps).map((_) => a));
+  F operator <<(F next) => bind((a) => (next as MonadOps).map((_) => a) as F);
   F replace(replacement) => map((_) => replacement);
   F join() => bind((A a) => a as F);
   F flatten() => join();
@@ -43,8 +43,8 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
 class MonadOpsMonad<F extends MonadOps> extends Monad<F> {
   final Function _pure;
   MonadOpsMonad(this._pure);
-  @override F pure(a) => _pure(a);
-  @override F bind(F fa, F f(_)) => fa.bind(f);
-  @override F ap(F fa, F ff) => fa.ap(ff);
-  @override F map(F fa, f(_)) => fa.map(f);
+  @override F pure(a) => _pure(a) as F;
+  @override F bind(F fa, F f(_)) => fa.bind(f) as F;
+  @override F ap(F fa, F ff) => fa.ap(ff) as F;
+  @override F map(F fa, f(_)) => fa.map(f) as F;
 }

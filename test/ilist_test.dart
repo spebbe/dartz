@@ -48,7 +48,7 @@ void main() {
 
     expect(ilist([1,2,3,4]).filter((i) => i%2==0), ilist([2,4]));
 
-    expect(ilist([1,2,3,4]).map((i) => i%2 == 1 ? some(i) : none).unite(OptionFo), ilist([1,3]));
+    expect(ilist([1,2,3,4]).map((i) => i%2 == 1 ? some(i) : none()).unite(OptionFo), ilist([1,3]));
 
     expect(ilist([1,2,3]).foldLeftM(OptionM, "", (p, i) => some(p+i.toString())), some("123"));
     expect(ilist([1,2,3]).foldRightM(OptionM, "", (i, p) => some(p+i.toString())), some("321"));
@@ -70,12 +70,12 @@ void main() {
 
   test('traverse', () {
     expect(ilist([2,4,6,8]).traverse(OptionM, (i) => option(i%2==0, i)), some(ilist([2,4,6,8])));
-    expect(ilist([2,3,4,6]).traverse(OptionM, (i) => option(i%2==0, i)), none);
+    expect(ilist([2,3,4,6]).traverse(OptionM, (i) => option(i%2==0, i)), none());
   });
 
   test('sequence', () {
     expect(ilist([2,4,6,8]).map((i) => option(i%2==0, i)).sequence(OptionM), some(ilist([2,4,6,8])));
-    expect(ilist([2,3,4,6]).map((i) => option(i%2==0, i)).sequence(OptionM), none);
+    expect(ilist([2,3,4,6]).map((i) => option(i%2==0, i)).sequence(OptionM), none());
   });
 
   group("IListM", () => checkMonadLaws(IListM));

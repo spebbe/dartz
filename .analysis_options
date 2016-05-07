@@ -1,0 +1,7 @@
+analyzer:
+  strong-mode: true
+  language:
+    - enableGenericMethods: true
+    - enableSuperMixins: true
+  exclude:
+    - test/*.dart

@@ -1,14 +1,14 @@
 part of dartz;
 
-class IMap<K, V> extends TraversableOps<IMap, V> {
+class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   final Order<K> _order;
   final _IMapAVLNode<K, V> _tree;
 
   IMap(this._order, this._tree);
 
-  IMap.empty(): _order = comparableOrder, _tree = _emptyIMapAVLNode;
+  IMap.empty(): _order = comparableOrder(), _tree = emptyIMapAVLNode();
 
-  IMap.emptyWithOrder(this._order): _tree = _emptyIMapAVLNode;
+  IMap.emptyWithOrder(this._order): _tree = emptyIMapAVLNode();
 
   factory IMap.from(Map<K, V> m) => m.keys.fold(new IMap.empty(), (IMap<K, V> p, K k) => p.put(k, m[k]));
 
@@ -24,32 +24,32 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
 
   IMap<K, V> remove(K k) => new IMap(_order, _tree.remove(_order, k));
 
-  IList<K> keys() => _tree.foldRight(Nil, (k, v, p) => new Cons(k, p));
+  IList<K> keys() => _tree.foldRight(nil(), (k, v, p) => new Cons(k, p));
 
-  IList<V> values() => _tree.foldRight(Nil, (k, v, p) => new Cons(v, p));
+  IList<V> values() => _tree.foldRight(nil(), (k, v, p) => new Cons(v, p));
 
-  foldLeftKV(z, f(previous, K k, V v)) => _tree.foldLeft(z, f);
+  /*=B*/ foldLeftKV/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => _tree.foldLeft(z, f);
 
-  foldRightKV(z, f(K k, V v, previous)) => _tree.foldRight(z, f);
+  /*=B*/ foldRightKV/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => _tree.foldRight(z, f);
 
   foldMapKV(Monoid mi, f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
-  IMap<K, dynamic> mapWithKey(f(K k, V v)) => foldLeftKV(new IMap(_order, _emptyIMapAVLNode), (IMap<K, dynamic> p, k, v) => p.put(k, f(k, v)));
+  IMap<K, dynamic/*=V2*/> mapWithKey/*<V2>*/(/*=V2*/ f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (IMap<K, dynamic/*=V2*/> p, k, v) => p.put(k, f(k, v)));
 
-  IList<Tuple2<K, V>> pairs() => _tree.foldRight(Nil, (k, v, p) => new Cons(tuple2(k, v), p));
+  IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
-  @override traverse(Applicative gApplicative, f(V v)) =>
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(V v)) =>
       _tree.foldLeft(gApplicative.pure(
           new IMap(_order, _emptyIMapAVLNode)),
           (prev, k, v) => gApplicative.map2(prev, f(v), (IMap p, v2) => p.put(k, v2)));
 
-  @override foldMap(Monoid bMonoid, f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
 
-  @override foldLeft(z, f(previous, V v)) => _tree.foldLeft(z, (p, k, v) => f(p, v));
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, V v)) => _tree.foldLeft(z, (p, k, v) => f(p, v));
 
-  @override foldRight(z, f(V v, previous)) => _tree.foldRight(z, (k, v, p) => f(v, p));
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(V v, /*=B*/ previous)) => _tree.foldRight(z, (k, v, p) => f(v, p));
 
-  @override IMap<K, dynamic> map(f(V v)) => new IMap(_order, _tree.map(f));
+  @override IMap<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => new IMap(_order, _tree.map(f));
 
   Map<K, V> toMap() => foldLeftKV(new Map<K, V>(), (Map<K, V> p, K k, V v) => p..[k] = v);
 
@@ -58,8 +58,8 @@ class IMap<K, V> extends TraversableOps<IMap, V> {
   @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", Nil)).intercalate(StringMi, ", ")}}";
 }
 
-IMap imap(Map m) => new IMap.from(m);
-IMap imapWithOrder(Order o, Map m) => new IMap.fromWithOrder(o, m);
+IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);
+IMap/*<K, V>*/ imapWithOrder/*<K, V>*/(Order/*<K>*/ o, Map/*<K, V>*/ m) => new IMap.fromWithOrder(o, m);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
   final Semigroup<V> _vSemigroup;
@@ -77,24 +77,26 @@ class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
 Monoid<IMap> imapMonoid(Semigroup si) => new IMapMonoid(si);
 
 final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup);
+Monoid<IMap/*<K, V>*/> imapMi/*<K, V>*/() => IMapMi;
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
 final Foldable<IMap> IMapFo = IMapTr;
 final Functor<IMap> IMapF = IMapTr;
 
 
-abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode, V> {
+abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V> {
   _IMapAVLNode();
 
   _IMapAVLNode<K, V> insert(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> remove(Order<K> order, K k);
-  foldLeft(z, f(previous, K k, V v));
-  foldRight(z, f(K k, V v, previous));
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v));
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous));
   Option<V> get(Order<K> order, K k);
   int get height;
   int get balance;
   Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax();
   Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v);
+  _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v));
 }
 
 class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -115,10 +117,10 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final Ordering o = order.order(k, _k);
     if (o == Ordering.LT) {
       final _IMapAVLNode<K, V> newLeft = _left.insert(order, k, v);
-      return new _NonEmptyIMapAVLNode(_k, _v, newLeft, _right)._rebalance();
+      return new _NonEmptyIMapAVLNode/*<K, V>*/(_k, _v, newLeft, _right)._rebalance();
     } else if (o == Ordering.GT) {
       final _IMapAVLNode<K, V> newRight = _right.insert(order, k, v);
-      return new _NonEmptyIMapAVLNode(_k, _v, _left, newRight)._rebalance();
+      return new _NonEmptyIMapAVLNode/*<K, V>*/(_k, _v, _left, newRight)._rebalance();
     } else {
       return new _NonEmptyIMapAVLNode(k, v, _left, _right);
     }
@@ -127,17 +129,17 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   _IMapAVLNode<K, V> remove(Order<K> order, K k) {
     final Ordering o = order.order(k, _k);
     if (o == Ordering.LT) {
-      return new _NonEmptyIMapAVLNode(_k, _v, _left.remove(order, k), _right)._rebalance();
+      return new _NonEmptyIMapAVLNode/*<K, V>*/(_k, _v, _left.remove(order, k), _right)._rebalance();
     } else if (o == Ordering.GT) {
-      return new _NonEmptyIMapAVLNode(_k, _v, _left, _right.remove(order, k))._rebalance();
+      return new _NonEmptyIMapAVLNode/*<K, V>*/(_k, _v, _left, _right.remove(order, k))._rebalance();
     } else {
-      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyIMapAVLNode(lr.value2, lr.value3, lr.value1, _right)._rebalance());
+      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyIMapAVLNode/*<K, V>*/(lr.value2, lr.value3, lr.value1, _right)._rebalance());
     }
   }
 
   Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax() =>
       _right._removeMax().fold(() => some(tuple3(_left, _k, _v)),
-          (rightResult) => some(tuple3(new _NonEmptyIMapAVLNode(_k, _v, _left, rightResult.value1)._rebalance(), rightResult.value2, rightResult.value3)));
+          (rightResult) => some(tuple3(new _NonEmptyIMapAVLNode/*<K, V>*/(_k, _v, _left, rightResult.value1)._rebalance(), rightResult.value2, rightResult.value3)));
 
   _IMapAVLNode<K, V> _rebalance() {
     final b = balance;
@@ -166,13 +168,13 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left));
 
-  foldLeft(z, f(previous, K k, V v)) {
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) {
     final leftResult = _left.foldLeft(z, f);
     final midResult = f(leftResult, _k, _v);
     return _right.foldLeft(midResult, f);
   }
 
-  foldRight(z, f(K k, V v, previous)) {
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) {
     final rightResult =_right.foldRight(z, f);
     final midResult = f(_k, _v, rightResult);
     return _left.foldRight(midResult, f);
@@ -190,13 +192,13 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
         current = current._right;
       }
     }
-    return none;
+    return none();
   }
 
-  @override _IMapAVLNode<K, dynamic> map(f(V v)) {
-    final _IMapAVLNode<K, dynamic> newLeft = _left.map(f);
+  @override _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) {
+    final _IMapAVLNode<K, dynamic/*=V2*/> newLeft = _left.map(f);
     final newV = f(_v);
-    final _IMapAVLNode<K, dynamic> newRight = _right.map(f);
+    final _IMapAVLNode<K, dynamic/*=V2*/> newRight = _right.map(f);
     return new _NonEmptyIMapAVLNode(_k, newV, newLeft, newRight);
   }
 
@@ -215,13 +217,13 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   _EmptyIMapAVLNode();
 
-  @override foldLeft(z, f(previous, K k, V v)) => z;
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => z;
 
-  @override foldRight(z, f(K k, V v, previous)) => z;
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => z;
 
-  @override Option<V> get(Order<K> order, K k) => none;
+  @override Option<V> get(Order<K> order, K k) => none();
 
-  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode<K, V>(k, v, _emptyIMapAVLNode, _emptyIMapAVLNode);
+  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode<K, V>(k, v, emptyIMapAVLNode(), emptyIMapAVLNode());
 
   @override _IMapAVLNode<K, V> remove(Order<K> order, K k) => this;
 
@@ -229,13 +231,14 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override int get balance => 0;
 
-  @override Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax() => none;
+  @override Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax() => none();
 
-  @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) => none;
+  @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) => none();
 
-  @override _IMapAVLNode<K, dynamic> map(f(V v)) => this;
+  @override _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => emptyIMapAVLNode();
 
   @override operator ==(other) => identical(_emptyIMapAVLNode, other);
 }
 
 final _IMapAVLNode _emptyIMapAVLNode = new _EmptyIMapAVLNode();
+_IMapAVLNode/*<K, V>*/ emptyIMapAVLNode/*<K, V>*/() => _emptyIMapAVLNode as _IMapAVLNode/*<K, V>*/;

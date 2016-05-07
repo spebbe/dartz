@@ -8,9 +8,10 @@ class IdMonad extends Monad {
 final Monad IdM = new IdMonad();
 
 class IdTraversable extends Traversable {
-  @override traverse(Applicative gApplicative, fa, f(a)) => f(fa);
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, fa, /*=G*/ f(a)) => f(fa);
 }
 
 final Traversable IdTr = new IdTraversable();
 
-dynamic id(dynamic t) => t;
+/*=A*/ id/*<A>*/(/*=A*/ a) => a;
+/*=Endo<A>*/ idF/*<A>*/() => id;

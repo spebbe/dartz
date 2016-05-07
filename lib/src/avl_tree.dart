@@ -14,15 +14,15 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   AVLTree<A> remove(A a) => new AVLTree(_order, _root.remove(_order, a));
 
-  @override foldLeft(z, f(previous, A a)) => _root.foldLeft(z, f);
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _root.foldLeft(z, f);
 
-  @override foldRight(z, f(A a, previous)) => _root.foldRight(z, f);
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _root.foldRight(z, f);
 
-  @override foldMap(Monoid bMonoid, f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
+  @override  /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
 
-  factory AVLTree.fromIList(Order<A> order, IList<A> l) => l.foldLeft(new AVLTree<A>(order, emptyAVLNode), (AVLTree<A> tree, A a) => tree.insert(a));
+  factory AVLTree.fromIList(Order<A> order, IList<A> l) => l.foldLeft(new AVLTree<A>(order, emptyAVLNode()), (AVLTree<A> tree, A a) => tree.insert(a));
 
-  IList<A> toIList() => foldRight(Nil, (A a, IList<A> p) => new Cons(a, p));
+  IList<A> toIList() => foldRight(nil(), (A a, IList<A> p) => new Cons(a, p));
 
   Option<A> get(A a) => _root.get(_order, a);
 
@@ -40,8 +40,8 @@ abstract class _AVLNode<A> {
 
   _AVLNode<A> insert(Order<A> order, A a);
   _AVLNode<A> remove(Order<A> order, A a);
-  foldLeft(z, f(previous, A a));
-  foldRight(z, f(A a, previous));
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a));
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous));
   Option<A> get(Order<A> order, A a);
   Option<A> min();
   Option<A> max();
@@ -67,10 +67,10 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     final Ordering o = order.order(a, _a);
     if (o == Ordering.LT) {
       final _AVLNode<A> newLeft = _left.insert(order, a);
-      return new _NonEmptyAVLNode(_a, newLeft, _right)._rebalance();
+      return new _NonEmptyAVLNode/*<A>*/(_a, newLeft, _right)._rebalance();
     } else if (o == Ordering.GT) {
       final _AVLNode<A> newRight = _right.insert(order, a);
-      return new _NonEmptyAVLNode(_a, _left, newRight)._rebalance();
+      return new _NonEmptyAVLNode/*<A>*/(_a, _left, newRight)._rebalance();
     } else {
       return new _NonEmptyAVLNode(a, _left, _right);
     }
@@ -79,17 +79,17 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   _AVLNode<A> remove(Order<A> order, A a) {
     final Ordering o = order.order(a, _a);
     if (o == Ordering.LT) {
-      return new _NonEmptyAVLNode(_a, _left.remove(order, a), _right)._rebalance();
+      return new _NonEmptyAVLNode<A>(_a, _left.remove(order, a), _right)._rebalance();
     } else if (o == Ordering.GT) {
-      return new _NonEmptyAVLNode(_a, _left, _right.remove(order, a))._rebalance();
+      return new _NonEmptyAVLNode/*<A>*/(_a, _left, _right.remove(order, a))._rebalance();
     } else {
-      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyAVLNode(lr.value2, lr.value1, _right)._rebalance());
+      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyAVLNode/*<A>*/(lr.value2, lr.value1, _right)._rebalance());
     }
   }
 
   Option<Tuple2<_AVLNode<A>, A>> _removeMax() =>
       _right._removeMax().fold(() => some(tuple2(_left, _a)),
-          (rightResult) => some(tuple2(new _NonEmptyAVLNode(_a, _left, rightResult.value1)._rebalance(), rightResult.value2)));
+          (rightResult) => some(tuple2(new _NonEmptyAVLNode/*<A>*/(_a, _left, rightResult.value1)._rebalance(), rightResult.value2)));
 
   _AVLNode<A> _rebalance() {
     final b = balance;
@@ -118,13 +118,13 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left));
 
-  foldLeft(z, f(previous, A a)) {
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
     final leftResult = _left.foldLeft(z, f);
     final midResult = f(leftResult, _a);
     return _right.foldLeft(midResult, f);
   }
 
-  foldRight(z, f(A a, previous)) {
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) {
     final rightResult =_right.foldRight(z, f);
     final midResult = f(_a, rightResult);
     return _left.foldRight(midResult, f);
@@ -142,7 +142,7 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
         current = current._right;
       }
     }
-    return none;
+    return none();
   }
 
   Option<A> min() => _left == emptyAVLNode ? some(_a) : _left.min();
@@ -153,17 +153,17 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 class _EmptyAVLNode<A> extends _AVLNode<A> {
   const _EmptyAVLNode();
 
-  @override foldLeft(z, f(previous, A a)) => z;
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => z;
 
-  @override foldRight(z, f(A a, previous)) => z;
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => z;
 
-  @override Option<A> get(Order<A> order, A a) => none;
+  @override Option<A> get(Order<A> order, A a) => none();
 
-  @override _AVLNode<A> insert(Order<A> order, A a) => new _NonEmptyAVLNode<A>(a, emptyAVLNode, emptyAVLNode);
+  @override _AVLNode<A> insert(Order<A> order, A a) => new _NonEmptyAVLNode<A>(a, emptyAVLNode(), emptyAVLNode());
 
-  @override Option<A> max() => none;
+  @override Option<A> max() => none();
 
-  @override Option<A> min() => none;
+  @override Option<A> min() => none();
 
   @override _AVLNode<A> remove(Order<A> order, A a) => this;
 
@@ -171,19 +171,20 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   @override int get balance => 0;
 
-  @override Option<Tuple2<_AVLNode<A>, A>> _removeMax() => none;
+  @override Option<Tuple2<_AVLNode<A>, A>> _removeMax() => none();
 
   @override operator ==(other) => identical(emptyAVLNode, other);
 }
 
-const _AVLNode emptyAVLNode = const _EmptyAVLNode();
+_AVLNode/*<A>*/ emptyAVLNode/*<A>*/() => const _EmptyAVLNode();
+
 
 class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
   final Order<A> _tOrder;
 
   AVLTreeMonoid(this._tOrder);
 
-  @override AVLTree<A> zero() => new AVLTree<A>(_tOrder, emptyAVLNode);
+  @override AVLTree<A> zero() => new AVLTree<A>(_tOrder, emptyAVLNode());
 
   @override AVLTree<A> append(AVLTree<A> a1, AVLTree<A> t2) => t2.foldLeft(a1, (AVLTree<A> p, A a) => p.insert(a));
 }

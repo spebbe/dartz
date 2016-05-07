@@ -2,52 +2,56 @@ part of dartz;
 
 abstract class Traversable<F> extends Functor<F> with Foldable<F> {
   //def traverseImpl[G[_]:Applicative,A,B](fa: F[A])(f: A => G[B]): G[F[B]]
-  traverse(Applicative gApplicative, F fa, f(a));
+  /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, F fa, /*=G*/ f(a));
 
-  traverse_(Applicative gApplicative, F fa, f(a)) => traverse(gApplicative, fa, f).map(constF(unit));
+  /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa, /*=G*/ f(a)) => gApplicative.map(traverse/*<G>*/(gApplicative, fa, f), constF(unit));
 
-  sequence(Applicative gApplicative, F fa) => traverse(gApplicative, fa, id);
+  /*=G*/ sequence/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => traverse(gApplicative, fa, id);
 
-  sequence_(Applicative gApplicative, F fa) => traverse_(gApplicative, fa, id);
+  /*=G*/ sequence_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => traverse_(gApplicative, fa, id);
 
-  F mapWithIndex(F fa, f(int i, a)) => traverse(TStateM, fa, (e) => TStateM.get() >= (i) => TStateM.put(i+1).replace(f(i, e))).value(0).run();
+  F mapWithIndex/*<B>*/(F fa, /*=B*/ f(int i, a)) =>
+      traverse/*<StateT<Trampoline<F>, int, dynamic>>*/(tstateM/*<F, int>*/(), fa, (e) => tstateM/*<F, int>*/().get().bind((i) => tstateM/*<F, int>*/().put(i+1).replace(f(i, e)))).value(0).run();
 
   F zipWithIndex(F fa) => mapWithIndex(fa, tuple2);
 
-  @override F map(F fa, f(a)) => traverse(IdM, fa, f);
+  @override F map(F fa, f(a)) => traverse(IdM, fa, f) as F;
 
   // def foldMap[A, B](bMonoid: Monoid[B], fa: Option[A], f: A => B): B
-  @override foldMap(Monoid bMonoid, F fa, f(a)) => traverse(TStateM, fa, (a) => TStateM.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run();
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a)) =>
+      traverse(TStateM, fa, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;
 }
 
 abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F, A> {
-  traverse(Applicative gApplicative, f(A a));
+  /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a));
 
-  traverse_(Applicative gApplicative, f(A a)) => traverse(gApplicative, f).map(constF(unit));
+  /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) => gApplicative.map(traverse(gApplicative, f), constF(unit));
 
-  sequence(Applicative gApplicative) => traverse(gApplicative, id);
+  /*=G*/ sequence/*<G>*/(Applicative/*<G>*/ gApplicative) => traverse/*<G>*/(gApplicative, id as Function1/*<A, G>*/);
 
-  sequence_(Applicative gApplicative) => traverse_(gApplicative, id);
+  /*=G*/ sequence_/*<G>*/(Applicative/*<G>*/ gApplicative) => traverse_/*<G>*/(gApplicative, id as Function1/*<A, G>*/);
 
-  F mapWithIndex(f(int i, a)) => traverse(TStateM, (e) => TStateM.get() >= (i) => TStateM.put(i+1).replace(f(i, e))).value(0).run();
+  F mapWithIndex/*<B>*/(/*=B*/ f(int i, a)) =>
+      traverse/*<StateT<Trampoline<F>, int, dynamic>>*/(tstateM/*<F, int>*/(), (e) => tstateM/*<F, int>*/().get().bind((i) => tstateM/*<F, int>*/().put(i+1).replace(f(i, e)))).value(0).run();
 
   F zipWithIndex() => mapWithIndex(tuple2);
 
-  @override F map(f(A a)) => traverse(IdM, f);
+  @override F map/*<B>*/(/*=B*/ f(A a)) => traverse(IdM, f) as F;
 
-  @override foldMap(Monoid bMonoid, f(A a)) => traverse(TStateM, (a) => TStateM.modify((previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run();
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) =>
+      traverse(TStateM, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;
 }
 
 class TraversableOpsTraversable<F extends TraversableOps> extends Traversable<F> {
-  @override traverse(Applicative gApplicative, F fa, f(a)) => fa.traverse(gApplicative, f);
-  @override foldRight(F fa, z, f(a, previous)) => fa.foldRight(z, f);
-  @override foldMap(Monoid bMonoid, F fa, f(a)) => fa.foldMap(bMonoid, f);
-  @override F map(F fa, f(a)) => fa.map(f);
-  @override sequence_(Applicative gApplicative, F fa) => fa.sequence_(gApplicative);
-  @override sequence(Applicative gApplicative, F fa) => fa.sequence(gApplicative);
-  @override traverse_(Applicative gApplicative, F fa, f(a)) => fa.traverse_(gApplicative, f);
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, F fa, /*=G*/ f(a)) => fa.traverse(gApplicative, f);
+  @override /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => fa.foldRight(z, f);
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a)) => fa.foldMap(bMonoid, f);
+  @override F map/*<B>*/(F fa, /*=B*/ f(a)) => fa.map/*<B>*/(f) as F;
+  @override /*=G*/ sequence_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => fa.sequence_(gApplicative);
+  @override /*=G*/ sequence/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => fa.sequence(gApplicative);
+  @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa, /*=G*/ f(a)) => fa.traverse_(gApplicative, f);
   @override concatenateO(Semigroup si, F fa) => fa.concatenateO(si);
   @override concatenate(Monoid mi, F fa) => fa.concatenate(mi);
   @override foldMapO(Semigroup si, F fa, f(a)) => fa.foldMapO(si, f);
-  @override foldLeft(F fa, z, f(previous, a)) => fa.foldLeft(z, f);
+  @override /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => fa.foldLeft(z, f);
 }

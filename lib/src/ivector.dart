@@ -9,7 +9,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   factory IVector.emptyVector() => new IVector._internal(new IMap<int, A>.emptyWithOrder(IntOrder), 0, 0);
 
-  factory IVector.from(Iterable<A> iterable) => iterable.fold(emptyVector, (IVector<A> p, A a) => p.appendElement(a));
+  factory IVector.from(Iterable<A> iterable) => iterable.fold(emptyVector(), (IVector<A> p, A a) => p.appendElement(a));
 
   IVector<A> prependElement(A a) => new IVector._internal(_elementsByIndex.put(-(_prepended+1), a), _prepended+1, _appended);
 
@@ -19,11 +19,11 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   Option<IVector<A>> set(int i, A a) => _elementsByIndex.set(i, a).map((newElements) => new IVector._internal(newElements, _prepended, _appended));
 
-  @override IVector bind(IVector f(A a)) => foldLeft(emptyVector, (IVector p, A a) => p.plus(f(a)));
+  @override IVector/*<B>*/ bind/*<B>*/(IVector/*<B>*/ f(A a)) => foldLeft(emptyVector(), (IVector/*<B>*/ p, A a) => p.plus(f(a)));
 
-  @override IVector map(f(A a)) => new IVector._internal(_elementsByIndex.map(f), _prepended, _appended);
+  @override IVector/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => new IVector._internal(_elementsByIndex.map(f), _prepended, _appended);
 
-  @override IVector<A> empty() => emptyVector;
+  @override IVector<A> empty() => emptyVector();
 
   @override IVector<A> plus(IVector<A> fa2) {
     final int l = length();
@@ -41,15 +41,15 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
     }
   }
 
-  @override IVector pure(a) => emptyVector.appendElement(a);
+  @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);
 
-  @override traverse(Applicative gApplicative, f(A a)) =>
-      _elementsByIndex.foldLeft(gApplicative.pure(emptyVector),
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) =>
+      _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
           (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
-  @override foldLeft(z, f(previous, A a)) => _elementsByIndex.foldLeft(z, f);
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _elementsByIndex.foldLeft(z, f);
 
-  @override foldRight(z, f(A a, previous)) => _elementsByIndex.foldRight(z, f);
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _elementsByIndex.foldRight(z, f);
 
   @override int length() => _prepended + _appended;
 
@@ -58,11 +58,12 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   @override String toString() => "ivector[${map((A a) => a.toString()).intercalate(StringMi, ', ')}]";
 }
 
-IVector ivector(Iterable iterable) => new IVector.from(iterable);
+IVector/*<A>*/ ivector/*<A>*/(Iterable/*<A>*/ iterable) => new IVector.from(iterable);
 
-final IVector emptyVector = new IVector.emptyVector();
+final IVector _emptyVector = new IVector.emptyVector();
+IVector/*<A>*/ emptyVector/*<A>*/() => _emptyVector as IVector/*<A>*/;
 
-final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonad((a) => emptyVector.appendElement(a), () => emptyVector);
+final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonad/*<IVector>*/((a) => emptyVector().appendElement(a), emptyVector);
 final Monad<IVector> IVectorM = IVectorMP;
 final ApplicativePlus<IVector> IVectorAP = IVectorMP;
 final Applicative<IVector> IVectorA = IVectorMP;
@@ -71,7 +72,7 @@ final Traversable<IVector> IVectorTr = new TraversableOpsTraversable<IVector>();
 final Foldable<IVector> IVectorFo = IVectorTr;
 
 class IVectorMonoid extends Monoid<IVector> {
-  @override IVector zero() => emptyVector;
+  @override IVector zero() => emptyVector();
   @override IVector append(IVector a1, IVector a2) => a1.plus(a2);
 }
 

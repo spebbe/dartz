@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0
+
+- Dart [Strong Mode](https://github.com/dart-lang/dev_compiler/blob/master/STRONG_MODE.md) compliance. This forced a couple of breaking changes:
+  - Use `Option<A> none<A>()` instead of `Option<dynamic> none`
+  - Prefer `IList<A> nil<A>()` to `IList<dynamic> Nil`
+  - ...and so on for emptyVector, IMapMi, etc.
+- Much improved type safety through type parameterization of commonly used methods/functions, using the [prototype syntax](https://github.com/dart-lang/dev_compiler/blob/master/doc/GENERIC_METHODS.md). More type annotations to come!
+
 ## 0.0.10
 
 - Fixed embarrassing bug in IMap#set. Let's never mention it again.

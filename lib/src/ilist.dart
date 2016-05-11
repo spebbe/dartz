@@ -16,11 +16,11 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   IList();
 
-  factory IList.from(Iterable<A> iterable) => iterable.fold /*<IList<A>>*/(nil(), (IList<A> a, A h) => new Cons(h, a)).reverse();
+  factory IList.from(Iterable<A> iterable) => iterable.fold/*<IList<A>>*/(nil(), (a, h) => new Cons(h, a)).reverse();
 
   @override IList/*<B>*/ pure/*<B>*/(/*=B*/ b) => new Cons(b, nil());
 
-  @override /*=G*/ traverse /*<G>*/(Applicative /*<G>*/ gApplicative, /*=G*/ f(A a)) {
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
     var result = gApplicative.pure(Nil);
     var current = this;
     while (current._isCons()) {
@@ -31,7 +31,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
     return gApplicative.map(result, (l) => l.reverse());
   }
 
-  @override /*=G*/ traverse_ /*<G>*/(Applicative /*<G>*/ gApplicative, /*=G*/ f(A a)) {
+  @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
     var result = gApplicative.pure(unit);
     var current = this;
     while (current._isCons()) {
@@ -62,7 +62,9 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
     return result;
   }
 
-  @override IList /*<B>*/ map /*<B>*/(/*=B*/ f(A a)) {
+  @override IList/*<B>*/ flatMap/*<B>*/(IList/*<B>*/ f(A a)) => bind(f);
+
+  @override IList /*<B>*/ map/*<B>*/(/*=B*/ f(A a)) {
     List /*<B>*/ mresult = [];
     var current = this;
     while (current._isCons()) {
@@ -77,7 +79,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
     return result;
   }
 
-  @override /*=B*/ foldLeft /*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
     var result = z;
     var current = this;
     while (current._isCons()) {
@@ -93,15 +95,41 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   Iterator<A> iterator() => new _IListIterator<A>(this);
 
-  @override /*=B*/ foldRight /*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
 
-  @override /*=B*/ foldMap /*<B>*/(Monoid /*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
 
   IList<A> reverse() => foldLeft(nil(), (a, h) => new Cons(h, a));
 
   @override IList<A> empty() => nil();
 
   @override IList<A> plus(IList<A> l2) => new Cons(this, new Cons(l2, nil())).join() as IList/*<A>*/;
+
+
+  @override IList<A> filter(bool predicate(A a)) {
+    var rresult = nil/*<A>*/();
+    var current = this;
+    while(current._isCons()) {
+      final currentHead = current._unsafeHead();
+      if (predicate(currentHead)) {
+        rresult = new Cons(currentHead, rresult);
+      }
+      current = current._unsafeTail();
+    }
+    return rresult.reverse();
+  }
+
+  Option<A> find(bool predicate(A a)) {
+    var current = this;
+    while(current._isCons()) {
+      final currentHead = current._unsafeHead();
+      if (predicate(currentHead)) {
+        return some(currentHead);
+      }
+      current = current._unsafeTail();
+    }
+    return none();
+  }
 
   @override String toString() => 'ilist[' + map((A a) => a.toString()).intercalate(StringMi, ', ') + ']';
 
@@ -146,8 +174,8 @@ class Cons<A> extends IList<A> {
 
 class _Nil<A> extends IList<A> {
   bool _isCons() => false;
-  A _unsafeHead() => null;
-  IList<A> _unsafeTail() => null;
+  A _unsafeHead() => throw new UnsupportedError("_unsafeHead called on _Nil");
+  IList<A> _unsafeTail() => throw new UnsupportedError("_unsafeTail called on _Nil");
 
   @override Option<A> get headOption => none();
 
@@ -156,6 +184,7 @@ class _Nil<A> extends IList<A> {
 
 final IList Nil = new _Nil();
 IList/*<A>*/ nil/*<A>*/() => Nil as IList/*<A>*/;
+IList/*<A>*/ cons/*<A>*/(/*=A*/ head, IList/*<A>*/ tail) => new Cons(head, tail);
 
 final MonadPlus<IList> IListMP = new MonadPlusOpsMonad<IList>((a) => new Cons(a, Nil), () => Nil);
 final Monad<IList> IListM = IListMP;

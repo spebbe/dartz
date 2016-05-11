@@ -34,7 +34,7 @@ class ISet<A> {
   @override String toString() => "iset<$_tree>";
 }
 
-ISet iset(IList l) => new ISet.fromIList(l);
+ISet/*<A>*/ iset/*<A>*/(Iterable/*<A>*/ l) => new ISet.fromIList(ilist(l));
 
 class ISetMonoid<A> extends Monoid<ISet<A>> {
   final Order<A> _aOrder;

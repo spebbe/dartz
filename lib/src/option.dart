@@ -2,24 +2,24 @@ part of dartz;
 
 abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a));
+
   /*=B*/ cata/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => fold(ifNone, ifSome);
-  Option/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => fold(() => none(), (A a) => some(f(a)));
-  Option<A> orElse(Option<A> other) => fold(() => other, (_) => this);
-  A getOrElse(A dflt) => fold(() => dflt, (a) => a);
-  @override String toString() => fold(() => 'None', (a) => 'Some($a)');
+  Option<A> orElse(Option<A> other()) => fold(other, (_) => this);
+  A getOrElse(A dflt()) => fold(dflt, (a) => a);
+  Either/*<B, A>*/ toEither/*<B>*/(/*=B*/ ifNone()) => fold(() => left(ifNone()), (a) => right(a));
+  Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
+  A operator |(A dflt) => getOrElse(() => dflt);
 
   @override Option/*<B>*/ pure/*<B>*/(/*=B*/ b) => some(b);
+  Option/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => fold(() => none(), (A a) => some(f(a)));
   @override Option/*<B>*/ bind/*<B>*/(Option/*<B>*/ f(A a)) => fold(() => none(), (A a) => f(a));
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) => fold(() => gApplicative.pure(none()), (a) => gApplicative.map(f(a), some));
 
   @override Option<A> empty() => none/*<A>*/();
+  @override Option<A> plus(Option<A> o2) => orElse(() => o2);
 
-  @override Option<A> plus(Option<A> o2) => orElse(o2);
-
-  Either/*<B, A>*/ toEither/*<B>*/(/*=B*/ ifNone()) => fold(() => left(ifNone()), (a) => right(a));
-  Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
-  A operator |(A dflt) => fold(() => dflt, (a) => a);
+  @override String toString() => fold(() => 'None', (a) => 'Some($a)');
 }
 
 class Some<A> extends Option<A> {

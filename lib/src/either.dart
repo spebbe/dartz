@@ -2,15 +2,18 @@ part of dartz;
 
 abstract class Either<L, R> extends TraversableOps<Either<L, dynamic>, R> with MonadOps<Either<L, dynamic>, R> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r));
-  R getOrElse(R dflt) => fold/*<R, R>*/((l) => dflt, (r) => r);
-  Either leftMap(f(L l)) => fold((L l) => left(f(l)), (R r) => this);
-  Option<R> toOption() => fold/*<Option<R>, Option<R>>*/((L l) => none(), (R r) => some(r));
 
-  @override Either/*<L, R2>*/ pure/*<R2>*/(/*=R2*/ a) => right(a);
-  @override Either/*<L, R2>*/ map/*<R2>*/(/*=R2*/ f(R r)) => fold((L l) => left(l), (R r) => right(f(r)));
-  @override Either/*<L, R2>*/ bind/*<R2>*/(Either/*<L, R2>*/ f(R r)) => fold((L l) => left(l), (R r) => f(r));
+  Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);
+  R getOrElse(R dflt()) => fold/*<R, R>*/((_) => dflt(), id);
+  R operator |(R dflt) => getOrElse(() => dflt);
+  Either<dynamic/*=L2*/, R> leftMap/*<L2>*/(/*=L2*/ f(L l)) => fold((L l) => left(f(l)), right);
+  Option<R> toOption() => fold/*<Option<R>, Option<R>>*/((_) => none(), some);
 
-  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(R r)) => fold((L l) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
+  @override Either/*<L, R2>*/ pure/*<R2>*/(/*=R2*/ r2) => right(r2);
+  @override Either/*<L, R2>*/ map/*<R2>*/(/*=R2*/ f(R r)) => fold(left, (R r) => right(f(r)));
+  @override Either/*<L, R2>*/ bind/*<R2>*/(Either/*<L, R2>*/ f(R r)) => fold(left, f);
+
+  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 }

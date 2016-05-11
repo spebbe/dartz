@@ -77,7 +77,7 @@ class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>>
     return new Future.value(new Right(new Tuple3(_W.zero(), s, a)));
   });
 
-  Evaluation<E, R, W, S, dynamic> liftFuture(Future fut) => new Evaluation(_W, (r, s) {
+  Evaluation<E, R, W, S, dynamic/*=A*/> liftFuture/*<A>*/(Future/*<A>*/ fut) => new Evaluation(_W, (r, s) {
     return fut.then((ta) => new Right(new Tuple3(_W.zero(), s, ta)));
   });
 

@@ -28,7 +28,7 @@ void main() {
     final result = nums.foldMapO(reducer, mapper).map(tuplize4(polish));
     expect(result, some(new Tuple3(516.2, 59, 891)));
 
-    IList<int> dup(int i) => new Cons<int>(i, new Cons<int>(i, Nil));
+    IList<int> dup(int i) => new Cons<int>(i, new Cons<int>(i, nil()));
     expect(l.flatMap(dup), ilist([1,1,2,2,3,3]));
     expect(l.flatMap(dup), l.foldMap(IListMi, dup));
 

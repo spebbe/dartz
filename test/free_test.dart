@@ -19,9 +19,9 @@ Free<RPNOp, Unit> push(double value) => liftF(new Push(value));
 class Pop extends RPNOp<double> {}
 final Free<RPNOp, double> pop = liftF(new Pop());
 
-final Free<RPNOp, Unit> dup = pop >= (i) => push(i) >> push(i);
+final Free<RPNOp, dynamic> dup = pop >= (i) => push(i) >> push(i);
 
-final Free<RPNOp, Unit> multiply = pop >= (a) => pop >= (b) => push(a*b);
+final Free<RPNOp, dynamic> multiply = pop >= (a) => pop >= (b) => push(a*b);
 
 void main() {
   final M = new EvaluationMonad<String, IMap<String, double>, IList<String>, IList<double>>(IListMi);
@@ -41,7 +41,7 @@ void main() {
       return M.get() >= (IList<double> stack) {
         return stack.headOption.fold(() =>
             M.raiseError("Stack underflow"),
-            (double value) => M.put(stack.tailOption | Nil) >> M.pure(value));
+            (double value) => M.put(stack.tailOption | nil/*<double>*/()) >> M.pure(value));
       };
 
     } else {
@@ -49,7 +49,7 @@ void main() {
     }
   }
 
-  final Free<RPNOp, double> circleArea = pushSymbol("PI") >> pushSymbol("r") >> dup >> multiply >> multiply >> pop;
+  final Free<RPNOp, dynamic> circleArea = pushSymbol("PI") >> pushSymbol("r") >> dup >> multiply >> multiply >> pop;
 
   group("free RPN interpreter demo", (){
     test("successful evaluation", () async {

@@ -6,7 +6,7 @@ import 'laws.dart';
 
 IMap<String, IList<String>> parseName(String name) {
   final IList<String> parts = ilist(name.split(" ")).reverse();
-  return (parts.headOption >= (last) => parts.tailOption.map((first) => imap({last: first}))) | imap({});
+  return (parts.headOption >= (last) => parts.tailOption.map((first) => imap({last: first}))) | imap({}) as IMap<String, IList<String>>;
 }
 
 void main() {
@@ -17,7 +17,7 @@ void main() {
     expect(boyz.foldMap(imapMonoid(IListMi), parseName), boyzByLastName);
 
     final numberOfBoyzByLastName = imap({"Jonas": 3, "Bieber": 1, "Hanson": 3});
-    expect(boyz.foldMap(imapMonoid(NumSumMi), (name) => parseName(name).map(constF(1))), numberOfBoyzByLastName);
+    expect(boyz.foldMap(imapMonoid(NumSumMi), (name) => parseName(name).map(constF/*<IList<String>, int>*/(1))), numberOfBoyzByLastName);
   });
 
   final qc = new QuickCheck(maxSize: 300, seed: 42);

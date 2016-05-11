@@ -11,9 +11,9 @@ void main() {
     final IMap<String, String> englishToSwedishMap = imap({"one": "ett", "two": "två"});
 
     Either<String, int> stringToInt(String intString) => catching(() => int.parse(intString)).leftMap((_) => "could not parse '$intString' to int");
-    Either<String, String> intToEnglish(int i) => intToEnglishMap.get(i) % "could not translate '$i' to english";
-    Either<String, String> englishToSwedish(String english) => englishToSwedishMap.get(english) % "could not translate '$english' to swedish";
-    Either<String, String> intStringToSwedish(String intString) => (stringToInt(intString) >= intToEnglish) >= englishToSwedish;
+    Either<String, String> intToEnglish(int i) => intToEnglishMap.get(i).toEither(() => "could not translate '$i' to english");
+    Either<String, String> englishToSwedish(String english) => englishToSwedishMap.get(english).toEither(() => "could not translate '$english' to swedish");
+    Either<String, String> intStringToSwedish(String intString) => stringToInt(intString).bind(intToEnglish).bind(englishToSwedish);
 
     expect(intStringToSwedish("1"), right("ett"));
     expect(intStringToSwedish("2"), right("två"));
@@ -23,7 +23,7 @@ void main() {
   });
 
   test("transformer demo", () async {
-    final Monad<Future<List<Either>>> M = eitherTMonad(listTMonad(FutureM));
+    final M = eitherTMonad(listTMonad(FutureM)) as Monad<Future<List<Either>>>;
     final stacked = M.map(M.bind(M.map(new Future.sync(() => [right("a"), left("b"), right("c")]),
         (x) => x + "!"),
         (x) => new Future.delayed(new Duration(seconds: 1), () => [right(x), right(x)])),

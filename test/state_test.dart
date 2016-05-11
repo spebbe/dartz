@@ -4,8 +4,8 @@ import 'laws.dart';
 
 void main() {
   test("demo", () {
-    final State<num, String> st = StateM.pure("hej");
-    final State<num, Unit> inc = StateM.modify((num n) => n+1);
+    final State st = StateM.pure("hej");
+    final State inc = StateM.modify((num n) => n+1);
     expect((inc >> inc >> st).map((v) => "$v!").run(5), tuple2("hej!", 7));
   });
 
@@ -18,7 +18,7 @@ void main() {
   test("StateTMonad+Trampoline stack safety", () {
     final StateTMonad<Trampoline, int> M = new StateTMonad(TrampolineM);
 
-    final StateT<Trampoline, int, Unit> inc20k = M.replicate_(20000, M.modify((i) => i+1));
+    final StateT<Trampoline, int, dynamic> inc20k = M.replicate_(20000, M.modify((i) => i+1));
     expect(inc20k.state(17).run(), 20017);
   });
 }

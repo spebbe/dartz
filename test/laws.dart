@@ -84,7 +84,7 @@ void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck q
     });
   });
 
-  checkFunctorLaws(M, c.ints.map(M.pure), equality: equality, qc: qc);
+  checkFunctorLaws(M, c.ints.map((i) => M.pure(i)), equality: equality, qc: qc);
 }
 
 void checkFoldableMonadLaws(Foldable F, Monad M, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {

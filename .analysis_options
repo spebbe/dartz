@@ -3,5 +3,4 @@ analyzer:
   language:
     - enableGenericMethods: true
     - enableSuperMixins: true
-  exclude:
-    - test/*.dart
+

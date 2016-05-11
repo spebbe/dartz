@@ -9,7 +9,7 @@ void main() {
     Option<int> stringToInt(String intString) => catching(() => int.parse(intString)).toOption();
     final IMap<int, String> intToEnglish = imap({1: "one", 2: "two", 3: "three"});
     final IMap<String, String> englishToSwedish = imap({"one": "ett", "two": "två"});
-    Option<String> intStringToSwedish(String intString) => (stringToInt(intString) >= intToEnglish.get) >= englishToSwedish.get;
+    Option<String> intStringToSwedish(String intString) => stringToInt(intString).bind(intToEnglish.get).bind(englishToSwedish.get);
 
     expect(intStringToSwedish("1"), some("ett"));
     expect(intStringToSwedish("2"), some("två"));
@@ -18,7 +18,7 @@ void main() {
   });
 
   test("transformer demo", () {
-    final Monad<List<Option>> M = optionTMonad(ListM);
+    final Monad<List<Option>> M = optionTMonad(ListM) as Monad<List<Option>>;
     final expected = [some("a!"), some("a!!"), none(), some("c!"), some("c!!")];
     expect(M.bind([some("a"), none(), some("c")], (e) => [some(e + "!"), some(e + "!!")]), expected);
   });

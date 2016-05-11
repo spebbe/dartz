@@ -16,7 +16,7 @@ void main() {
           return M.put(newState) >> M.write(new Tuple2(IListM.pure("State transition from $oldState to $newState"), "!"));
         });
 
-    final Evaluation<String, String, IList<String>, num, String> p =
+    final Evaluation p =
         inc >>
         (M.pure("hej") >= (v) =>
          inc >>
@@ -51,11 +51,11 @@ void main() {
   test("liftEither", () async {
     final M = new EvaluationMonad<String, IList<int>, Unit, Unit>(UnitMi);
 
-    Either<String, int> first(IList<int> l) => l.headOption % "Empty list";
+    Either<String, int> first(IList<int> l) => l.headOption.toEither(() => "Empty list");
 
     final ev = M.ask() >= composeF(M.liftEither, first);
 
-    expect(await ev.value(Nil, unit), left("Empty list"));
+    expect(await ev.value(nil(), unit), left("Empty list"));
     expect(await ev.value(ilist([1,2,3]), unit), right(1));
   });
 

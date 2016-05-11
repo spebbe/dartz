@@ -14,7 +14,7 @@ void main() {
     } else if (a is Option && b is Option) {
       return OptionM.map2(a, b, bonkersEquality) | false;
     } else if (a is Either && b is Either) {
-      return EitherM.map2(a, b, bonkersEquality).getOrElse(false);
+      return EitherM.map2(a, b, bonkersEquality) | false;
     } else {
       return false;
     }

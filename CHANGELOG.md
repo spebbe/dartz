@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1
+
+- A lot more method/function type parameters for better type safety/inference
+- find and specialized filter operations for IList
+- Modified all tests for strong mode compliance
+- orElse and eager getOrElse operator '|' for Either
+- orElse and getOrElse operations on Option and Either take thunks instead of values
+- Faster IMap modify
+- Various cleanups
+
 ## 0.1.0
 
 - Dart [Strong Mode](https://github.com/dart-lang/dev_compiler/blob/master/STRONG_MODE.md) compliance. This forced a couple of breaking changes:

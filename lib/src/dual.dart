@@ -8,7 +8,7 @@ class DualSemigroup<A> extends Semigroup<A> {
   @override A append(A a1, A a2) => _aSemigroup.append(a2, a1);
 }
 
-Semigroup dualSemigroup(Semigroup si) => new DualSemigroup(si);
+Semigroup/*<A>*/ dualSemigroup/*<A>*/(Semigroup/*<A>*/ si) => new DualSemigroup(si);
 
 class DualMonoid<A> extends Monoid<A> {
   final Monoid<A> _aMonoid;

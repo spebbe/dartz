@@ -85,11 +85,11 @@ class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>>
 
   Evaluation<E, R, W, S, S> get() => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), s, s))));
 
-  Evaluation<E, R, W, S, dynamic/*=A*/> gets/*<A>*/(/*=A*/ f(S s)) => get().map(f);
+  Evaluation<E, R, W, S, dynamic/*=A*/> gets/*<A>*/(/*=A*/ f(S s)) => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), s, f(s)))));
 
   Evaluation<E, R, W, S, Unit> put(S s) => new Evaluation(_W, (r, _) => new Future.value(new Right(new Tuple3(_W.zero(), s, unit))));
 
-  Evaluation<E, R, W, S, Unit> modify(S f(S s)) => get().bind(((S s)=> put(f(s))));
+  Evaluation<E, R, W, S, Unit> modify(S f(S s)) => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), f(s), unit))));
 
   Evaluation<E, R, W, S, Unit> write(W w) => new Evaluation(_W, (_, s) => new Future.value(new Right(new Tuple3(w, s, unit))));
 

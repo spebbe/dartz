@@ -4,6 +4,7 @@ part of dartz;
 
 abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with ApplicativeOps<Free/*<F, dynamic>*/, A>, MonadOps<Free/*<F, dynamic>*/, A> {
   @override Free/*<F, B>*/ pure/*<B>*/(/*=B*/ b) => new Pure(b);
+  @override Free/*<F, B>*/ map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
   @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a));
   foldMap(Monad G, f(_));
 }

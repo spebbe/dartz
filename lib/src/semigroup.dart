@@ -5,17 +5,20 @@ abstract class Semigroup<A> {
   Endo<A> appendC(A a1) => (A a2) => append(a1, a2);
 }
 
-class _AnonymousSemigroup extends Semigroup {
-  final _append;
+class _AnonymousSemigroup<A> extends Semigroup<A> {
+  final Function2<A, A, A> _append;
 
   _AnonymousSemigroup(this._append);
 
-  @override append(a1, a2) => _append(a1, a2);
+  @override A append(A a1, A a2) => _append(a1, a2);
 }
 
-Semigroup semigroup(append(a1, a2)) => new _AnonymousSemigroup(append);
+Semigroup/*<A>*/ semigroup/*<A>*/(/*=A*/ append(/*=A*/ a1, /*=A*/ a2)) => new _AnonymousSemigroup(append);
 
-final Semigroup firstSemigroup = semigroup((a1, a2) => a1);
+final Semigroup FirstSemigroup = semigroup((a1, a2) => a1);
+Semigroup/*<A>*/ firstSemigroup/*<A>*/() => FirstSemigroup as Semigroup/*<A>*/;
 
-final Semigroup secondSemigroup = semigroup((a1, a2) => a2);
+final Semigroup SecondSemigroup = semigroup((a1, a2) => a2);
+Semigroup/*<A>*/ secondSemigroup/*<A>*/() => SecondSemigroup as Semigroup/*<A>*/;
+
 

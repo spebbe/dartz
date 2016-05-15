@@ -1,9 +1,9 @@
 part of dartz;
 
 class FutureMonad extends Monad<Future> {
-  @override Future pure(a) => new Future.value(a);
-  @override Future map(Future fa, f(_)) => fa.then(f);
-  @override Future bind(Future fa, Future f(_)) => fa.then(f);
+  @override Future/*<A>*/ pure/*<A>*/(/*=A*/ a) => new Future.value(a);
+  @override Future/*<B>*/ map/*<A, B>*/(Future/*<A>*/ fa, /*=B*/ f(/*=A*/ a)) => fa.then(f);
+  @override Future/*<B>*/ bind/*<A, B>*/(Future/*<A>*/ fa, Future/*<B>*/ f(/*=A*/ a)) => fa.then(f) as Future/*<B>*/;
 }
 
-final Monad<Future> FutureM = new FutureMonad();
+final FutureMonad FutureM = new FutureMonad();

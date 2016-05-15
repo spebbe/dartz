@@ -44,3 +44,5 @@ class ISetMonoid<A> extends Monoid<ISet<A>> {
   @override ISet<A> zero() => new ISet<A>.emptyWithOrder(_aOrder);
   @override ISet<A> append(ISet<A> a1, ISet<A> a2) => a1.union(a2);
 }
+
+Monoid<ISet/*<A>*/> isetMi/*<A>*/(Order/*<A>*/ o) => new ISetMonoid/*<A>*/(o);

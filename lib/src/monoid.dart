@@ -4,15 +4,15 @@ abstract class Monoid<A> extends Semigroup<A> {
   A zero();
 }
 
-class _AnonymousMonoid extends Monoid {
-  final _zero;
-  final _append;
+class _AnonymousMonoid<A> extends Monoid<A> {
+  final Function0<A> _zero;
+  final Function2<A, A, A> _append;
 
   _AnonymousMonoid(this._zero, this._append);
 
-  @override zero() => _zero();
+  @override A zero() => _zero();
 
-  @override append(a1, a2) => _append(a1, a2);
+  @override A append(A a1, A a2) => _append(a1, a2);
 }
 
-Monoid monoid(zero(), append(t1, t2)) => new _AnonymousMonoid(zero, append);
+Monoid/*<A>*/ monoid/*<A>*/(/*=A*/ zero(), /*=A*/ append(/*=A*/ t1, /*=A*/ t2)) => new _AnonymousMonoid/*<A>*/(zero, append);

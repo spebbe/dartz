@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- IHashMap, an immutable and persistent map that, unlike IMap, doesn't require a total ordering of keys, but instead relies on hashCode and equality of keys
+- Even more method/function type parameters added
+- More efficient primitives for State and Evaluation
+
 ## 0.1.1
 
 - A lot more method/function type parameters for better type safety/inference

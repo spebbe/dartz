@@ -32,7 +32,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   /*=B*/ foldRightKV/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => _tree.foldRight(z, f);
 
-  foldMapKV(Monoid mi, f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
+  /*=B*/ foldMapKV/*<B>*/(Monoid/*<B>*/ mi, /*=B*/ f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
   IMap<K, dynamic/*=V2*/> mapWithKey/*<V2>*/(/*=V2*/ f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (IMap<K, dynamic/*=V2*/> p, k, v) => p.put(k, f(k, v)));
 
@@ -74,9 +74,9 @@ class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
               (m1v) => p.put(kv.value1, _vSemigroup.append(m1v, kv.value2))));
 }
 
-Monoid<IMap> imapMonoid(Semigroup si) => new IMapMonoid(si);
+Monoid<IMap/*<K, V>*/> imapMonoid/*<K, V>*/(Semigroup/*<V>*/ si) => new IMapMonoid/*<K, V>*/(si);
 
-final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup);
+final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
 Monoid<IMap/*<K, V>*/> imapMi/*<K, V>*/() => IMapMi;
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();

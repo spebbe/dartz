@@ -17,7 +17,7 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   @override F map(F fa, f(a)) => traverse(IdM, fa, f) as F;
 
-  // def foldMap[A, B](bMonoid: Monoid[B], fa: Option[A], f: A => B): B
+  // def foldMap[A, B](bMonoid: Monoid[B], fa: F[A], f: A => B): B
   @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a)) =>
       traverse(TStateM, fa, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;
 }
@@ -50,8 +50,8 @@ class TraversableOpsTraversable<F extends TraversableOps> extends Traversable<F>
   @override /*=G*/ sequence_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => fa.sequence_(gApplicative);
   @override /*=G*/ sequence/*<G>*/(Applicative/*<G>*/ gApplicative, F fa) => fa.sequence(gApplicative);
   @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, F fa, /*=G*/ f(a)) => fa.traverse_(gApplicative, f);
-  @override concatenateO(Semigroup si, F fa) => fa.concatenateO(si);
-  @override concatenate(Monoid mi, F fa) => fa.concatenate(mi);
-  @override foldMapO(Semigroup si, F fa, f(a)) => fa.foldMapO(si, f);
+  @override Option/*<A>*/ concatenateO/*<A>*/(Semigroup/*<A>*/ si, F fa) => fa.concatenateO(si) as Option/*<A>*/;
+  @override /*=A*/ concatenate/*<A>*/(Monoid/*<A>*/ mi, F fa) => fa.concatenate(mi) as dynamic/*=A*/;
+  @override Option/*<A>*/ foldMapO/*<A>*/(Semigroup/*<A>*/ si, F fa, /*=A*/ f(a)) => fa.foldMapO(si, f);
   @override /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => fa.foldLeft(z, f);
 }

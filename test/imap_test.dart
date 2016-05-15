@@ -36,7 +36,7 @@ void main() {
       final Map<int, int> expected = new Map.from(m1);
       m2.keys.forEach((i) => expected.remove(i));
       final actual = m2.keys.fold(imap(m1), (IMap<int, int> p, k) => p.remove(k));
-      return expected.keys.length == actual.keys().length() &&  expected.keys.every((i) => some(expected[i]) == actual.get(i));
+      return expected.keys.length == actual.keys().length() && expected.keys.every((i) => some(expected[i]) == actual.get(i));
     }));
   });
 

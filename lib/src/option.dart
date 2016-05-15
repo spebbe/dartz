@@ -6,7 +6,7 @@ abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option,
   /*=B*/ cata/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => fold(ifNone, ifSome);
   Option<A> orElse(Option<A> other()) => fold(other, (_) => this);
   A getOrElse(A dflt()) => fold(dflt, (a) => a);
-  Either/*<B, A>*/ toEither/*<B>*/(/*=B*/ ifNone()) => fold(() => left(ifNone()), (a) => right(a));
+  Either<dynamic/*=B*/, A> toEither/*<B>*/(/*=B*/ ifNone()) => fold(() => left(ifNone()), (a) => right(a));
   Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
   A operator |(A dflt) => getOrElse(() => dflt);
 
@@ -39,11 +39,19 @@ Option/*<A>*/ none/*<A>*/() => _none as None/*<A>*/;
 Option/*<A>*/ some/*<A>*/(/*=A*/ a) => new Some/*<A>*/(a);
 Option/*<A>*/ option/*<A>*/(bool test, /*=A*/ value) => test ? some(value) : none();
 
-final MonadPlus<Option> OptionMP = new MonadPlusOpsMonad<Option>(some, none);
-final Monad<Option> OptionM = OptionMP;
-final ApplicativePlus<Option> OptionAP = OptionMP;
-final Applicative<Option> OptionA = OptionM;
-final Functor<Option> OptionF = OptionM;
+class OptionMonadPlus extends MonadPlusOpsMonad<Option> {
+  OptionMonadPlus() : super(some, none);
+
+  @override Option/*<C>*/ map2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, /*=C*/ f(/*=A*/ a, /*=B*/ b)) => fa.bind((a) => fb.map((b) => f(a, b)));
+  Option/*<C>*/ mapM2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ f(/*=A*/ a, /*=B*/ b)) => fa.bind((a) => fb.bind((b) => f(a, b)));
+
+}
+
+final OptionMonadPlus OptionMP = new OptionMonadPlus();
+final OptionMonadPlus OptionM = OptionMP;
+final OptionMonadPlus OptionAP = OptionMP;
+final OptionMonadPlus OptionA = OptionM;
+final OptionMonadPlus OptionF = OptionM;
 final Traversable<Option> OptionTr = new TraversableOpsTraversable<Option>();
 final Foldable<Option> OptionFo = OptionTr;
 

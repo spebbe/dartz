@@ -19,9 +19,11 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   Option<IVector<A>> set(int i, A a) => _elementsByIndex.set(i, a).map((newElements) => new IVector._internal(newElements, _prepended, _appended));
 
-  @override IVector/*<B>*/ bind/*<B>*/(IVector/*<B>*/ f(A a)) => foldLeft(emptyVector(), (IVector/*<B>*/ p, A a) => p.plus(f(a)));
+  @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);
 
   @override IVector/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => new IVector._internal(_elementsByIndex.map(f), _prepended, _appended);
+
+  @override IVector/*<B>*/ bind/*<B>*/(IVector/*<B>*/ f(A a)) => foldLeft(emptyVector(), (IVector/*<B>*/ p, A a) => p.plus(f(a)));
 
   @override IVector<A> empty() => emptyVector();
 
@@ -40,8 +42,6 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
       }
     }
   }
-
-  @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) =>
       _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
@@ -71,9 +71,10 @@ final Functor<IVector> IVectorF = IVectorMP;
 final Traversable<IVector> IVectorTr = new TraversableOpsTraversable<IVector>();
 final Foldable<IVector> IVectorFo = IVectorTr;
 
-class IVectorMonoid extends Monoid<IVector> {
-  @override IVector zero() => emptyVector();
-  @override IVector append(IVector a1, IVector a2) => a1.plus(a2);
+class IVectorMonoid<A> extends Monoid<IVector<A>> {
+  @override IVector<A> zero() => emptyVector();
+  @override IVector<A> append(IVector<A> a1, IVector<A> a2) => a1.plus(a2);
 }
 
 final Monoid<IVector> IVectorMi = new IVectorMonoid();
+Monoid<IVector/*<A>*/> ivectorMi/*<A>*/() => IVectorMi;

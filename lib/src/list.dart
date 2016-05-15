@@ -4,16 +4,16 @@ part of dartz;
 // If possible, use IList and its associated instances instead.
 
 class ListMonad extends MonadPlus<List> {
-  @override List pure(a) => [a];
-  @override List bind(List fa, List f(_)) => fa.expand(f).toList();
-  @override List empty() => [];
+  @override List/*<A>*/ pure/*<A>*/(/*=A*/ a) => [a];
+  @override List/*<B>*/ bind/*<A, B>*/(List/*<A>*/ fa, List/*<B>*/ f(/*=A*/ a)) => fa.expand(f).toList();
+  @override List/*<A>*/ empty/*<A>*/() => [];
 
-  @override List plus(List f1, List f2) => new List.from(f1)..addAll(f2);
+  @override List/*<A>*/ plus/*<A>*/(List/*<A>*/ f1, List/*<A>*/ f2) => new List.from(f1)..addAll(f2);
 }
 
-class ListMonoid extends Monoid<List> {
-  @override List zero() => new List();
-  @override List append(List l1, List l2) => l1.isEmpty ? l2 : (l2.isEmpty ? l1 : new List.from(l1)..addAll(l2));
+class ListMonoid<A> extends Monoid<List<A>> {
+  @override List<A> zero() => new List();
+  @override List<A> append(List<A> l1, List<A> l2) => l1.isEmpty ? l2 : (l2.isEmpty ? l1 : new List.from(l1)..addAll(l2));
 }
 
 final MonadPlus<List> ListMP = new ListMonad();
@@ -22,6 +22,7 @@ final ApplicativePlus<List> ListAP = ListMP;
 final Applicative<List> ListA = ListMP;
 final Functor<List> ListF = ListMP;
 final Monoid<List> ListMi = new ListMonoid();
+Monoid<List/*<A>*/> listMi/*<A>*/() => ListMi;
 
 class ListTMonad<M> extends Monad<M> {
   Monad<M> _stackedM;
@@ -33,7 +34,7 @@ class ListTMonad<M> extends Monad<M> {
   @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map(f).reduce(_concat)));
 }
 
-Monad listTMonad(Monad mmonad) => new ListTMonad(mmonad);
+Monad/*<M>*/ listTMonad/*<M>*/(Monad/*<M>*/ mmonad) => new ListTMonad/*<M>*/(mmonad);
 
 class ListTraversable extends Traversable<List> {
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, List fas, /*=G*/ f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {

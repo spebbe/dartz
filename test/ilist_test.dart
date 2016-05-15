@@ -16,7 +16,7 @@ void main() {
     expect(IListMi.append(l2, l2.reverse()), ilist([2,2,4,4,6,6,6,6,4,4,2,2]));
     expect(l2.foldLeft(0, (a, b) => a + b), 24);
 
-    final Monad<Option<IList>> OptionIListM = new IListTMonad(OptionM);
+    final Monad<Option<IList>> OptionIListM = new IListTMonad(OptionMP as Monad<Option<IList>>);
     final ol = some(l);
     final stackedResult = OptionIListM.bind(ol, (i) => i % 2 == 1 ? some(new Cons("$i!", Nil)) : some(Nil));
     expect(stackedResult, some(ilist(["1!", "3!"])));

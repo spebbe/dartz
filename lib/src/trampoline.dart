@@ -4,6 +4,7 @@ part of dartz;
 
 abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeOps<Trampoline, A>, MonadOps<Trampoline, A> {
   @override Trampoline/*<B>*/ pure/*<B>*/(/*=B*/ b) => new _TPure(b);
+  @override Trampoline/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
   @override Trampoline/*<B>*/ bind/*<B>*/(Trampoline/*<B>*/ f(A a)) => new _TBind(this, f);
 
   A run() {

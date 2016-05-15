@@ -26,17 +26,22 @@ abstract class Order<A> extends Eq<A> {
   Tuple2<A, A> sort(A a1, A a2) => lte(a1, a2) ? tuple2(a1, a2) : tuple2(a2, a1);
 
   Order<A> reverse() => new _AnonymousOrder(flip(order));
+
+  Order<A> andThen(Order<A> secondary) => new _AnonymousOrder((a1, a2) {
+    final Ordering primary = order(a1, a2);
+    return (primary == Ordering.EQ) ? secondary.order(a1, a2) : primary;
+  });
 }
 
-typedef Ordering OrderF(a1, a2);
+typedef Ordering OrderF<A>(A a1, A a2);
 class _AnonymousOrder<A> extends Order<A> {
-  final OrderF _f;
+  final OrderF<A> _f;
   _AnonymousOrder(this._f);
   @override Ordering order(A a1, A a2) => _f(a1, a2);
 }
 
-Order order(OrderF f) => new _AnonymousOrder(f);
-Order orderBy(Order o, by(_)) => new _AnonymousOrder((a1, a2) => o.order(by(a1), by(a2)));
+Order/*<A>*/ order/*<A>*/(OrderF/*<A>*/ f) => new _AnonymousOrder(f);
+Order/*<A>*/ orderBy/*<A, B>*/(Order/*<B>*/ o, /*=B*/ by(/*=A*/ a)) => new _AnonymousOrder((/*=A*/ a1, /*=A*/ a2) => o.order(by(a1), by(a2)));
 
 class ComparableOrder<A extends Comparable> extends Order<A> {
   @override Ordering order(A a1, A a2) {

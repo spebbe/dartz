@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Inspire dart2js to insert fewer cast checks and other runtime type paranoia, leading to significant performance improvements all over the place
+- Type parameters for Option mapX operations
+- traverseM operation for Traversable
+
 ## 0.1.2
 
 - IHashMap, an immutable and persistent map that, unlike IMap, doesn't require a total ordering of keys, but instead relies on hashCode and equality of keys

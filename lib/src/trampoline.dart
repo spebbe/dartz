@@ -10,17 +10,17 @@ abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeO
   A run() {
     var current = this;
     while(current is _TBind) {
-      var fa = (current as _TBind)._fa;
-      Function f = (current as _TBind)._f;
+      var fa = (current as dynamic/*=_TBind*/)._fa;
+      Function f = (current as dynamic/*=_TBind*/)._f;
       if (fa is _TBind) {
-        var fa2 = fa._fa as Trampoline/*<A>*/;
+        var fa2 = fa._fa as dynamic/*=Trampoline<A>*/;
         Function f2 = fa._f;
         current = new _TBind(fa2, (a2) => new _TBind(f2(a2), f));
       } else {
-        current = f((fa as _TPure)._a) as Trampoline/*<A>*/;
+        current = f((fa as dynamic/*=_TPure*/)._a) as dynamic/*=Trampoline<A>*/;
       }
     }
-    return (current as _TPure)._a as A;
+    return (current as dynamic/*=_TPure*/)._a as dynamic/*=A*/;
   }
 }
 
@@ -40,5 +40,5 @@ final Monad<Trampoline> TrampolineM = new MonadOpsMonad/*<Trampoline>*/((a) => n
 Trampoline/*<T>*/ treturn/*<T>*/(/*=T*/ t) => new _TPure(t);
 
 final Trampoline<Unit> tunit = new _TPure(unit);
-Trampoline/*<T>*/ tcall/*<T>*/(Function0/*<Trampoline<T>>*/ thunk) => new _TBind(tunit as Trampoline/*<T>*/, (_) => thunk());
+Trampoline/*<T>*/ tcall/*<T>*/(Function0/*<Trampoline<T>>*/ thunk) => new _TBind(tunit as dynamic/*=Trampoline<T>*/, (_) => thunk());
 

@@ -258,4 +258,4 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 }
 
 final _IMapAVLNode _emptyIMapAVLNode = new _EmptyIMapAVLNode();
-_IMapAVLNode/*<K, V>*/ emptyIMapAVLNode/*<K, V>*/() => _emptyIMapAVLNode as _IMapAVLNode/*<K, V>*/;
+_IMapAVLNode/*<K, V>*/ emptyIMapAVLNode/*<K, V>*/() => _emptyIMapAVLNode as dynamic/*=_IMapAVLNode<K, V>*/;

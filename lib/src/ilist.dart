@@ -183,7 +183,7 @@ class _Nil<A> extends IList<A> {
 }
 
 final IList Nil = new _Nil();
-IList/*<A>*/ nil/*<A>*/() => Nil as IList/*<A>*/;
+IList/*<A>*/ nil/*<A>*/() => Nil as dynamic/*=IList<A>*/;
 IList/*<A>*/ cons/*<A>*/(/*=A*/ head, IList/*<A>*/ tail) => new Cons(head, tail);
 
 final MonadPlus<IList> IListMP = new MonadPlusOpsMonad<IList>((a) => new Cons(a, Nil), () => Nil);

@@ -16,9 +16,9 @@ class _AnonymousSemigroup<A> extends Semigroup<A> {
 Semigroup/*<A>*/ semigroup/*<A>*/(/*=A*/ append(/*=A*/ a1, /*=A*/ a2)) => new _AnonymousSemigroup(append);
 
 final Semigroup FirstSemigroup = semigroup((a1, a2) => a1);
-Semigroup/*<A>*/ firstSemigroup/*<A>*/() => FirstSemigroup as Semigroup/*<A>*/;
+Semigroup/*<A>*/ firstSemigroup/*<A>*/() => FirstSemigroup as dynamic/*=Semigroup<A>*/;
 
 final Semigroup SecondSemigroup = semigroup((a1, a2) => a2);
-Semigroup/*<A>*/ secondSemigroup/*<A>*/() => SecondSemigroup as Semigroup/*<A>*/;
+Semigroup/*<A>*/ secondSemigroup/*<A>*/() => SecondSemigroup as dynamic/*=Semigroup<A>*/;
 
 

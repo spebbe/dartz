@@ -4,7 +4,7 @@ class IdMonad extends Monad {
   @override pure(a) => a;
   @override bind(fa, f(_)) => f(fa);
 
-  IList/*<A>*/ replicate/*<A>*/(int n, /*=A*/ fa) => super.replicate(n, fa) as IList/*<A>*/;
+  IList/*<A>*/ replicate/*<A>*/(int n, /*=A*/ fa) => super.replicate(n, fa) as dynamic/*=IList<A>*/;
 }
 
 final IdMonad IdM = new IdMonad();

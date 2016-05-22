@@ -32,7 +32,7 @@ class StateMonad<S> extends MonadOpsMonad<State<S, dynamic>> {
 }
 
 final StateMonad StateM = new StateMonad();
-StateMonad/*<S>*/ stateM/*<S>*/() => StateM as StateMonad/*<S>*/;
+StateMonad/*<S>*/ stateM/*<S>*/() => StateM as dynamic/*=StateMonad<S>*/;
 
 class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with ApplicativeOps<StateT/*<F, S, dynamic>*/, A>, MonadOps<StateT/*<F, S, dynamic>*/, A> {
   final Monad<F> _FM;
@@ -67,4 +67,4 @@ class StateTMonad<F, S> extends Monad<StateT<F, S, dynamic>> {
 }
 
 final StateTMonad<Trampoline, dynamic> TStateM = new StateTMonad(TrampolineM);
-StateTMonad<Trampoline/*<F>*/, dynamic/*=S*/> tstateM/*<F, S>*/() => TStateM as StateTMonad/*<Trampoline<F>, S>*/;
+StateTMonad<Trampoline/*<F>*/, dynamic/*=S*/> tstateM/*<F, S>*/() => TStateM as dynamic/*=StateTMonad<Trampoline<F>, S>*/;

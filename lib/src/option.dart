@@ -11,8 +11,8 @@ abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option,
   A operator |(A dflt) => getOrElse(() => dflt);
 
   @override Option/*<B>*/ pure/*<B>*/(/*=B*/ b) => some(b);
-  Option/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => fold(() => none(), (A a) => some(f(a)));
-  @override Option/*<B>*/ bind/*<B>*/(Option/*<B>*/ f(A a)) => fold(() => none(), (A a) => f(a));
+  Option/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => fold(none, (A a) => some(f(a)));
+  @override Option/*<B>*/ bind/*<B>*/(Option/*<B>*/ f(A a)) => fold(none, f);
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) => fold(() => gApplicative.pure(none()), (a) => gApplicative.map(f(a), some));
 
@@ -35,7 +35,7 @@ class None<A> extends Option<A> {
 }
 
 final Option _none = new None();
-Option/*<A>*/ none/*<A>*/() => _none as None/*<A>*/;
+Option/*<A>*/ none/*<A>*/() => _none as dynamic/*=None<A>*/;
 Option/*<A>*/ some/*<A>*/(/*=A*/ a) => new Some/*<A>*/(a);
 Option/*<A>*/ option/*<A>*/(bool test, /*=A*/ value) => test ? some(value) : none();
 
@@ -60,8 +60,8 @@ class OptionTMonad<M> extends Monad<M> {
   OptionTMonad(this._stackedM);
   Monad underlying() => OptionM;
 
-  @override M pure(a) => _stackedM.pure(some(a)) as M;
-  @override M bind(M moa, M f(_)) => _stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), f)) as M;
+  @override M pure(a) => _stackedM.pure(some(a)) as dynamic/*=M*/;
+  @override M bind(M moa, M f(_)) => _stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), f)) as dynamic/*=M*/;
 }
 
 Monad optionTMonad(Monad mmonad) => new OptionTMonad(mmonad);

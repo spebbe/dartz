@@ -12,7 +12,7 @@ class Println extends IOOp<Unit> {
 }
 Free<IOOp, Unit> println(Object o) => liftF(new Println(o.toString()));
 
-Free<IOOp, Unit> ios(IList<Free<IOOp, Unit>> ioList) => FreeM.sequenceL_(ioList) as Free<IOOp, Unit>;
+Free<IOOp, Unit> ios(IList<Free<IOOp, Unit>> ioList) => FreeM.sequenceL_(ioList) as dynamic/*=Free<IOOp, Unit>*/;
 
 final Monad<Free<IOOp, dynamic>> IOM = FreeM;
 

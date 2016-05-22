@@ -61,7 +61,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 IVector/*<A>*/ ivector/*<A>*/(Iterable/*<A>*/ iterable) => new IVector.from(iterable);
 
 final IVector _emptyVector = new IVector.emptyVector();
-IVector/*<A>*/ emptyVector/*<A>*/() => _emptyVector as IVector/*<A>*/;
+IVector/*<A>*/ emptyVector/*<A>*/() => _emptyVector as dynamic/*=IVector<A>*/;
 
 final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonad/*<IVector>*/((a) => emptyVector().appendElement(a), emptyVector);
 final Monad<IVector> IVectorM = IVectorMP;

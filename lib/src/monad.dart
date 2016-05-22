@@ -29,22 +29,22 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
   F bind(F f(A a));
 
   @override F map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
-  @override F ap/*<B>*/(F ff) => (ff as MonadOps/*<F, Function1<A, B>>*/).bind((f) => map(f));
+  @override F ap/*<B>*/(F ff) => (ff as dynamic/*=MonadOps<F, Function1<A, B>>*/).bind((f) => map(f));
   F flatMap(F f(A a)) => bind(f);
   F andThen(F next) => bind((_) => next);
   F operator >>(F next) => andThen(next);
   F operator >=(F f(A a)) => bind(f);
-  F operator <<(F next) => bind((a) => (next as MonadOps).map((_) => a) as F);
+  F operator <<(F next) => bind((a) => (next as dynamic/*=MonadOps*/).map((_) => a) as dynamic/*=F*/);
   F replace(replacement) => map((_) => replacement);
-  F join() => bind((A a) => a as F);
+  F join() => bind((A a) => a as dynamic/*=F*/);
   F flatten() => join();
 }
 
 class MonadOpsMonad<F extends MonadOps> extends Monad<F> {
   final Function _pure;
   MonadOpsMonad(this._pure);
-  @override F pure(a) => _pure(a) as F;
-  @override F bind(F fa, F f(_)) => fa.bind(f) as F;
-  @override F ap(F fa, F ff) => fa.ap(ff) as F;
-  @override F map(F fa, f(_)) => fa.map(f) as F;
+  @override F pure(a) => _pure(a) as dynamic/*=F*/;
+  @override F bind(F fa, F f(_)) => fa.bind(f) as dynamic/*=F*/;
+  @override F ap(F fa, F ff) => fa.ap(ff) as dynamic/*=F*/;
+  @override F map(F fa, f(_)) => fa.map(f) as dynamic/*=F*/;
 }

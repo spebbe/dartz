@@ -49,7 +49,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
       final Future<Either<E, Tuple3<W, S, A>>> ran = run(r, s);
       return ran.then((e) {
         final Future<Either<E, Tuple3<W, S, A>>> folded = e.fold((l) => onError(l).run(r, s), (r) => new Future.value(right(r)));
-        return folded as Either/*<E, Tuple3<W, S, A>>*/;
+        return folded as dynamic/*=Either<E, Tuple3<W, S, A>>*/;
       });
     });
   }

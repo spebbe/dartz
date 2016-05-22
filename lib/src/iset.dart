@@ -6,7 +6,7 @@ class ISet<A> {
   ISet(this._tree);
   factory ISet.emptyWithOrder(Order<A> order) => new ISet(new AVLTree<A>(order, emptyAVLNode()));
   factory ISet.empty() => new ISet<A>.emptyWithOrder(comparableOrder());
-  factory ISet.fromFoldableWithOrder(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.emptyWithOrder(order), (p, a) => p.insert(a as A));
+  factory ISet.fromFoldableWithOrder(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.emptyWithOrder(order), (p, a) => p.insert(a as dynamic/*=A*/));
   factory ISet.fromFoldable(Foldable foldable, fa) => new ISet<A>.fromFoldableWithOrder(comparableOrder(), foldable, fa);
   factory ISet.fromIListWithOrder(Order<A> order, IList<A> l) => new ISet.fromFoldableWithOrder(order, IListTr, l);
   factory ISet.fromIList(IList<A> l) => new ISet<A>.fromIListWithOrder(comparableOrder(), l);

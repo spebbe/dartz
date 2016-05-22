@@ -55,8 +55,8 @@ class EitherTMonad<M> extends Monad<M> {
   EitherTMonad(this._stackedM);
   Monad underlying() => EitherM;
 
-  @override M pure(a) => _stackedM.pure(right(a)) as M;
-  @override M bind(M mea, M f(_)) => _stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), f)) as M;
+  @override M pure(a) => _stackedM.pure(right(a)) as dynamic/*=M*/;
+  @override M bind(M mea, M f(_)) => _stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), f)) as dynamic/*=M*/;
 }
 
 Monad eitherTMonad(Monad mmonad) => new EitherTMonad(mmonad);

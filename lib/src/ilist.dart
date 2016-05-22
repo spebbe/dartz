@@ -103,7 +103,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>
 
   @override IList<A> empty() => nil();
 
-  @override IList<A> plus(IList<A> l2) => new Cons(this, new Cons(l2, nil())).join() as IList/*<A>*/;
+  @override IList<A> plus(IList<A> l2) => foldRight(l2, (e, p) => new Cons(e, p));
 
 
   @override IList<A> filter(bool predicate(A a)) {

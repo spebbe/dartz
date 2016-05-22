@@ -42,7 +42,21 @@ Option/*<A>*/ option/*<A>*/(bool test, /*=A*/ value) => test ? some(value) : non
 class OptionMonadPlus extends MonadPlusOpsMonad<Option> {
   OptionMonadPlus() : super(some, none);
 
-  @override Option/*<C>*/ map2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, /*=C*/ f(/*=A*/ a, /*=B*/ b)) => fa.bind((a) => fb.map((b) => f(a, b)));
+  @override Option/*<C>*/ map2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, /*=C*/ fun(/*=A*/ a, /*=B*/ b)) =>
+      fa.fold(none, (a) => fb.fold(none, (b) => some(fun(a, b))));
+
+  @override Option/*<D>*/ map3/*<A, B, C, D>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ fc, /*=D*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c)) =>
+      fa.fold(none, (a) => fb.fold(none, (b) => fc.fold(none, (c) => some(fun(a, b, c)))));
+
+  @override Option/*<E>*/ map4/*<A, B, C, D, E>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ fc, Option/*<D>*/ fd, /*=E*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d)) =>
+      fa.fold(none, (a) => fb.fold(none, (b) => fc.fold(none, (c) => fd.fold(none, (d) => some(fun(a, b, c, d))))));
+
+  @override Option/*<F>*/ map5/*<A, B, C, D, E, F>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ fc, Option/*<D>*/ fd, Option/*<E>*/ fe, /*=F*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e)) =>
+      fa.fold(none, (a) => fb.fold(none, (b) => fc.fold(none, (c) => fd.fold(none, (d) => fe.fold(none, (e) => some(fun(a, b, c, d, e)))))));
+
+  @override Option/*<G>*/ map6/*<A, B, C, D, E, F, G>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ fc, Option/*<D>*/ fd, Option/*<E>*/ fe, Option/*<F>*/ ff, /*=G*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e, /*=F*/ f)) =>
+      fa.fold(none, (a) => fb.fold(none, (b) => fc.fold(none, (c) => fd.fold(none, (d) => fe.fold(none, (e) => ff.fold(none, (f) => some(fun(a, b, c, d, e, f))))))));
+
   Option/*<C>*/ mapM2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, Option/*<C>*/ f(/*=A*/ a, /*=B*/ b)) => fa.bind((a) => fb.bind((b) => f(a, b)));
 
 }

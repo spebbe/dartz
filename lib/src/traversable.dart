@@ -20,8 +20,6 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
   // def foldMap[A, B](bMonoid: Monoid[B], fa: F[A], f: A => B): B
   @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a)) =>
       traverse(TStateM, fa, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;
-
-  /*=G*/ traverseM/*<G>*/(Applicative/*<G>*/ gApplicative, Monad<F> fMonad, F fa, /*=G*/ /* really G<F<A>>*/ f(a)) => gApplicative.map(traverse(gApplicative, fa, f), (F ffb) => fMonad.join(ffb));
 }
 
 abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F, A> {
@@ -42,8 +40,6 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) =>
       traverse(TStateM, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;
-
-  /*=G*/ traverseM/*<G>*/(Applicative/*<G>*/ gApplicative, Monad<F> fMonad, /*=G*/ /* really G<F<A>>*/ f(A a)) => gApplicative.map(traverse(gApplicative, f), (F ffb) => fMonad.join(ffb));
 }
 
 class TraversableOpsTraversable<F extends TraversableOps> extends Traversable<F> {

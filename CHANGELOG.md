@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+
+- New TraversableMonad and TraversableMonadOps
+- Moved traverseM operation to TraversableMonadOps
+- Removed IO stuff
+- Removed redundant type class instance aliases. Use IListMP instead of IListA, and so on
+- Gave up on mixin inheritance chains, since dart2js still doesn't implement them properly
+
 ## 0.1.3
 
 - Inspire dart2js to insert fewer cast checks and other runtime type paranoia, leading to significant performance improvements all over the place

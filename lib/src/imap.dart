@@ -80,9 +80,6 @@ final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
 Monoid<IMap/*<K, V>*/> imapMi/*<K, V>*/() => IMapMi;
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
-final Foldable<IMap> IMapFo = IMapTr;
-final Functor<IMap> IMapF = IMapTr;
-
 
 abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V> {
   _IMapAVLNode();

@@ -13,7 +13,7 @@ void main() {
     final Evaluation inc =
         M.get() >= ((oldState) {
           final newState = oldState+1;
-          return M.put(newState) >> M.write(new Tuple2(IListM.pure("State transition from $oldState to $newState"), "!"));
+          return M.put(newState) >> M.write(new Tuple2(IListMP.pure("State transition from $oldState to $newState"), "!"));
         });
 
     final Evaluation p =

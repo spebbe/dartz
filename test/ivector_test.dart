@@ -9,11 +9,11 @@ void main() {
   final intLists = c.listsOf(c.ints);
   final intIVectors = intLists.map(ivector);
 
-  group("IVectorM", () => checkMonadLaws(IVectorM));
+  group("IVectorM", () => checkMonadLaws(IVectorMP));
 
   group("IVectorTr", () => checkTraversableLaws(IVectorTr, intIVectors));
 
-  group("IVectorM+Foldable", () => checkFoldableMonadLaws(IVectorFo, IVectorM));
+  group("IVectorM+Foldable", () => checkFoldableMonadLaws(IVectorTr, IVectorMP));
 
   group("IVectorMi", () => checkMonoidLaws(IVectorMi, intIVectors));
 

@@ -1,6 +1,6 @@
 part of dartz;
 
-class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A> {
+class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A> {
   final IMap<int, A> _elementsByIndex;
   final int _prepended;
   final int _appended;
@@ -17,7 +17,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   Option<A> get(int index) => _elementsByIndex.get(index - _prepended);
 
-  Option<IVector<A>> set(int i, A a) => _elementsByIndex.set(i, a).map((newElements) => new IVector._internal(newElements, _prepended, _appended));
+  Option<IVector<A>> set(int index, A a) => _elementsByIndex.set(index - _prepended, a).map((newElements) => new IVector._internal(newElements, _prepended, _appended));
 
   @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);
 
@@ -63,13 +63,9 @@ IVector/*<A>*/ ivector/*<A>*/(Iterable/*<A>*/ iterable) => new IVector.from(iter
 final IVector _emptyVector = new IVector.emptyVector();
 IVector/*<A>*/ emptyVector/*<A>*/() => _emptyVector as dynamic/*=IVector<A>*/;
 
-final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonad/*<IVector>*/((a) => emptyVector().appendElement(a), emptyVector);
-final Monad<IVector> IVectorM = IVectorMP;
-final ApplicativePlus<IVector> IVectorAP = IVectorMP;
-final Applicative<IVector> IVectorA = IVectorMP;
-final Functor<IVector> IVectorF = IVectorMP;
+final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonadPlus<IVector>((a) => emptyVector().appendElement(a), emptyVector);
+MonadPlus<IVector/*<A>*/> ivectorMP/*<A>*/() => IVectorMP as dynamic/*=MonadPlus<IVector<A>>*/;
 final Traversable<IVector> IVectorTr = new TraversableOpsTraversable<IVector>();
-final Foldable<IVector> IVectorFo = IVectorTr;
 
 class IVectorMonoid<A> extends Monoid<IVector<A>> {
   @override IVector<A> zero() => emptyVector();

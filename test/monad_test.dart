@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
 void main() {
-  final Monad<Either<String, IList>> M = EitherM.composeM(IListM, IListTr);
+  final Monad<Either<String, IList>> M = EitherM.composeM(IListMP, IListTr);
 
   group("Monad composition", () {
     test("succeed", () {

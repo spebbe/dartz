@@ -18,28 +18,28 @@ void main() {
   });
 
   test("transformer demo", () {
-    final Monad<List<Option>> M = optionTMonad(ListM) as Monad<List<Option>>;
+    final Monad<List<Option>> M = optionTMonad(ListMP) as Monad<List<Option>>;
     final expected = [some("a!"), some("a!!"), none(), some("c!"), some("c!!")];
     expect(M.bind([some("a"), none(), some("c")], (e) => [some(e + "!"), some(e + "!!")]), expected);
   });
 
   test("sequencing", () {
     final IList<Option<int>> l = ilist([some(1), some(2)]);
-    expect(l.sequence(OptionM), some(ilist([1,2])));
-    expect(l.sequence(OptionM).sequence(IListM), l);
+    expect(l.sequence(OptionMP), some(ilist([1,2])));
+    expect(l.sequence(OptionMP).sequence(IListMP), l);
 
     final IList<Option<int>> l2 = ilist([some(1), none(), some(2)]);
-    expect(l2.sequence(OptionM), none());
-    expect(l2.sequence(OptionM).sequence(IListM), ilist([none()]));
+    expect(l2.sequence(OptionMP), none());
+    expect(l2.sequence(OptionMP).sequence(IListMP), ilist([none()]));
   });
 
-  group("OptionM", () => checkMonadLaws(OptionM));
+  group("OptionM", () => checkMonadLaws(OptionMP));
 
   group("OptionTMonad+Id", () => checkMonadLaws(optionTMonad(IdM)));
 
-  group("OptionTMonad+IList", () => checkMonadLaws(optionTMonad(IListM)));
+  group("OptionTMonad+IList", () => checkMonadLaws(optionTMonad(IListMP)));
 
-  group("OptionM+Foldable", () => checkFoldableMonadLaws(OptionFo, OptionM));
+  group("OptionM+Foldable", () => checkFoldableMonadLaws(OptionTr, OptionMP));
 
   group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), c.ints.map(some)));
 

@@ -35,20 +35,20 @@ void main() {
   test("sequencing", () {
     final IList<Either<String, int>> l = ilist([right(1), right(2)]);
     expect(l.sequence(EitherM), right(ilist([1,2])));
-    expect(l.sequence(EitherM).sequence(IListM), l);
+    expect(l.sequence(EitherM).sequence(IListMP), l);
 
     final IList<Either<String, int>> l2 = ilist([right(1), left("out of ints..."), right(2)]);
     expect(l2.sequence(EitherM), left("out of ints..."));
-    expect(l2.sequence(EitherM).sequence(IListM), ilist([left("out of ints...")]));
+    expect(l2.sequence(EitherM).sequence(IListMP), ilist([left("out of ints...")]));
   });
 
   group("EitherM", () => checkMonadLaws(EitherM));
 
   group("EitherTMonad+Id", () => checkMonadLaws(eitherTMonad(IdM)));
 
-  group("EitherTMonad+IList", () => checkMonadLaws(eitherTMonad(IListM)));
+  group("EitherTMonad+IList", () => checkMonadLaws(eitherTMonad(IListMP)));
 
-  group("EitherM+Foldable", () => checkFoldableMonadLaws(EitherFo, EitherM));
+  group("EitherM+Foldable", () => checkFoldableMonadLaws(EitherTr, EitherM));
 
   final intEithers = c.ints.map((i) => i%2==0 ? right(i) : left(i));
 

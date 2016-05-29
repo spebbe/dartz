@@ -12,7 +12,7 @@ void main() {
     } else if (a is List && b is List) {
       return ilist(a) == ilist(b);
     } else if (a is Option && b is Option) {
-      return OptionM.map2(a, b, bonkersEquality) | false;
+      return OptionMP.map2(a, b, bonkersEquality) | false;
     } else if (a is Either && b is Either) {
       return EitherM.map2(a, b, bonkersEquality) | false;
     } else {
@@ -20,7 +20,7 @@ void main() {
     }
   }
 
-  group("ListM", () => checkMonadLaws(ListM, equality: bonkersEquality));
+  group("ListM", () => checkMonadLaws(ListMP, equality: bonkersEquality));
 
   group("ListTMonad+Id", () => checkMonadLaws(listTMonad(IdM), equality: bonkersEquality));
 
@@ -28,7 +28,7 @@ void main() {
 
   group("ListTr", () => checkTraversableLaws(ListTr, intLists, equality: bonkersEquality));
 
-  group("ListM+Foldable", () => checkFoldableMonadLaws(ListFo, ListM, equality: bonkersEquality));
+  group("ListM+Foldable", () => checkFoldableMonadLaws(ListTr, ListMP, equality: bonkersEquality));
 
   group("ListMi", () => checkMonoidLaws(ListMi, intLists, equality: bonkersEquality));
 }

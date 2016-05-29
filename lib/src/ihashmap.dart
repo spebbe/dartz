@@ -59,5 +59,3 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 }
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();
-final Foldable<IHashMap> IHashMapFo = IHashMapTr;
-final Functor<IHashMap> IHashMapF = IHashMapTr;

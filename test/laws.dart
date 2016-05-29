@@ -53,7 +53,7 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
     });
 
     test("purity", () {
-      qc.check(forall(enumeration, (fa) => equality(T.traverse(OptionM, fa, OptionM.pure), OptionM.pure(fa))));
+      qc.check(forall(enumeration, (fa) => equality(T.traverse(OptionMP, fa, OptionMP.pure), OptionMP.pure(fa))));
     });
 
     // TODO: check naturality

@@ -63,7 +63,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
   Future<Either<E, A>> value(R r, S s) => run(r, s).then((e) => e.map((t) => t.value3));
 }
 
-class EvaluationMonad<E, R, W, S> extends Monad<Evaluation<E, R, W, S, dynamic>> {
+class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic>> with Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {
 
   final Monoid<W> _W;
 

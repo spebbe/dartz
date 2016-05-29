@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Applicative<F> extends Functor<F> {
+abstract class Applicative<F> implements Functor<F> {
   F pure(a);
   F ap(F fa, F ff);
 
@@ -53,7 +53,7 @@ abstract class Applicative<F> extends Functor<F> {
 }
 
 // Compose Applicative<F<_>> with Applicative<G<_>>, yielding Applicative<F<G<_>>>
-class ComposedApplicative<F, G> extends Applicative<F> {
+class ComposedApplicative<F, G> extends Functor<F> with Applicative<F> {
   final Applicative<F> _F;
   final Applicative<G> _G;
 

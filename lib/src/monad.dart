@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Monad<F> extends Applicative<F> {
+abstract class Monad<F> implements Applicative<F> {
   F bind(F fa, F f(_));
   
   F join(F ffa) => bind(ffa, (F f) => f);
@@ -12,7 +12,7 @@ abstract class Monad<F> extends Applicative<F> {
 }
 
 // Compose Monad<F<_>> with Monad<G<_>> and Traversable<G<_>>, yielding Monad<F<G<_>>>
-class ComposedMonad<F, G> extends Monad<F> {
+class ComposedMonad<F, G> extends Functor<F> with Applicative<F>, Monad<F> {
   final Monad<F> _F;
   final Monad<G> _G;
   final Traversable<G> _GT;
@@ -40,7 +40,7 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
   F flatten() => join();
 }
 
-class MonadOpsMonad<F extends MonadOps> extends Monad<F> {
+class MonadOpsMonad<F extends MonadOps> extends Functor<F> with Applicative<F>, Monad<F> {
   final Function _pure;
   MonadOpsMonad(this._pure);
   @override F pure(a) => _pure(a) as dynamic/*=F*/;

@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A> {
+abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a));
 
   /*=B*/ cata/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => fold(ifNone, ifSome);
@@ -39,7 +39,7 @@ Option/*<A>*/ none/*<A>*/() => _none as dynamic/*=None<A>*/;
 Option/*<A>*/ some/*<A>*/(/*=A*/ a) => new Some/*<A>*/(a);
 Option/*<A>*/ option/*<A>*/(bool test, /*=A*/ value) => test ? some(value) : none();
 
-class OptionMonadPlus extends MonadPlusOpsMonad<Option> {
+class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
   OptionMonadPlus() : super(some, none);
 
   @override Option/*<C>*/ map2/*<A, B, C>*/(Option/*<A>*/ fa, Option/*<B>*/ fb, /*=C*/ fun(/*=A*/ a, /*=B*/ b)) =>
@@ -62,17 +62,13 @@ class OptionMonadPlus extends MonadPlusOpsMonad<Option> {
 }
 
 final OptionMonadPlus OptionMP = new OptionMonadPlus();
-final OptionMonadPlus OptionM = OptionMP;
-final OptionMonadPlus OptionAP = OptionMP;
-final OptionMonadPlus OptionA = OptionM;
-final OptionMonadPlus OptionF = OptionM;
+MonadPlus<Option/*<A>*/> optionMP/*<A>*/() => OptionMP as dynamic/*=MonadPlus<Option<A>>*/;
 final Traversable<Option> OptionTr = new TraversableOpsTraversable<Option>();
-final Foldable<Option> OptionFo = OptionTr;
 
-class OptionTMonad<M> extends Monad<M> {
+class OptionTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad _stackedM;
   OptionTMonad(this._stackedM);
-  Monad underlying() => OptionM;
+  Monad underlying() => OptionMP;
 
   @override M pure(a) => _stackedM.pure(some(a)) as dynamic/*=M*/;
   @override M bind(M moa, M f(_)) => _stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), f)) as dynamic/*=M*/;

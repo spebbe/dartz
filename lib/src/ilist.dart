@@ -3,7 +3,7 @@ part of dartz;
 // (stack safety - tail call elimination) => icky mutating loops
 // everything should be externally RT though and mostly stack safe.
 
-abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>, MonadPlusOps<IList, A> {
+abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A> {
   Option<A> get headOption;
 
   Option<IList<A>> get tailOption;
@@ -186,13 +186,9 @@ final IList Nil = new _Nil();
 IList/*<A>*/ nil/*<A>*/() => Nil as dynamic/*=IList<A>*/;
 IList/*<A>*/ cons/*<A>*/(/*=A*/ head, IList/*<A>*/ tail) => new Cons(head, tail);
 
-final MonadPlus<IList> IListMP = new MonadPlusOpsMonad<IList>((a) => new Cons(a, Nil), () => Nil);
-final Monad<IList> IListM = IListMP;
-final ApplicativePlus<IList> IListAP = IListMP;
-final Applicative<IList> IListA = IListM;
-final Functor<IList> IListF = IListM;
+final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, Nil), () => Nil);
+MonadPlus<IList/*<A>*/> ilistMP/*<A>*/() => IListMP as dynamic/*=MonadPlus<IList<A>>*/;
 final Traversable<IList> IListTr = new TraversableOpsTraversable<IList>();
-final Foldable<IList> IListFo = IListTr;
 
 class IListMonoid extends Monoid<IList> {
   @override IList zero() => Nil;
@@ -201,10 +197,10 @@ class IListMonoid extends Monoid<IList> {
 
 final Monoid<IList> IListMi = new IListMonoid();
 
-class IListTMonad<M> extends Monad<M> {
+class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad<M> _stackedM;
   IListTMonad(this._stackedM);
-  Monad underlying() => IListM;
+  Monad underlying() => IListMP;
 
   @override M pure(a) => _stackedM.pure(new Cons(a, Nil));
 

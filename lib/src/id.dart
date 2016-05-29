@@ -1,6 +1,6 @@
 part of dartz;
 
-class IdMonad extends Monad {
+class IdMonad extends Functor with Applicative, Monad {
   @override pure(a) => a;
   @override bind(fa, f(_)) => f(fa);
 
@@ -13,7 +13,7 @@ class IdTraversable extends Traversable {
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, fa, /*=G*/ f(a)) => f(fa);
 }
 
-final Traversable IdTr = new IdTraversable();
+final IdTraversable IdTr = new IdTraversable();
 
 /*=A*/ id/*<A>*/(/*=A*/ a) => a;
 /*=Endo<A>*/ idF/*<A>*/() => id;

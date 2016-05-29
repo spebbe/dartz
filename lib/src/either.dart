@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Either<L, R> extends TraversableOps<Either<L, dynamic>, R> with MonadOps<Either<L, dynamic>, R> {
+abstract class Either<L, R> extends TraversableOps<Either<L, dynamic>, R> with FunctorOps<Either<L, dynamic>, R>, ApplicativeOps<Either<L, dynamic>, R>, MonadOps<Either<L, dynamic>, R>, TraversableMonadOps<Either<L, dynamic>, R> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r));
 
   Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);
@@ -44,13 +44,10 @@ Either/*<dynamic, A>*/ catching/*<A>*/(Function0/*<A>*/ thunk) {
 }
 
 final Monad<Either> EitherM = new MonadOpsMonad<Either>(right);
-final Applicative<Either> EitherA = EitherM;
-final Functor<Either> EitherF = EitherM;
-
+Monad<Either/*<dynamic, A>*/> eitherM/*<A>*/() => EitherM as dynamic/*=Monad<Either<dynamic, A>>*/;
 final Traversable<Either> EitherTr = new TraversableOpsTraversable<Either>();
-final Foldable<Either> EitherFo = EitherTr;
 
-class EitherTMonad<M> extends Monad<M> {
+class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad _stackedM;
   EitherTMonad(this._stackedM);
   Monad underlying() => EitherM;

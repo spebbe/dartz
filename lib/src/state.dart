@@ -51,7 +51,7 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   }));
 }
 
-class StateTMonad<F, S> extends Monad<StateT<F, S, dynamic>> {
+class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<StateT<F, S, dynamic>>, Monad<StateT<F, S, dynamic>> {
   final Monad<F> _FM;
 
   StateTMonad(this._FM);

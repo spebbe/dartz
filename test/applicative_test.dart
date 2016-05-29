@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 
 void main() {
   group("Applicative composition", () {
-    final Applicative<Either<String, Option<IList>>> A = EitherA.composeA(OptionA.composeA(IListA));
+    final Applicative<Either<String, Option<IList>>> A = EitherM.composeA(OptionMP.composeA(IListMP));
 
     test("succeed", () {
       expect(A.map3(A.pure("hello"), right(some(ilist(["functor", "applicative"]))), A.pure("!"), (a,b,c) => a+" "+b+c),

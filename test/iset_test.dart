@@ -32,4 +32,5 @@ void main() {
 
   group("ISetMonoid", () => checkMonoidLaws(new ISetMonoid(IntOrder), intSets));
 
+  group("ISetTreeFo", () => checkFoldableLaws(ISetFo, intSets));
 }

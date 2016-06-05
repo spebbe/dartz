@@ -1,6 +1,6 @@
 part of dartz;
 
-class ISet<A> {
+class ISet<A> extends FoldableOps<ISet, A> {
   final AVLTree<A> _tree;
 
   ISet(this._tree);
@@ -10,6 +10,10 @@ class ISet<A> {
   factory ISet.fromFoldable(Foldable foldable, fa) => new ISet<A>.fromFoldableWithOrder(comparableOrder(), foldable, fa);
   factory ISet.fromIListWithOrder(Order<A> order, IList<A> l) => new ISet.fromFoldableWithOrder(order, IListTr, l);
   factory ISet.fromIList(IList<A> l) => new ISet<A>.fromIListWithOrder(comparableOrder(), l);
+
+  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => _tree.foldMap(bMonoid, f);
+  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _tree.foldLeft(z, f);
+  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _tree.foldRight(z, f);
 
   ISet<A> insert(A a) => new ISet(_tree.insert(a));
 
@@ -33,6 +37,8 @@ class ISet<A> {
 
   @override String toString() => "iset<$_tree>";
 }
+
+final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();
 
 ISet/*<A>*/ iset/*<A>*/(Iterable/*<A>*/ l) => new ISet.fromIList(ilist(l));
 

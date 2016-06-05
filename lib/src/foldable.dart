@@ -31,6 +31,8 @@ abstract class Foldable<F> {
   /*=G*/ foldLeftM/*<G>*/(Monad/*<G>*/ m, F fa, z, /*=G*/ f(previous, a)) => foldRight/*<Function1<dynamic, G>>*/(fa, m.pure, (a, b) => (w) => m.bind(f(w, a), b))(z);
 
   /*=G*/ foldRightM/*<G>*/(Monad/*<G>*/ m, F fa, z, /*=G*/ f(a, previous)) => foldLeft/*<Function1<dynamic, G>>*/(fa, m.pure, (b, a) => (w) => m.bind(f(a, w), b))(z);
+
+  /*=G*/ foldMapM/*<G, B>*/(Monad/*<G>*/ m, Monoid/*<B>*/ bMonoid, F fa, /*=G*/ f(a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), m.lift2(bMonoid.append)), fa, f);
 }
 
 abstract class FoldableOps<F, A> {
@@ -63,6 +65,8 @@ abstract class FoldableOps<F, A> {
   /*=G*/ foldLeftM/*<G>*/(Monad/*<G>*/ m, z, /*=G*/ f(previous, A a)) => foldRight/*<Function1<dynamic, G>>*/(m.pure, (A a, b) => (w) => m.bind(f(w, a), b))(z);
 
   /*=G*/ foldRightM/*<G>*/(Monad/*<G>*/ m, z, /*=G*/ f(A a, previous)) => foldLeft/*<Function1<dynamic, G>>*/(m.pure, (b, A a) => (w) => m.bind(f(a, w), b))(z);
+
+  /*=G*/ foldMapM/*<G, B>*/(Monad/*<G>*/ m, Monoid/*<B>*/ bMonoid, /*=G*/ f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), m.lift2(bMonoid.append)), f);
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {

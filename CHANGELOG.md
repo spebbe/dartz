@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.1
+
+- Added two examples
+- Foldable instance for ISet
+- liftOption operation for Evaluation
+- foldMapM operation for Foldable
+- More type annotations and convenience functions
+
 ## 0.2.0
 
 - New TraversableMonad and TraversableMonadOps

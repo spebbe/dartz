@@ -54,6 +54,8 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
     });
   }
 
+  Evaluation<E, R, W, S, dynamic/*=B*/> andThen/*<B>*/(Evaluation<E, R, W, S, dynamic/*=B*/> next) => bind((_) => next);
+
   Future<Either<E, Tuple3<W, S, A>>> run(R r, S s) => _run(r, s);
 
   Future<Either<E, W>> written(R r, S s) => run(r, s).then((e) => e.map((t) => t.value1));
@@ -82,6 +84,8 @@ class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic
   });
 
   Evaluation<E, R, W, S, dynamic/*=A*/> liftEither/*<A>*/(Either<E, dynamic/*=A*/> either) => either.fold(raiseError, pure);
+
+  Evaluation<E, R, W, S, dynamic/*=A*/> liftOption/*<A>*/(Option/*<A>*/ oa, E ifNone()) => liftEither(oa.toEither(ifNone));
 
   Evaluation<E, R, W, S, S> get() => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), s, s))));
 

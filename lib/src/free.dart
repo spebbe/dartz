@@ -6,7 +6,8 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
   @override Free/*<F, B>*/ pure/*<B>*/(/*=B*/ b) => new Pure(b);
   @override Free/*<F, B>*/ map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
   @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a));
-  foldMap(Monad G, f(_));
+  @override Free/*<F, B>*/ andThen/*<B>*/(Free/*<F, B>*/ next) => bind((_) => next);
+  /*=GA*/ foldMap/*<G, GA>*/(Monad/*<G>*/ gMonad, /*=G*/ f(_));
 }
 
 class Pure<F, A> extends Free<F, A> {
@@ -15,7 +16,7 @@ class Pure<F, A> extends Free<F, A> {
 
   @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => f(_a);
 
-  @override foldMap(Monad G, f(_)) => G.pure(_a);
+  @override /*=GA*/ foldMap/*<G, GA>*/(Monad/*<G>*/ gMonad, /*=G*/ f(_)) => gMonad.pure(_a) as dynamic/*=GA*/;
 
   @override bool operator ==(other) => other is Pure && other._a == _a;
 }
@@ -28,7 +29,7 @@ class Bind<F, I, A> extends Free<F, A> {
 
   @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => new Bind(_i, (i) => _k(i).bind(f));
 
-  @override foldMap(Monad G, f(_)) => G.bind(f(_i), (a) => _k(a).foldMap(G, f));
+  @override /*=GA*/ foldMap/*<G, GA>*/(Monad/*<G>*/ gMonad, /*=G*/ f(_)) => gMonad.bind(f(_i), (a) => _k(a).foldMap(gMonad, f) as dynamic/*=G*/) as dynamic/*=GA*/;
 
   @override bool operator ==(other) => other is Bind && other._i == _i && other._k == _k;
 }

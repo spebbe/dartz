@@ -85,3 +85,4 @@ class OptionMonoid<A> extends Monoid<Option<A>> {
 
   @override Option<A> append(Option<A> oa1, Option<A> oa2) => oa1.fold(() => oa2, (a1) => oa2.fold(() => oa1, (a2) => some(_tSemigroup.append(a1, a2))));
 }
+Monoid<Option/*<A>*/> optionMi/*<A>*/(Semigroup/*<A>*/ si) => new OptionMonoid/*<A>*/(si);

@@ -59,3 +59,5 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 }
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();
+
+IHashMap/*<K, V>*/ ihashmap/*<K, V>*/(Map/*<K, V>*/ m) => new IHashMap.from(m);

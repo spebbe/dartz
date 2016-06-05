@@ -64,6 +64,8 @@ class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<
   StateT<F, S, dynamic/*=A*/> gets/*<A>*/(/*=A*/ f(S s)) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(f(s), s)));
   StateT<F, S, Unit> put(S newS) => new StateT(_FM, (_) => _FM.pure(new Tuple2(unit, newS)));
   StateT<F, S, Unit> modify(S f(S s)) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(unit, f(s))));
+
+  StateT<F, S, dynamic/*=A*/> withState/*<A>*/(StateT<F, S, dynamic/*=A*/> f(S s)) => get().bind(f);
 }
 
 final StateTMonad<Trampoline, dynamic> TStateM = new StateTMonad(TrampolineM);

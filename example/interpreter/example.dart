@@ -1,4 +1,4 @@
-library evaluation_example;
+library interpreter_example;
 
 import 'package:dartz/dartz.dart';
 import 'minilanguage.dart';

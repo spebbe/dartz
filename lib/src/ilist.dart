@@ -156,6 +156,20 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
       return false;
     }
   }
+
+  Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => super.partition(f);
+
+  @override IList<A> prependElement(A a) => new Cons(a, this);
+
+  @override IList<A> appendElement(A a) => this.plus(new Cons(a, nil()));
+
+  Option/*<B>*/ unconsO/*<B>*/(/*=B*/ f(A head, IList<A> tail)) => OptionMP.map2(headOption, tailOption, f);
+
+  /*=B*/ uncons/*<B>*/(/*=B*/ z(), /*=B*/ f(A head, IList<A> tail)) => unconsO(f).getOrElse(z);
+
+  IList<A> sort(Order<A> oa) => uncons(nil, (pivot, rest) => rest
+      .partition((e) => oa.lt(e, pivot))
+      .apply((smaller, larger) => smaller.sort(oa).plus(larger.sort(oa).prependElement(pivot))));
 }
 
 class Cons<A> extends IList<A> {

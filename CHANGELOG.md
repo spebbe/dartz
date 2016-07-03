@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.3
+
+- New TraversableMonadPlus type class, with partition operation
+- TraversableMonadPlus instances for IList, List, IVector and Option
+- prependElement and appendElement operations for ApplicativePlus
+- better type inference for applicative mapX operations on Option and Either
+- uncons, unconsO and sort operations for IList
+
 ## 0.2.2
 
 - Added Free IO example

@@ -43,8 +43,28 @@ Either/*<dynamic, A>*/ catching/*<A>*/(Function0/*<A>*/ thunk) {
   }
 }
 
-final Monad<Either> EitherM = new MonadOpsMonad<Either>(right);
-Monad<Either/*<dynamic, A>*/> eitherM/*<A>*/() => EitherM as dynamic/*=Monad<Either<dynamic, A>>*/;
+class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
+  EitherMonad(): super(right);
+
+  @override Either<L, dynamic/*=C*/> map2/*<A, A2 extends A, B, B2 extends B, C>*/(Either<L, dynamic/*=A2*/> fa, Either<L, dynamic/*=B2*/> fb, /*=C*/ fun(/*=A*/ a, /*=B*/ b)) =>
+      fa.fold(left, (a) => fb.fold(left, (b) => right(fun(a, b))));
+
+  @override Either<L, dynamic/*=D*/> map3/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>*/(Either<L, dynamic/*=A2*/> fa, Either<L, dynamic/*=B2*/> fb, Either<L, dynamic/*=C2*/> fc, /*=D*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c)) =>
+      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => right(fun(a, b, c)))));
+
+  @override Either<L, dynamic/*=E*/> map4/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>*/(Either<L, dynamic/*=A2*/> fa, Either<L, dynamic/*=B2*/> fb, Either<L, dynamic/*=C2*/> fc, Either<L, dynamic/*=D2*/> fd, /*=E*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d)) =>
+      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => right(fun(a, b, c, d))))));
+
+  @override Either<L, dynamic/*=F*/> map5/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F>*/(Either<L, dynamic/*=A2*/> fa, Either<L, dynamic/*=B2*/> fb, Either<L, dynamic/*=C2*/> fc, Either<L, dynamic/*=D2*/> fd, Either<L, dynamic/*=E2*/> fe, /*=F*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e)) =>
+      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => right(fun(a, b, c, d, e)))))));
+
+  @override Either<L, dynamic/*=G*/> map6/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F, F2 extends F, G>*/(Either<L, dynamic/*=A2*/> fa, Either<L, dynamic/*=B2*/> fb, Either<L, dynamic/*=C2*/> fc, Either<L, dynamic/*=D2*/> fd, Either<L, dynamic/*=E2*/> fe, Either<L, dynamic/*=F2*/> ff, /*=G*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e, /*=F*/ f)) =>
+      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => ff.fold(left, (f) => right(fun(a, b, c, d, e, f))))))));
+
+}
+
+final EitherMonad EitherM = new EitherMonad();
+EitherMonad/*<L>*/ eitherM/*<L>*/() => EitherM as dynamic/*=Monad<Either<L, dynamic>>*/;
 final Traversable<Either> EitherTr = new TraversableOpsTraversable<Either>();
 
 class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {

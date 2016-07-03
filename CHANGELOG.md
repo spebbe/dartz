@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- Fixed incompatibilities with dart2js
+
 ## 0.2.3
 
 - New TraversableMonadPlus type class, with partition operation

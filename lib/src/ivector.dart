@@ -1,6 +1,6 @@
 part of dartz;
 
-class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A> {
+class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, ApplicativePlusOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A>, TraversableMonadPlusOps<IVector, A> {
   final IMap<int, A> _elementsByIndex;
   final int _prepended;
   final int _appended;

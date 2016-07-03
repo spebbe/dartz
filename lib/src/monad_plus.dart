@@ -12,7 +12,7 @@ abstract class MonadPlusOps<F, A> implements MonadOps<F, A>, ApplicativePlusOps<
   F unite(Foldable<A> aFoldable) => bind((ga) => aFoldable.foldLeft/*<F>*/(ga, empty(), (p, a) => (p as dynamic/*=MonadPlusOps<F, A>*/).plus(pure(a))));
 }
 
-class MonadPlusOpsMonadPlus<F extends MonadPlusOps> extends Functor<F> with Applicative<F>, Monad<F>, MonadPlus<F> {
+class MonadPlusOpsMonadPlus<F extends MonadPlusOps> extends Functor<F> with Applicative<F>, ApplicativePlus<F>, Monad<F>, MonadPlus<F> {
   final Function1<dynamic, F> _pure;
   final Function0<F> _empty;
 

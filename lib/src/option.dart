@@ -1,9 +1,9 @@
 part of dartz;
 
-abstract class Option<A> extends TraversableOps<Option, A> with MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A> {
+abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Option, A>, ApplicativeOps<Option, A>, ApplicativePlusOps<Option, A>, MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A>, TraversableMonadPlusOps<Option, A> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a));
 
-  /*=B*/ cata/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => fold(ifNone, ifSome);
+  /*=B*/ cata/*<B, B2 extends B>*/(/*=B*/ ifNone(), /*=B2*/ ifSome(A a)) => fold(ifNone, ifSome);
   Option<A> orElse(Option<A> other()) => fold(other, (_) => this);
   A getOrElse(A dflt()) => fold(dflt, (a) => a);
   Either<dynamic/*=B*/, A> toEither/*<B>*/(/*=B*/ ifNone()) => fold(() => left(ifNone()), (a) => right(a));

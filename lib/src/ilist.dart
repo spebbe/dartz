@@ -3,7 +3,7 @@ part of dartz;
 // (stack safety - tail call elimination) => icky mutating loops
 // everything should be externally RT though and mostly stack safe.
 
-abstract class IList<A> extends TraversableOps<IList, A> with MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A> {
+abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, A>, ApplicativeOps<IList, A>, ApplicativePlusOps<IList, A>, MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A>, TraversableMonadPlusOps<IList, A> {
   Option<A> get headOption;
 
   Option<IList<A>> get tailOption;

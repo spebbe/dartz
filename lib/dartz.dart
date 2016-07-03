@@ -37,3 +37,4 @@ part 'src/trampoline.dart';
 part 'src/ivector.dart';
 part 'src/ihashmap.dart';
 part 'src/traversable_monad.dart';
+part 'src/traversable_monad_plus.dart';

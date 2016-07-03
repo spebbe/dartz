@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Either<L, R> extends TraversableOps<Either<L, dynamic>, R> with FunctorOps<Either<L, dynamic>, R>, ApplicativeOps<Either<L, dynamic>, R>, MonadOps<Either<L, dynamic>, R>, TraversableMonadOps<Either<L, dynamic>, R> {
+abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> with FunctorOps<Either/*<L, dynamic>*/, R>, ApplicativeOps<Either/*<L, dynamic>*/, R>, MonadOps<Either/*<L, dynamic>*/, R>, TraversableMonadOps<Either/*<L, dynamic>*/, R> {
   /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifLeft(L l), /*=C*/ ifRight(R r));
 
   Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);

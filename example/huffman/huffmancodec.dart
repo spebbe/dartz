@@ -81,17 +81,16 @@ class HuffmanCodec {
   Option<IList<Bit>> encode(String plainText) => ilist(plainText.split("")).traverseM(optionMP(), _codeBook.get);
 
   // Technique: Deep recursion without fear, using Trampoline primitives tcall and treturn
-  // Technique: Applicative mapping over multiple Options
+  // Technique: IList destructuring using uncons
   String decode(IList<Bit> compressed) {
     Trampoline<String> loop(_HuffmanNode tree, _HuffmanNode current, IList<Bit> compressed, String decompressed) => current.fold(
-        (internalNode) {
-          return OptionMP.map2(compressed.headOption, compressed.tailOption, (Bit bit, IList<Bit> bits) {
-            final nextNode = (bit == Bit.ONE ? internalNode.right : internalNode.left);
-            return tcall(() => loop(tree, nextNode, bits, decompressed));
-          }) | treturn(decompressed);
-        }, (leafNode) {
-          return tcall(() => loop(tree, tree, compressed, decompressed+leafNode.char));
-        }
+        (internalNode) =>
+            compressed.uncons(() => treturn(decompressed), (bit, bits) {
+              final nextNode = (bit == Bit.ONE ? internalNode.right : internalNode.left);
+              return tcall(() => loop(tree, nextNode, bits, decompressed));
+            })
+        , (leafNode) =>
+            tcall(() => loop(tree, tree, compressed, decompressed+leafNode.char))
     );
     return loop(_tree, _tree, compressed, "").run();
   }

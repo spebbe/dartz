@@ -27,8 +27,8 @@ class Plus extends Exp {
   final Exp right;
   Plus(this.left, this.right);
 }
-
 Exp plus(Exp left, Exp right) => new Plus(left, right);
+
 class Lambda extends Exp {
   final String formal;
   final Exp body;

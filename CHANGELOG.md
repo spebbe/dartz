@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.5
+
+- MonadCatch type class
+- Simplistic Task implementation, with MonadCatch instance
+
 ## 0.2.4
 
 - Fixed incompatibilities with dart2js

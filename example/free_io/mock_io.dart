@@ -12,7 +12,7 @@ Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpr
   if (io is Readln) {
     return MockM.get() >= (int i) =>
     MockM.ask() >= (IVector<String> vs) =>
-    MockM.liftOption(vs.get(i), () =>"Read past end of input") << MockM.put(i+1);
+    MockM.liftOption(vs.get(i), () => "Read past end of input") << MockM.put(i+1);
 
   } else if (io is Println) {
     return MockM.write(ivector([io.s]));

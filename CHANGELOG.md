@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Conveyor, an experimental implementation of functional streams, based on work by Chiusano/Bjarnason (chapter 15 in FPIS)
+- Clarified Free IO example
+- Added Streaming IO example, based on Free IO and Conveyor
+
 ## 0.2.5
 
 - MonadCatch type class

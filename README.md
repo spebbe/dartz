@@ -9,6 +9,11 @@ Functional programming in Dart
 * Evaluation, a Reader+Writer+State+Either+Future swiss army knife monad
 * Type class instances (Monoids, Traversable Functors, Monads and so on) for included types, as well as for several standard Dart types
 
+
+##### New to functional programming?
+
+A good place to start learning is the excellent [Functional Programming in Scala](https://www.manning.com/books/functional-programming-in-scala) by Paul Chiusano and Rúnar Bjarnason. I can not recommend this book highly enough.
+
 ##### Status
 
 * Super experimental!

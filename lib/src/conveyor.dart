@@ -179,6 +179,10 @@ class Source {
 
   static Conveyor<Nowhere, dynamic/*=O*/> fromIList/*<F, O>*/(/*=IList<O>*/ v) => fromFoldable(v, IListTr);
   static IList/*<O>*/ toIList/*<O>*/(Conveyor<Nowhere, dynamic/*=O*/> s) => materialize/*<IList, O>*/(s, IListMP) as dynamic/*=IList<O>*/;
+
+  static Conveyor<Task, dynamic/*=A*/> fromStream/*<A>*/(Stream/*<A>*/ s) => Source.resource(Task.delay(() => new StreamIterator(s)),
+      (StreamIterator/*<A>*/ it) => Source.eval(new Task(it.moveNext)).repeat().takeWhile(id).flatMap((_) => Source.eval(Task.delay(() => it.current))),
+      (StreamIterator/*<A>*/ it) => Source.eval_(new Task(() => new Future.value(unit).then((_) => it.cancel()))));
 }
 
 class From<A> {}

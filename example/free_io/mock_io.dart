@@ -17,6 +17,12 @@ Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpr
   } else if (io is Println) {
     return MockM.write(ivector([io.s]));
 
+  } else if (io is Attempt) {
+    return io.fa.foldMap/*<Evaluation, Evaluation<String, IVector<String>, IVector<String>, int, dynamic>>*/(MockM, mockIOInterpreter).map(right).handleError((e) => MockM.pure(left(e)));
+
+  } else if (io is Fail) {
+    return MockM.raiseError(io.failure);
+
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
 

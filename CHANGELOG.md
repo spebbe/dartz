@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1
+
+- Renamed Conveyor primitives (await -> consume, emit -> produce)
+- Added identity, drop and dropWhile operations to Pipe and Conveyor
+- Added Source#fromStream for driving Conveyors from Dart Streams
+- Helpers for creating anonymous Eq instances
+- ObjectEq Eq instance for comparing Objects for equality using '=='
+- Beefed up mock IO interpreter in Free IO example
+- Funner, faster and longer streaming IO example
+
 ## 0.3.0
 
 - Conveyor, an experimental implementation of functional streams, based on work by Chiusano/Bjarnason (chapter 15 in FPIS)

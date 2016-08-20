@@ -8,6 +8,7 @@ Functional programming in Dart
 * Option, Either, State, Tuple, Free and other tools for programming in a functional style
 * Evaluation, a Reader+Writer+State+Either+Future swiss army knife monad
 * Type class instances (Monoids, Traversable Functors, Monads and so on) for included types, as well as for several standard Dart types
+* Conveyor, an ultra experimental implementation of pure functional streaming
 
 
 ##### New to functional programming?

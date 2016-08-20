@@ -104,6 +104,10 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> takeWhile(bool f(O o)) => pipe(Pipe.takeWhile(f));
 
+  Conveyor<F, O> drop(int n) => pipe(Pipe.drop(n));
+
+  Conveyor<F, O> dropWhile(bool f(O o)) => pipe(Pipe.dropWhile(f));
+
   Conveyor<F, O> filter(bool f(O o)) => pipe(Pipe.filter(f));
 
   Conveyor<F, Unit> sink(F f(O o)) => flatMap(composeF(Source.eval_, f));
@@ -190,12 +194,17 @@ class Pipe {
 
   static Conveyor<From/*<I>*/, dynamic/*=O*/> halt/*<I, O>*/() => Conveyor.halt(Conveyor.End);
 
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> identity/*<I>*/() => lift(id);
 
   static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume((/*=I*/ i) => produce(f(i))).repeat();
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> take/*<I>*/(int n) => n <= 0 ? halt() : consume((i) => produce(i, take/*<I>*/(n-1)));
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> takeWhile/*<I>*/(bool f(/*=I*/ i)) => consume((i) => f(i) ? produce(i, takeWhile/*<I>*/(f)) : halt());
+
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> drop/*<I>*/(int n) => consume((i) => n > 0 ? drop/*<I>*/(n-1) : produce(i, identity()));
+
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> dropWhile/*<I>*/(bool f(/*=I*/ i)) => consume((i) => f(i) ? dropWhile/*<I>*/(f) : identity());
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> filter/*<I>*/(bool f(/*=I*/ i)) => consume/*<I, I>*/((i) => f(i) ? produce(i) : halt()).repeat();
 

@@ -27,7 +27,7 @@ class Bind<F, I, A> extends Free<F, A> {
 
   Bind(this._i, this._k);
 
-  @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => new Bind(_i, (i) => _k(i).bind(f));
+  @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a)) => new Bind/*<F, I, B>*/(_i, (i) => _k(i).bind(f));
 
   @override /*=GA*/ foldMap/*<G, GA>*/(Monad/*<G>*/ gMonad, /*=G*/ f(_)) => gMonad.bind(f(_i), (a) => _k(a).foldMap(gMonad, f) as dynamic/*=G*/) as dynamic/*=GA*/;
 

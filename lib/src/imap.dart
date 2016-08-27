@@ -34,7 +34,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   /*=B*/ foldMapKV/*<B>*/(Monoid/*<B>*/ mi, /*=B*/ f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
-  IMap<K, dynamic/*=V2*/> mapWithKey/*<V2>*/(/*=V2*/ f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (IMap<K, dynamic/*=V2*/> p, k, v) => p.put(k, f(k, v)));
+  IMap<K, dynamic/*=V2*/> mapWithKey/*<V2>*/(/*=V2*/ f(K k, V v)) => foldLeftKV(new IMap/*<K, V2>*/(_order, emptyIMapAVLNode()), (IMap<K, dynamic/*=V2*/> p, k, v) => p.put(k, f(k, v)));
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
@@ -49,7 +49,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(V v, /*=B*/ previous)) => _tree.foldRight(z, (k, v, p) => f(v, p));
 
-  @override IMap<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => new IMap(_order, _tree.map(f));
+  @override IMap<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => new IMap/*<K, V2>*/(_order, _tree.map(f));
 
   Map<K, V> toMap() => foldLeftKV(new Map(), (Map<K, V> p, K k, V v) => p..[k] = v);
 
@@ -197,7 +197,7 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final _IMapAVLNode<K, dynamic/*=V2*/> newLeft = _left.map(f);
     final newV = f(_v);
     final _IMapAVLNode<K, dynamic/*=V2*/> newRight = _right.map(f);
-    return new _NonEmptyIMapAVLNode(_k, newV, newLeft, newRight);
+    return new _NonEmptyIMapAVLNode/*<K, V2>*/(_k, newV, newLeft, newRight);
   }
 
   @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) {

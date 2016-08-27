@@ -10,8 +10,8 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
 
   State(this._run);
 
-  @override State/*<S, B>*/ pure/*<B>*/(/*=B*/ b) => new State((s) => new Tuple2(b, s));
-  @override State/*<S, B>*/ map/*<B>*/(/*=B*/ f(A a)) => new State((S s) => run(s).map1(f));
+  @override State/*<S, B>*/ pure/*<B>*/(/*=B*/ b) => new State/*<S, B>*/((s) => new Tuple2(b, s));
+  @override State/*<S, B>*/ map/*<B>*/(/*=B*/ f(A a)) => new State/*<S, B>*/((S s) => run(s).map1(f));
   @override State/*<S, B>*/ bind/*<B>*/(State/*<S, B>*/ f(A a)) => new State/*<S, B>*/((S s) {
     final ran = run(s);
     return f(ran.value1).run(ran.value2);
@@ -44,9 +44,9 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   F value(S s) => _FM.map(_run(s), (t) => t.value1);
   F state(S s) => _FM.map(_run(s), (t) => t.value2);
 
-  @override StateT/*<F, S, B>*/ pure/*<B>*/(/*=B*/ b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2<B, S>(b, s)));
-  @override StateT/*<F, S, B>*/ map/*<B>*/(/*=B*/ f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, S> t) => t.map1(f)));
-  @override StateT/*<F, S, B>*/ bind/*<B>*/(StateT/*<F, S, B>*/ f(A a)) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
+  @override StateT/*<F, S, B>*/ pure/*<B>*/(/*=B*/ b) => new StateT/*<F, S, B>*/(_FM, (S s) => _FM.pure(new Tuple2<dynamic/*=B*/, S>(b, s)));
+  @override StateT/*<F, S, B>*/ map/*<B>*/(/*=B*/ f(A a)) => new StateT/*<F, S, B>*/(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, S> t) => t.map1(f)));
+  @override StateT/*<F, S, B>*/ bind/*<B>*/(StateT/*<F, S, B>*/ f(A a)) => new StateT/*<F, S, B>*/(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));
 }

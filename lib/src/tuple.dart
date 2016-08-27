@@ -5,8 +5,8 @@ class Tuple2<T1, T2> {
   final T2 value2;
   Tuple2(this.value1, this.value2);
   /*=R*/ apply/*<R>*/(Function2/*<T1, T2, R>*/ f) => f(value1, value2);
-  Tuple2/*<NT1, T2>*/ map1/*<NT1>*/(Function1/*<T1, NT1>*/ f) => new Tuple2(f(value1), value2);
-  Tuple2/*<T1, NT2>*/ map2/*<NT2>*/(Function1/*<T2, NT2>*/ f) => new Tuple2(value1, f(value2));
+  Tuple2/*<NT1, T2>*/ map1/*<NT1>*/(Function1/*<T1, NT1>*/ f) => new Tuple2/*<NT1, T2>*/(f(value1), value2);
+  Tuple2/*<T1, NT2>*/ map2/*<NT2>*/(Function1/*<T2, NT2>*/ f) => new Tuple2/*<T1, NT2>*/(value1, f(value2));
   @override String toString() => '($value1, $value2)';
   @override bool operator ==(other) => other is Tuple2 && other.value1 == value1 && other.value2 == value2;
 }

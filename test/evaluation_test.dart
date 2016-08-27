@@ -8,7 +8,7 @@ void main() {
   //final qc = new QuickCheck(maxSize: 300, seed: 42);
 
   test("demo", () async {
-    final M = new EvaluationMonad(tuple2Monoid(IListMi, StringMi));
+    final EvaluationMonad M = new EvaluationMonad(tuple2Monoid(IListMi, StringMi));
 
     final Evaluation inc =
         M.get() >= ((oldState) {

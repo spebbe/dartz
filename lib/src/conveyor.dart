@@ -181,7 +181,7 @@ class Source {
   static IList/*<O>*/ toIList/*<O>*/(Conveyor<Nowhere, dynamic/*=O*/> s) => materialize/*<IList, O>*/(s, IListMP) as dynamic/*=IList<O>*/;
 
   static Conveyor<Task, dynamic/*=A*/> fromStream/*<A>*/(Stream/*<A>*/ s) => Source.resource(Task.delay(() => new StreamIterator(s)),
-      (StreamIterator/*<A>*/ it) => Source.eval(new Task(it.moveNext)).repeat().takeWhile(id).flatMap((_) => Source.eval(Task.delay(() => it.current))),
+      (StreamIterator/*<A>*/ it) => Source.eval/*<Task, bool>*/(new Task(it.moveNext)).repeat().takeWhile(id).flatMap((_) => Source.eval(Task.delay(() => it.current))),
       (StreamIterator/*<A>*/ it) => Source.eval_(new Task(() => new Future.value(unit).then((_) => it.cancel()))));
 }
 
@@ -200,7 +200,7 @@ class Pipe {
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> identity/*<I>*/() => lift(id);
 
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume((/*=I*/ i) => produce(f(i))).repeat();
+  static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume/*<I, O>*/((i) => produce(f(i))).repeat();
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> take/*<I>*/(int n) => n <= 0 ? halt() : consume((i) => produce(i, take/*<I>*/(n-1)));
 

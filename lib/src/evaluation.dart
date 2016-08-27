@@ -9,13 +9,13 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
   Evaluation(this._W, this._run);
 
   Evaluation<E, R, W, S, dynamic/*=B*/> pure/*<B>*/(/*=B*/ b) {
-    return new Evaluation(_W, (r, s) {
+    return new Evaluation/*<E, R, W, S, B>*/(_W, (r, s) {
       return new Future.value(new Right(new Tuple3(_W.zero(), s, b)));
     });
   }
 
   Evaluation<E, R, W, S, dynamic/*=B*/> map/*<B>*/(/*=B*/ f(A a)) {
-    return new Evaluation(_W, (r, s) {
+    return new Evaluation/*<E, R, W, S, B>*/(_W, (r, s) {
       return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
         return leftOrRight.map((t) => new Tuple3(t.value1, t.value2, f(t.value3)));
       });
@@ -23,7 +23,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
   }
 
   Evaluation<E, R, W, S, dynamic/*=B*/> bind/*<B>*/(Evaluation<E, R, W, S, dynamic/*=B*/> f(A a)) {
-    return new Evaluation(_W, (r, s) {
+    return new Evaluation/*<E, R, W, S, B>*/(_W, (r, s) {
       return new Future.microtask(() {
         return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
           return leftOrRight.fold((e) => new Future.value(new Left(e)), (t) {

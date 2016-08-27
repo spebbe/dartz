@@ -7,6 +7,13 @@ import 'dart:async';
 // Technique: Instantiate EvaluationMonad using types for either, reader, writer and state, as well as a monoid for the writer type
 final EvaluationMonad<String, IVector<String>, IVector<String>, int> MockM = new EvaluationMonad(ivectorMi());
 
+class _MockFile implements FileRef {
+  final String path;
+  _MockFile(this.path);
+  @override Future<Unit> close() => new Future.value(unit);
+  @override Future<IList<int>> read(int byteCount) => new Future.value(nil());
+}
+
 // Technique: Interpret Free monad into Evaluation
 Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpreter(IOOp io) {
   if (io is Readln) {
@@ -21,11 +28,19 @@ Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpr
     return io.fa.foldMap/*<Evaluation, Evaluation<String, IVector<String>, IVector<String>, int, dynamic>>*/(MockM, mockIOInterpreter).map(right).handleError((e) => MockM.pure(left(e)));
 
   } else if (io is Fail) {
-    return MockM.raiseError(io.failure);
+    return MockM.raiseError(io.failure.toString());
+
+  } else if (io is OpenFile) {
+    return MockM.pure(new _MockFile(io.path));
+
+  } else if (io is CloseFile) {
+    return MockM.liftFuture(io.file.close());
+
+  } else if (io is ReadBytes) {
+    return MockM.liftFuture(io.file.read(io.byteCount));
 
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
-
   }
 }
 

@@ -1,7 +1,6 @@
 library streaming_io_utils;
 
 import 'package:dartz/dartz.dart';
-import 'dart:io';
 import 'dart:async';
 import '../free_io/io.dart';
 import '../free_io/console_io.dart';
@@ -13,13 +12,13 @@ Future<Either<Object, IList/*<A>*/>> dump/*<A>*/(Conveyor<Free<IOOp, dynamic>, S
 // Note: Just a basic implementation!!! Assumes Latin-1 encoding, not super efficient, naively buffers extremely long lines, etc...
 Conveyor<Free<IOOp, dynamic>, String> fileLines(String path) => Source.resource(
     println("\n*** opening $path ***") >> openFile(path),
-    (RandomAccessFile file) =>
-        Source.eval(readBytes(file, 4096))
+    (FileRef file) =>
+        Source.eval/*<Free<IOOp, dynamic>, IList<int>>*/(readBytes(file, 4096))
             .repeat()
-            .takeWhile((byte) => byte.isNotEmpty)
-            .map(LATIN1.decode)
+            .takeWhile((bytes) => bytes != nil())
+            .map((bytes) => LATIN1.decode(bytes.toList()))
             .pipe(bufferLines),
-    (RandomAccessFile file) =>
+    (FileRef file) =>
         Source.eval_(println("*** closing $path ***") >> closeFile(file)));
 
 Conveyor<From<String>, String> _bufferLines(Option<String> spill) =>
@@ -31,9 +30,9 @@ Conveyor<From<String>, String> _bufferLines(Option<String> spill) =>
       );
     }, () => spill.fold(Pipe.halt, Pipe.produce));
 
-Conveyor<From<String>, String> bufferLines = _bufferLines(none()).repeat();
+final Conveyor<From<String>, String> bufferLines = _bufferLines(none());
 
-final toUppercase = Pipe.lift((String s) => s.toUpperCase());
+final Conveyor<From<String>, String> toUppercase = Pipe.lift((String s) => s.toUpperCase());
 
 Conveyor<From/*<A>*/, dynamic/*=A*/> skipDuplicates/*<A>*/([Eq/*<A>*/ _eq]) {
   final Eq/*<A>*/ eq = _eq ?? ObjectEq;

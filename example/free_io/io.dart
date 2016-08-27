@@ -1,7 +1,7 @@
 library free_io_io;
 
 import 'package:dartz/dartz.dart';
-import 'dart:io';
+import 'dart:async';
 
 // Technique: Lift ADT into Free monad using liftF
 abstract class IOOp<A> {}
@@ -15,24 +15,28 @@ class Println extends IOOp<Unit> {
 }
 Free<IOOp, Unit> println(String s) => liftF(new Println(s));
 
-class OpenFile extends IOOp<RandomAccessFile> {
+abstract class FileRef {
+  Future<Unit> close();
+  Future<IList<int>> read(int byteCount);
+}
+class OpenFile extends IOOp<FileRef> {
   final String path;
   OpenFile(this.path);
 }
-Free<IOOp, RandomAccessFile> openFile(String path) => liftF(new OpenFile(path));
+Free<IOOp, FileRef> openFile(String path) => liftF(new OpenFile(path));
 
 class ReadBytes extends IOOp<IList<int>> {
-  final RandomAccessFile file;
+  final FileRef file;
   final int byteCount;
   ReadBytes(this.file, this.byteCount);
 }
-Free<IOOp, IList<int>> readBytes(RandomAccessFile file, int byteCount) => liftF(new ReadBytes(file, byteCount));
+Free<IOOp, IList<int>> readBytes(FileRef file, int byteCount) => liftF(new ReadBytes(file, byteCount));
 
 class CloseFile extends IOOp<Unit> {
-  final RandomAccessFile file;
+  final FileRef file;
   CloseFile(this.file);
 }
-Free<IOOp, Unit> closeFile(RandomAccessFile file) => liftF(new CloseFile(file));
+Free<IOOp, Unit> closeFile(FileRef file) => liftF(new CloseFile(file));
 
 class Attempt<A> extends IOOp<Either<Object, A>> {
   final Free<IOOp, A> fa;

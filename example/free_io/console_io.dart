@@ -5,6 +5,13 @@ import 'io.dart';
 import 'dart:io';
 import 'dart:async';
 
+class _RandomAccessFileRef implements FileRef {
+  final RandomAccessFile _f;
+  _RandomAccessFileRef(this._f);
+  @override Future<Unit> close() => _f.close().then((_) => unit);
+  @override Future<IList<int>> read(int byteCount) => _f.read(byteCount).then(ilist);
+}
+
 // Technique: Express Free monad using side effects through the console
 Future consoleIOInterpreter(IOOp io) {
   if (io is Readln) {
@@ -21,7 +28,7 @@ Future consoleIOInterpreter(IOOp io) {
     return new Future.error(io.failure);
 
   } else if (io is OpenFile) {
-    return new File(io.path).open();
+    return new File(io.path).open().then((f) => new _RandomAccessFileRef(f));
 
   } else if (io is CloseFile) {
     return io.file.close();

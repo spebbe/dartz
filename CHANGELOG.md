@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.2
+
+- Updated for the improvements to strong mode in Dart 1.19.0
+- Fully mockable IO type and other cleanups in examples
+
 ## 0.3.1
 
 - Renamed Conveyor primitives (await -> consume, emit -> produce)

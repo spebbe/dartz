@@ -47,10 +47,7 @@ class HuffmanCodec {
       // Technique: Folding an IMap into an AVLTree of leaf nodes, for use as a priority queue
       final AVLTree<_HuffmanNode> leafNodes = characterFrequencies
           .foldLeftKV(new AVLTree(_HuffmanNode.order, emptyAVLNode()), (t, char, freq) => t.insert(new _LeafHuffmanNode(freq, char)));
-      return _buildTree(leafNodes).map((tree) {
-        final codeBook = _buildCodeBook(tree);
-        return new HuffmanCodec._internal(tree, codeBook);
-      });
+      return _buildTree(leafNodes).map((tree) => new HuffmanCodec._internal(tree, _buildCodeBook(tree)));
     }
   }
 
@@ -59,8 +56,8 @@ class HuffmanCodec {
   static Option<_HuffmanNode> _buildTree(AVLTree<_HuffmanNode> nodes) => nodes.min().map((l) {
     final withoutL = nodes.remove(l);
     return withoutL.min().bind((r) {
-      final withoutR = withoutL.remove(r);
-      return _buildTree(withoutR.insert(new _InternalHuffmanNode(l.frequency+r.frequency, l.char+r.char, l, r)));
+      final withoutLR = withoutL.remove(r);
+      return _buildTree(withoutLR.insert(new _InternalHuffmanNode(l.frequency+r.frequency, l.char+r.char, l, r)));
     }) | l;
   });
 
@@ -68,7 +65,7 @@ class HuffmanCodec {
   static IMap<String, IList<Bit>> _buildCodeBook(_HuffmanNode tree) {
     IMap<String, IList<Bit>> buildCodes(_HuffmanNode node, IMap<String, IList<Bit>> codes, IList<Bit> code) => node.fold(
         (internalNode) {
-          final leftCodes =  buildCodes(internalNode.left, codes, cons(Bit.ZERO, code));
+          final leftCodes = buildCodes(internalNode.left, codes, cons(Bit.ZERO, code));
           return buildCodes(internalNode.right, leftCodes, cons(Bit.ONE, code));
         }, (leafNode) {
           return codes.put(leafNode.char, code.reverse());
@@ -83,16 +80,16 @@ class HuffmanCodec {
   // Technique: Deep recursion without fear, using Trampoline primitives tcall and treturn
   // Technique: IList destructuring using uncons
   String decode(IList<Bit> compressed) {
-    Trampoline<String> loop(_HuffmanNode tree, _HuffmanNode current, IList<Bit> compressed, String decompressed) => current.fold(
+    Trampoline<String> loop(_HuffmanNode current, IList<Bit> compressed, String decompressed) => current.fold(
         (internalNode) =>
             compressed.uncons(() => treturn(decompressed), (bit, bits) {
               final nextNode = (bit == Bit.ONE ? internalNode.right : internalNode.left);
-              return tcall(() => loop(tree, nextNode, bits, decompressed));
+              return tcall(() => loop(nextNode, bits, decompressed));
             })
         , (leafNode) =>
-            tcall(() => loop(tree, tree, compressed, decompressed+leafNode.char))
+            tcall(() => loop(_tree, compressed, decompressed+leafNode.char))
     );
-    return loop(_tree, _tree, compressed, "").run();
+    return loop(_tree, compressed, "").run();
   }
 
 }

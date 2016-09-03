@@ -5,6 +5,9 @@ part of dartz;
   Design similar to the "Process" construct from chapter 15 of "Functional Programming in Scala" by Paul Chiusano and Rúnar Bjarnason.
  */
 
+typedef Conveyor<F, Unit> SinkF<F, O>(O o);
+typedef Conveyor<F, O> ChannelF<F, I, O>(I i);
+
 abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> with ApplicativeOps<Conveyor/*<F, dynamic>*/, O>, ApplicativePlusOps<Conveyor/*<F, dynamic>*/, O>, MonadOps<Conveyor/*<F, dynamic>*/, O>, MonadPlusOps<Conveyor/*<F, dynamic>*/, O> {
 
   /*=A*/ interpret/*<A>*/(/*=A*/ ifProduce(O head, Conveyor<F, O> tail), /*=A*/ ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), /*=A*/ ifHalt(Object err));
@@ -77,15 +80,15 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
           halt);
 
 
-  Conveyor<F, dynamic/*=O2*/> pipe/*<O2>*/(Conveyor<From<O>, dynamic/*=O2*/> p2) =>
-      p2.interpret((h, t) => produce(h, pipe /*<O2>*/(t)),
+  Conveyor<F, dynamic/*=O2*/> pipe/*<O2>*/(Conveyor<From<O>, dynamic/*=O2*/> c2) =>
+      c2.interpret((h, t) => produce(h, pipe /*<O2>*/(t)),
           (req, recv) =>
               this.interpret((h, t) => t.pipe/*<O2>*/(Try(() => recv(right(h)))),
-                  (req0, recv0) => consume/*<F, O, O2>*/(req0, (ea) => recv0(ea).pipe /*<O2>*/(p2)),
-                  (err) => halt/*<F, O2>*/(err)),
+                  (req0, recv0) => consume/*<F, O, O2>*/(req0, (ea) => recv0(ea).pipe /*<O2>*/(c2)),
+                  (err) => halt/*<F, O>*/(err).pipe/*<O2>*/(recv(left(err)))),
           (err) => kill/*<O2>*/().onHalt((err2) => halt/*<F, O2>*/(err).plus(halt(err2))));
 
-  Conveyor<F, dynamic> operator |(Conveyor<From<O>, dynamic> p2) => pipe(p2);
+  Conveyor<F, dynamic> operator |(Conveyor<From<O>, dynamic> c2) => pipe(c2);
 
   Conveyor<F, O> lastOr(O o) =>
       interpret((h, t) => t.lastOr(h),
@@ -109,8 +112,6 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, O> dropWhile(bool f(O o)) => pipe(Pipe.dropWhile(f));
 
   Conveyor<F, O> filter(bool f(O o)) => pipe(Pipe.filter(f));
-
-  Conveyor<F, Unit> sink(F f(O o)) => flatMap(composeF(Source.eval_, f));
 
   Conveyor<F, dynamic/*=O2*/> fold/*<O2>*/(/*=O2*/ z, Function2/*<O2, O, O2>*/ f) => pipe(Pipe.scan(z, f)).lastOr(z);
 
@@ -136,6 +137,10 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, Tuple2/*<O, O2>*/> zip/*<O2>*/(Conveyor<F, dynamic/*=O2*/> c2) => tee(c2, Tee.zip());
 
   Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
+
+  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap(id);
+
+  Conveyor<F, dynamic/*=O2*/> through/*<O2>*/(Conveyor<F, ChannelF<F, O, dynamic/*=O2*/>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(id);
 }
 
 class _Produce<F, O> extends Conveyor<F, O> {

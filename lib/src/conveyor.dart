@@ -116,6 +116,24 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> concatenate(Monoid<O> monoid) => pipe(Pipe.scan(monoid.zero(), monoid.append)).lastOr(monoid.zero());
 
+  Conveyor<F, dynamic/*=O3*/> tee/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Conveyor/*<Both<O, O2>, O3>*/ t) => t.interpret/*<Conveyor<F, O3>>*/(
+      (h, t) => produce/*<F, O3>*/(h, tee/*<O2, O3>*/(c2, t))
+      ,(side, recv) => side == Tee._getL
+          ? interpret/*<Conveyor<F, O3>>*/(
+          (o, ot) => ot.tee/*<O2, O3>*/(c2, Try(() => recv(right(o))))
+          ,(reqL, recvL) => consume(reqL, (ea) => recvL(ea).tee/*<O2, O3>*/(c2, t))
+          ,(e) => c2.kill/*<O3>*/().onComplete(() => halt(e)))
+          : c2.interpret/*<Conveyor<F, O3>>*/(
+          (o2, ot) => tee/*<O2, O3>*/(ot, Try(() => recv(right(o2))))
+          ,(reqR, recvR) => consume(reqR, (ea) => tee/*<O2, O3>*/(recvR(ea), t))
+          ,(e) => kill/*<O3>*/().onComplete(() => halt(e)))
+      ,(e) => kill/*<O3>*/().onComplete(() => c2.kill/*<O3>*/().onComplete(() => halt(e))));
+
+  Conveyor<F, dynamic/*=O3*/> zipWith/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Function2/*<O, O2, O3>*/ f) => tee(c2, Tee.zipWith(f));
+
+  Conveyor<F, Tuple2/*<O, O2>*/> zip/*<O2>*/(Conveyor<F, dynamic/*=O2*/> c2) => tee(c2, Tee.zip());
+
+  Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
 }
 
 class _Produce<F, O> extends Conveyor<F, O> {
@@ -194,7 +212,9 @@ class Pipe {
       Conveyor.produce(h, t);
 
   static Conveyor<From/*<I>*/, dynamic/*=O*/> consume/*<I, O>*/(Function1/*<I, Conveyor<From<I>, O>>*/ recv, [Function0/*<Conveyor<From<I>, O>>*/ fallback]) =>
-      Conveyor.consume(_get as dynamic/*=From<I>*/, (ea) => ea.fold((err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err), (/*=I*/ i) => Conveyor.Try(() => recv(i))));
+      Conveyor.consume(_get as dynamic/*=From<I>*/, (ea) => ea.fold(
+          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
+          ,(/*=I*/ i) => Conveyor.Try(() => recv(i))));
 
   static Conveyor<From/*<I>*/, dynamic/*=O*/> halt/*<I, O>*/() => Conveyor.halt(Conveyor.End);
 
@@ -219,6 +239,35 @@ class Pipe {
     });
     return go(z);
   }
+
+class Both<L, R> {}
+
+class Tee {
+  static final Both _getL = new Both();
+  static final Both _getR = new Both();
+
+  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> produce/*<L, R, O>*/(/*=O*/ h, [Conveyor<Both/*<L, R>*/, dynamic/*=O*/> t]) => Conveyor.produce(h, t);
+
+  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> consumeL/*<L, R, O>*/(Function1/*<L, Conveyor<Both<L, R>, O>>*/ recv, [Function0/*<Conveyor<Both<L, R>, O>>*/ fallback]) =>
+      Conveyor.consume/*<Both<L, R>, L, O>*/(_getL as dynamic/*=Both<L, R>*/, (ea) => ea.fold(
+          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
+          ,(/*=L*/ l) => Conveyor.Try(() => recv(l))));
+
+  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> consumeR/*<L, R, O>*/(Function1/*<R, Conveyor<Both<L, R>, O>>*/ recv, [Function0/*<Conveyor<Both<L, R>, O>>*/ fallback]) =>
+      Conveyor.consume/*<Both<L, R>, R, O>*/(_getR as dynamic/*=Both<L, R>*/, (ea) => ea.fold(
+          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
+          ,(/*=R*/ r) => Conveyor.Try(() => recv(r))));
+
+  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> halt/*<L, R, O>*/() => Conveyor.halt(Conveyor.End);
+
+  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> zipWith/*<L, R, O>*/(Function2/*<L, R, O>*/ f) =>
+      consumeL/*<L, R, O>*/((/*=L*/ l) => consumeR((/*=R*/ r) => produce(f(l, r)))).repeat();
+
+  static Conveyor<Both/*<L, R>*/, Tuple2/*<L, R>*/> zip/*<L, R>*/() => zipWith(tuple2);
+
+  static Conveyor<Both/*<I, I>*/, dynamic/*=I*/> interleave/*<I>*/() =>
+      consumeL/*<I, I, I>*/((/*=I*/ i1) => consumeR((/*=I*/ i2) => produce(i1, produce(i2)))).repeat();
+
 }
 
 final MonadPlus<Conveyor> ConveyorMP = new MonadPlusOpsMonadPlus<Conveyor>((a) => Conveyor.produce(a), () => Conveyor.halt(Conveyor.End));

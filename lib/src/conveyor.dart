@@ -116,6 +116,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> concatenate(Monoid<O> monoid) => pipe(Pipe.scan(monoid.zero(), monoid.append)).lastOr(monoid.zero());
 
+  Conveyor<F, O> intersperse(O sep) => pipe(Pipe.intersperse(sep));
+
   Conveyor<F, dynamic/*=O3*/> tee/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Conveyor/*<Both<O, O2>, O3>*/ t) => t.interpret/*<Conveyor<F, O3>>*/(
       (h, t) => produce/*<F, O3>*/(h, tee/*<O2, O3>*/(c2, t))
       ,(side, recv) => side == Tee._getL
@@ -239,6 +241,9 @@ class Pipe {
     });
     return go(z);
   }
+
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> intersperse/*<I>*/(/*=I*/ sep) => Pipe.consume/*<I, I>*/((i) => Pipe.produce(i, Pipe.produce(sep))).repeat();
+}
 
 class Both<L, R> {}
 

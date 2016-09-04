@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.3
+
+- Tee construct for combining Conveyors
+- tee, zip, zipWith, interleave, intersperse and constant operations on Conveyor
+- through and to operations for effectful sinks and channels on Conveyor
+- Moved Free IO algebra back into library
+- Extracted side effecting IO interpreter into "unsafe" mini library
+
 ## 0.3.2
 
 - Updated for the improvements to strong mode in Dart 1.19.0

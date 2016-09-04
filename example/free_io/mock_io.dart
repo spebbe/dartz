@@ -1,7 +1,6 @@
 library free_io_mock_io;
 
 import 'package:dartz/dartz.dart';
-import 'io.dart';
 import 'dart:async';
 
 // Technique: Instantiate EvaluationMonad using types for either, reader, writer and state, as well as a monoid for the writer type
@@ -12,6 +11,7 @@ class _MockFile implements FileRef {
   _MockFile(this.path);
   @override Future<Unit> close() => new Future.value(unit);
   @override Future<IList<int>> read(int byteCount) => new Future.value(nil());
+  @override Future<Unit> write(IList<int> bytes) => new Future.value(unit);
 }
 
 // Technique: Interpret Free monad into Evaluation
@@ -38,6 +38,9 @@ Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpr
 
   } else if (io is ReadBytes) {
     return MockM.liftFuture(io.file.read(io.byteCount));
+
+  } else if (io is WriteBytes) {
+    return MockM.liftFuture(io.file.write(io.bytes));
 
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");

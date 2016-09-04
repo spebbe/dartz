@@ -13,7 +13,7 @@ main() async {
   // 3, 4. Finds single line comments and removes consecutive duplicates
   // 3, 4. Finds single line comments and removes consecutive duplicates
   // 5. Stops after five comments are consumed
-  final firstFiveCommentsInThisFile = fileLines(pathToThisFile)
+  final firstFiveCommentsInThisFile = fileLineReader(pathToThisFile)
       .map((line) => line.trim())
       .filter((line) => line.startsWith("//"))
       .pipe(skipDuplicates())
@@ -23,12 +23,11 @@ main() async {
   // since the Conveyor finishes as soon as the fifth comment is consumed.
   // The file will be closed as soon as the Conveyor finishes.
 
-  await dump(firstFiveCommentsInThisFile);
+  await unsafeConveyIO(firstFiveCommentsInThisFile.to(stdoutSink));
 
   // Conveyors are pure values, and can safely be reused:
-  await dump(firstFiveCommentsInThisFile);
+  await unsafeConveyIO(firstFiveCommentsInThisFile.to(stdoutSink));
 
   // ...and composed further:
-  await dump(firstFiveCommentsInThisFile.pipe(toUppercase));
-
+  await unsafeConveyIO(firstFiveCommentsInThisFile.pipe(toUppercase).to(stdoutSink));
 }

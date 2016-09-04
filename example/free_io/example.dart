@@ -1,9 +1,8 @@
 library free_io_example;
 
 import 'package:dartz/dartz.dart';
-import 'io.dart';
-import 'console_io.dart';
 import 'mock_io.dart';
+import 'package:dartz/dartz_unsafe.dart';
 
 // Technique: Construct referentially transparent program using monadic sequencing.
 //            The resulting program is a pure value and doesn't have any knowledge of

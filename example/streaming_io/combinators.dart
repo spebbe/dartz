@@ -1,17 +1,18 @@
 library streaming_io_utils;
 
 import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz_unsafe.dart';
 import 'dart:async';
-import '../free_io/io.dart';
-import '../free_io/console_io.dart';
 import 'dart:convert';
 
-Future<Either<Object, IList/*<A>*/>> dump/*<A>*/(Conveyor<Free<IOOp, dynamic>, String> conveyor) =>
-    unsafePerformIO/*<Either<Object, IList<A>>>*/(IOM.attempt(conveyor.sink(println).runLog(IOM)));
+final Conveyor<Free<IOOp, dynamic>, SinkF<Free<IOOp, dynamic>, String>> stdoutSink = Source.constant(IOM, (String s) => Source.eval_(println(s)));
+
+Future<Either<Object, IList/*<A>*/>> unsafeConveyIO/*<A>*/(Conveyor<Free<IOOp, dynamic>, dynamic/*=A*/> conveyor) =>
+    unsafePerformIO/*<Either<Object, IList<A>>>*/(IOM.attempt(conveyor.runLog(IOM)));
 
 // Note: Just a basic implementation!!! Assumes Latin-1 encoding, not super efficient, naively buffers extremely long lines, etc...
-Conveyor<Free<IOOp, dynamic>, String> fileLines(String path) => Source.resource(
-    println("\n*** opening $path ***") >> openFile(path),
+Conveyor<Free<IOOp, dynamic>, String> fileLineReader(String path) => Source.resource(
+    openFile(path, true) << println("\n*** opened $path ***"),
     (FileRef file) =>
         Source.eval/*<Free<IOOp, dynamic>, IList<int>>*/(readBytes(file, 4096))
             .repeat()
@@ -19,7 +20,20 @@ Conveyor<Free<IOOp, dynamic>, String> fileLines(String path) => Source.resource(
             .map((bytes) => LATIN1.decode(bytes.toList()))
             .pipe(bufferLines),
     (FileRef file) =>
-        Source.eval_(println("*** closing $path ***") >> closeFile(file)));
+        Source.eval_(closeFile(file) << println("*** closed $path ***")));
+
+Conveyor<Free<IOOp, dynamic>, SinkF<Free<IOOp, dynamic>, String>> fileWriter(String path) => Source.resource(
+    openFile(path, false) << println("*** opened $path for writing ***"),
+    (FileRef file) => Source.constant(IOM, (String s) => Source.eval_(writeBytes(file, ilist(LATIN1.encode(s))))),
+    (FileRef file) => Source.eval_(closeFile(file) << println("*** closed $path for writing ***")));
+
+Conveyor/*<From<A>, A>*/ chunk/*<A>*/(Monoid/*<A>*/ monoid, int chunkSize) {
+  Conveyor/*<From<A>, A>*/ go(int n, /*=A*/ sofar) =>
+      Pipe.consume(
+          (a) => n > 1 ? go(n-1, monoid.append(sofar, a)) : Pipe.produce(monoid.append(sofar, a), go(chunkSize, monoid.zero()))
+          ,() => sofar == monoid.zero() ? Pipe.halt() : Pipe.produce(sofar));
+  return go(chunkSize, monoid.zero());
+}
 
 Conveyor<From<String>, String> _bufferLines(Option<String> spill) =>
     Pipe.consume((s) {

@@ -1,19 +1,14 @@
-library free_io_console_io;
-
-import 'package:dartz/dartz.dart';
-import 'io.dart';
-import 'dart:io';
-import 'dart:async';
+part of dartz_unsafe;
 
 class _RandomAccessFileRef implements FileRef {
   final RandomAccessFile _f;
   _RandomAccessFileRef(this._f);
   @override Future<Unit> close() => _f.close().then((_) => unit);
   @override Future<IList<int>> read(int byteCount) => _f.read(byteCount).then(ilist);
+  @override Future<Unit> write(IList<int> bytes) => _f.writeFrom(bytes.toList()).then((_) => unit);
 }
 
-// Technique: Express Free monad using side effects through the console
-Future consoleIOInterpreter(IOOp io) {
+Future _consoleIOInterpreter(IOOp io) {
   if (io is Readln) {
     return new Future.value(stdin.readLineSync());
 
@@ -28,7 +23,7 @@ Future consoleIOInterpreter(IOOp io) {
     return new Future.error(io.failure);
 
   } else if (io is OpenFile) {
-    return new File(io.path).open().then((f) => new _RandomAccessFileRef(f));
+    return new File(io.path).open(mode: io.openForRead ? FileMode.READ : FileMode.WRITE).then((f) => new _RandomAccessFileRef(f));
 
   } else if (io is CloseFile) {
     return io.file.close();
@@ -36,9 +31,12 @@ Future consoleIOInterpreter(IOOp io) {
   } else if (io is ReadBytes) {
     return io.file.read(io.byteCount);
 
+  } else if (io is WriteBytes) {
+    return io.file.write(io.bytes);
+
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");
   }
 }
-// Technique: Interpret Free monad using Future monad, to allow for asynchronous side effecting operations
-Future/*<A>*/ unsafePerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io) => io.foldMap(FutureM, consoleIOInterpreter);
+
+Future/*<A>*/ unsafePerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io) => io.foldMap(FutureM, _consoleIOInterpreter);

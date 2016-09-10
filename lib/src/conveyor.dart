@@ -61,6 +61,11 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> repeat() => lazyPlus(repeat);
 
+  Conveyor<F, O> repeatNotEmpty() =>
+      interpret((h, t) => produce(h, t.lazyPlus(repeatNotEmpty)),
+          (req, recv) => consume(req, (ea) => ea.fold((l) => recv(left(l)), (r) => recv(right(r)).lazyPlus(repeatNotEmpty))),
+          halt);
+
   F/*=FLA*/ runLog/*<FLA extends F>*/(MonadCatch<F> monadCatch) {
     F go(Conveyor<F, O> cur, IList<O> acc) =>
         cur.interpret((h, t) => go(t, cons(h, acc)),
@@ -229,7 +234,7 @@ class Pipe {
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> identity/*<I>*/() => lift(id);
 
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume/*<I, O>*/((i) => produce(f(i))).repeat();
+  static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume/*<I, O>*/((i) => produce(f(i))).repeatNotEmpty();
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> take/*<I>*/(int n) => n <= 0 ? halt() : consume((i) => produce(i, take/*<I>*/(n-1)));
 
@@ -239,7 +244,7 @@ class Pipe {
 
   static Conveyor<From/*<I>*/, dynamic/*=I*/> dropWhile/*<I>*/(bool f(/*=I*/ i)) => consume((i) => f(i) ? dropWhile/*<I>*/(f) : identity());
 
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> filter/*<I>*/(bool f(/*=I*/ i)) => consume/*<I, I>*/((i) => f(i) ? produce(i) : halt()).repeat();
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> filter/*<I>*/(bool f(/*=I*/ i)) => consume/*<I, I>*/((i) => f(i) ? produce(i) : halt()).repeatNotEmpty();
 
   static Conveyor<From/*<I>*/, dynamic/*=O*/> scan/*<I, O>*/(/*=O*/ z, Function2/*<O, I, O>*/ f) {
     Conveyor/*<From<I>, O>*/ go(/*=O*/ previous) => consume((/*=I*/ i) {
@@ -249,7 +254,7 @@ class Pipe {
     return go(z);
   }
 
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> intersperse/*<I>*/(/*=I*/ sep) => Pipe.consume/*<I, I>*/((i) => Pipe.produce(i, Pipe.produce(sep))).repeat();
+  static Conveyor<From/*<I>*/, dynamic/*=I*/> intersperse/*<I>*/(/*=I*/ sep) => Pipe.consume/*<I, I>*/((i) => Pipe.produce(i, Pipe.produce(sep))).repeatNotEmpty();
 }
 
 class Both<L, R> {}
@@ -273,12 +278,12 @@ class Tee {
   static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> halt/*<L, R, O>*/() => Conveyor.halt(Conveyor.End);
 
   static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> zipWith/*<L, R, O>*/(Function2/*<L, R, O>*/ f) =>
-      consumeL/*<L, R, O>*/((/*=L*/ l) => consumeR((/*=R*/ r) => produce(f(l, r)))).repeat();
+      consumeL/*<L, R, O>*/((/*=L*/ l) => consumeR((/*=R*/ r) => produce(f(l, r)))).repeatNotEmpty();
 
   static Conveyor<Both/*<L, R>*/, Tuple2/*<L, R>*/> zip/*<L, R>*/() => zipWith(tuple2);
 
   static Conveyor<Both/*<I, I>*/, dynamic/*=I*/> interleave/*<I>*/() =>
-      consumeL/*<I, I, I>*/((/*=I*/ i1) => consumeR((/*=I*/ i2) => produce(i1, produce(i2)))).repeat();
+      consumeL/*<I, I, I>*/((/*=I*/ i1) => consumeR((/*=I*/ i2) => produce(i1, produce(i2)))).repeatNotEmpty();
 
 }
 

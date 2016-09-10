@@ -3,10 +3,9 @@ part of dartz_unsafe;
 class _RandomAccessFileRef implements FileRef {
   final RandomAccessFile _f;
   _RandomAccessFileRef(this._f);
-  @override Future<Unit> close() => _f.close().then((_) => unit);
-  @override Future<IList<int>> read(int byteCount) => _f.read(byteCount).then(ilist);
-  @override Future<Unit> write(IList<int> bytes) => _f.writeFrom(bytes.toList()).then((_) => unit);
 }
+
+Future<RandomAccessFile> unwrapFileRef(FileRef ref) => ref is _RandomAccessFileRef ? new Future.value(ref._f) : new Future.error("Not a valid FileRef: $ref");
 
 Future _consoleIOInterpreter(IOOp io) {
   if (io is Readln) {
@@ -26,13 +25,13 @@ Future _consoleIOInterpreter(IOOp io) {
     return new File(io.path).open(mode: io.openForRead ? FileMode.READ : FileMode.WRITE).then((f) => new _RandomAccessFileRef(f));
 
   } else if (io is CloseFile) {
-    return io.file.close();
+    return unwrapFileRef(io.file).then((f) => f.close().then((_) => unit));
 
   } else if (io is ReadBytes) {
-    return io.file.read(io.byteCount);
+    return unwrapFileRef(io.file).then((f) => f.read(io.byteCount).then(ilist));
 
   } else if (io is WriteBytes) {
-    return io.file.write(io.bytes);
+    return unwrapFileRef(io.file).then((f) => f.writeFrom(io.bytes.toList()).then((_) => unit));
 
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");

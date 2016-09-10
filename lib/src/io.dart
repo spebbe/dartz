@@ -11,11 +11,7 @@ class Println extends IOOp<Unit> {
 }
 Free<IOOp, Unit> println(String s) => liftF(new Println(s));
 
-abstract class FileRef {
-  Future<Unit> close();
-  Future<IList<int>> read(int byteCount);
-  Future<Unit> write(IList<int> bytes);
-}
+abstract class FileRef {}
 class OpenFile extends IOOp<FileRef> {
   final String path;
   final bool openForRead;

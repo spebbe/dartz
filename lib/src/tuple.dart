@@ -23,7 +23,7 @@ class Tuple2Semigroup<T1, T2> extends Semigroup<Tuple2<T1, T2>> {
       new Tuple2<T1, T2>(_value1Semigroup.append(t1.value1, t2.value1), _value2Semigroup.append(t1.value2, t2.value2));
 }
 
-Semigroup<Tuple2> tuple2Semigroup(Semigroup value1Semigroup, Semigroup value2Semigroup) => new Tuple2Semigroup(value1Semigroup, value2Semigroup);
+Semigroup<Tuple2/*<T1, T2>*/> tuple2Semigroup/*<T1, T2>*/(Semigroup/*<T1>*/ value1Semigroup, Semigroup/*<T2>*/ value2Semigroup) => new Tuple2Semigroup(value1Semigroup, value2Semigroup);
 
 class Tuple2Monoid<T1, T2> extends Monoid<Tuple2<T1, T2>> {
   final Monoid<T1> _value1Monoid;
@@ -37,7 +37,7 @@ class Tuple2Monoid<T1, T2> extends Monoid<Tuple2<T1, T2>> {
   @override Tuple2<T1, T2> zero() => new Tuple2<T1, T2>(_value1Monoid.zero(), _value2Monoid.zero());
 }
 
-Monoid<Tuple2> tuple2Monoid(Monoid value1Monoid, Monoid value2Monoid) => new Tuple2Monoid(value1Monoid, value2Monoid);
+Monoid<Tuple2/*<T1, T2>*/> tuple2Monoid/*<T1, T2>*/(Monoid/*<T1>*/ value1Monoid, Monoid/*<T2>*/ value2Monoid) => new Tuple2Monoid(value1Monoid, value2Monoid);
 
 class Tuple3<T1, T2, T3> {
   final T1 value1;
@@ -62,7 +62,7 @@ class Tuple3Semigroup<T1, T2, T3> extends Semigroup<Tuple3<T1, T2, T3>> {
       new Tuple3<T1, T2, T3>(_value1Semigroup.append(t1.value1, t2.value1), _value2Semigroup.append(t1.value2, t2.value2), _value3Semigroup.append(t1.value3, t2.value3));
 }
 
-Semigroup<Tuple3> tuple3Semigroup(Semigroup value1Semigroup, Semigroup value2Semigroup, Semigroup value3Semigroup) => new Tuple3Semigroup(value1Semigroup, value2Semigroup, value3Semigroup);
+Semigroup<Tuple3/*<T1, T2, T3>*/> tuple3Semigroup/*<T1, T2, T3>*/(Semigroup/*<T1>*/ value1Semigroup, Semigroup/*<T2>*/ value2Semigroup, Semigroup/*<T3>*/ value3Semigroup) => new Tuple3Semigroup(value1Semigroup, value2Semigroup, value3Semigroup);
 
 class Tuple3Monoid<T1, T2, T3> extends Monoid<Tuple3<T1, T2, T3>> {
   final Monoid<T1> _value1Monoid;
@@ -77,7 +77,7 @@ class Tuple3Monoid<T1, T2, T3> extends Monoid<Tuple3<T1, T2, T3>> {
   @override Tuple3<T1, T2, T3> zero() => new Tuple3<T1, T2, T3>(_value1Monoid.zero(), _value2Monoid.zero(), _value3Monoid.zero());
 }
 
-Monoid<Tuple3> tuple3Monoid(Monoid value1Monoid, Monoid value2Monoid, Monoid value3Monoid) => new Tuple3Monoid(value1Monoid, value2Monoid, value3Monoid);
+Monoid<Tuple3/*<T1, T2, T3>*/> tuple3Monoid/*<T1, T2, T3>*/(Monoid/*<T1>*/ value1Monoid, Monoid/*<T2>*/ value2Monoid, Monoid/*<T3>*/ value3Monoid) => new Tuple3Monoid(value1Monoid, value2Monoid, value3Monoid);
 
 
 class Tuple4<T1, T2, T3, T4> {
@@ -105,7 +105,7 @@ class Tuple4Semigroup<T1, T2, T3, T4> extends Semigroup<Tuple4<T1, T2, T3, T4>> 
       new Tuple4<T1, T2, T3, T4>(_value1Semigroup.append(t1.value1, t2.value1), _value2Semigroup.append(t1.value2, t2.value2), _value3Semigroup.append(t1.value3, t2.value3), _value4Semigroup.append(t1.value4, t2.value4));
 }
 
-Semigroup<Tuple4> tuple4Semigroup(Semigroup value1Semigroup, Semigroup value2Semigroup, Semigroup value3Semigroup, Semigroup value4Semigroup) => new Tuple4Semigroup(value1Semigroup, value2Semigroup, value3Semigroup, value4Semigroup);
+Semigroup<Tuple4/*<T1, T2, T3, T4>*/> tuple4Semigroup/*<T1, T2, T3, T4>*/(Semigroup/*<T1>*/ value1Semigroup, Semigroup/*<T2>*/ value2Semigroup, Semigroup/*<T3>*/ value3Semigroup, Semigroup/*<T4>*/ value4Semigroup) => new Tuple4Semigroup(value1Semigroup, value2Semigroup, value3Semigroup, value4Semigroup);
 
 
 class Tuple4Monoid<T1, T2, T3, T4> extends Monoid<Tuple4<T1, T2, T3, T4>> {
@@ -122,4 +122,4 @@ class Tuple4Monoid<T1, T2, T3, T4> extends Monoid<Tuple4<T1, T2, T3, T4>> {
   @override Tuple4<T1, T2, T3, T4> zero() => new Tuple4<T1, T2, T3, T4>(_value1Monoid.zero(), _value2Monoid.zero(), _value3Monoid.zero(), _value4Monoid.zero());
 }
 
-Monoid<Tuple4> tuple4Monoid(Monoid value1Monoid, Monoid value2Monoid, Monoid value3Monoid, Monoid value4Monoid) => new Tuple4Monoid(value1Monoid, value2Monoid, value3Monoid, value4Monoid);
+Monoid<Tuple4/*<T1, T2, T3, T4>*/> tuple4Monoid/*<T1, T2, T3, T4>*/(Monoid/*<T1>*/ value1Monoid, Monoid/*<T2>*/ value2Monoid, Monoid/*<T3>*/ value3Monoid, Monoid/*<T4>*/ value4Monoid) => new Tuple4Monoid(value1Monoid, value2Monoid, value3Monoid, value4Monoid);

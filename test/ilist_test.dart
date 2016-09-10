@@ -24,7 +24,7 @@ void main() {
     final IList<int> nums = ilist([743, 59, 633, 532, 744, 234, 792, 891, 178, 356]);
     Tuple4<int, int, int, int> mapper(int i) => new Tuple4(i, 1, i, i);
     final reducer = tuple4Semigroup(NumSumMi, NumSumMi, NumMinSi, NumMaxSi);
-    Tuple3<double, int, int> polish(int sum, int count, int min, int max) => new Tuple3(sum / count, min, max);
+    Tuple3<num, num, num> polish(num sum, num count, num min, num max) => new Tuple3(sum / count, min, max);
     final result = nums.foldMapO(reducer, mapper).map(tuplize4(polish));
     expect(result, some(new Tuple3(516.2, 59, 891)));
 

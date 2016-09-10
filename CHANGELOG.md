@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4
+
+- repeatNotEmpty operation for Conveyor
+- Opaque FileRefs in Free IO
+- Proper type parameterization for derived Tuple Semigroups and Monoids
+
 ## 0.3.3
 
 - Tee construct for combining Conveyors

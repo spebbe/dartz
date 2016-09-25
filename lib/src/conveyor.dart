@@ -22,7 +22,7 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, dynamic/*=B*/> pure/*<B>*/(/*=B*/ b) => produce(b);
 
   Conveyor<F, dynamic/*=O2*/> map/*<O2>*/(/*=O2*/ f(O o)) =>
-      interpret((h, t) => Try(() => produce(f(h), t.map/*<O2>*/(f))),
+      interpret((h, t) => tryOrDie(() => produce(f(h), t.map/*<O2>*/(f))),
           (req, recv) => consume(req, (ea) => recv(ea).map/*<O2>*/(f)),
           halt);
 
@@ -53,7 +53,7 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
       onHalt((err) => err == End ? f() : halt(err));
 
   Conveyor<F, dynamic/*=O2*/> flatMap/*<O2>*/(Conveyor<F, dynamic/*=O2*/> f(O o)) =>
-      interpret((h, t) => Try(() => f(h)).lazyPlus(() => t.flatMap/*<O2>*/(f)),
+      interpret((h, t) => tryOrDie(() => (f(h).onHalt((err) => err == End ? halt(End) : kill/*<O2>*/().plus(halt(err)))).lazyPlus(() => t.flatMap /*<O2>*/(f))),
           (req, recv) => consume(req, (ea) => recv(ea).flatMap/*<O2>*/(f)),
           halt);
 
@@ -105,6 +105,14 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
       return p();
     } catch (err) {
       return halt(err);
+    }
+  }
+
+  Conveyor/*<F, O2>*/ tryOrDie/*<O2>*/(Conveyor/*<F, O2>*/ p()) {
+    try {
+      return p();
+    } catch (err) {
+      return kill/*<O2>*/().onHalt((err2) => halt/*<F, O2>*/(err).plus(halt(err2)));
     }
   }
 

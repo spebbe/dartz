@@ -9,6 +9,7 @@ Functional programming in Dart
 * Evaluation, a Reader+Writer+State+Either+Future swiss army knife monad
 * Type class instances (Monoids, Traversable Functors, Monads and so on) for included types, as well as for several standard Dart types
 * Conveyor, an ultra experimental implementation of pure functional streaming
+* [Examples](https://github.com/spebbe/dartz/tree/master/example), showcasing core concepts
 
 
 ##### New to functional programming?

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.5
+
+- Improved resource safety of Conveyor primitives
+- repeatUntilExhausted, repeatNonEmpty, intsFrom, window2 and window2all operations for Conveyor
+- Corrections for stronger strong mode
+
 ## 0.3.4
 
 - repeatNotEmpty operation for Conveyor

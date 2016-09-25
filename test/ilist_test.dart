@@ -12,13 +12,13 @@ void main() {
   test("grab bag", () {
     final l = iota(3).map((i) => i + 1);
 
-    final l2 = l.flatMap((i) => new Cons(i * 2, new Cons(i * 2, Nil)));
+    final l2 = l.flatMap/*<int>*/((i) => new Cons(i * 2, new Cons(i * 2, nil())));
     expect(IListMi.append(l2, l2.reverse()), ilist([2,2,4,4,6,6,6,6,4,4,2,2]));
-    expect(l2.foldLeft(0, (a, b) => a + b), 24);
+    expect(l2.foldLeft/*<int>*/(0, (a, b) => a + b), 24);
 
     final Monad<Option<IList>> OptionIListM = new IListTMonad(OptionMP as Monad<Option<IList>>);
     final ol = some(l);
-    final stackedResult = OptionIListM.bind(ol, (i) => i % 2 == 1 ? some(new Cons("$i!", Nil)) : some(Nil));
+    final stackedResult = OptionIListM.bind(ol, (i) => i % 2 == 1 ? some(new Cons("$i!", nil/*<String>*/())) : some(Nil));
     expect(stackedResult, some(ilist(["1!", "3!"])));
 
     final IList<int> nums = ilist([743, 59, 633, 532, 744, 234, 792, 891, 178, 356]);
@@ -38,8 +38,8 @@ void main() {
     expect(IListTr.traverse(EitherM, l1, (i) => i<4 ? right(i) : left("too big")), left("too big"));
     expect(IListTr.sequence(EitherM, l1.map((i) => right(i))), right(ilist([1,2,3,4])));
 
-    expect(IListTr.foldMap(NumSumMi, l1, id), 10);
-    expect(IListTr.foldRight(l1, 0, (a, b) => a+b), 10);
+    expect(IListTr.foldMap/*<int>*/(NumSumMi, l1, id), 10);
+    expect(IListTr.foldRight/*<int>*/(l1, 0, (a, b) => a+b), 10);
 
     expect(ilist([2,4,6]).any((i) => i%2==0), true);
     expect(ilist([2,4,6]).any((i) => i%2==1), false);
@@ -98,7 +98,7 @@ void main() {
 
   test("stack safety (foldLeft)", () {
     final IList<int> massive = IdM.replicate(20000, 1);
-    expect(massive.foldLeft(0, (a,b) => a+b), 20000);
+    expect(massive.foldLeft/*<int>*/(0, (a,b) => a+b), 20000);
   });
 
   test("stack safety (foldRight)", () {

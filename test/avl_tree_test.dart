@@ -6,7 +6,7 @@ import 'laws.dart';
 
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(NumOrder, ilist(l)));
+  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(NumOrder, ilist(l as List<num>)));
 
   test("min", () {
     qc.check(forall(intTrees,

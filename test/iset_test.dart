@@ -16,7 +16,7 @@ void main() {
 
   test("deletion", () {
     qc.check(forall2(intLists, intLists, (List<int> l1, List<int> l2) {
-      final actual = l2.fold(iset(l1), (s, i) => s.remove(i)).toIList();
+      final actual = l2.fold/*<ISet<int>>*/(iset(l1), (s, i) => s.remove(i)).toIList();
       final expected = ilist(l1.where((i) => !l2.contains(i)).toSet().toList()..sort());
       return actual == expected;
     }));

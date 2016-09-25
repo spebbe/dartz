@@ -56,4 +56,4 @@ class IOMonad extends MonadOpsMonad<Free<IOOp, dynamic>> with MonadCatch<Free<IO
   @override Free<IOOp, dynamic> fail(Object err) => liftF(new Fail(err));
 }
 
-final IOM = new IOMonad();
+final IOMonad IOM = new IOMonad();

@@ -36,7 +36,7 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   F zipWithIndex() => mapWithIndex(tuple2);
 
-  @override F map/*<B>*/(/*=B*/ f(A a)) => traverse(IdM, f) as dynamic/*=F*/;
+  @override F map/*<B>*/(/*=B*/ f(A a)) => traverse/*<Object>*/(IdM, f) as dynamic/*=F*/;
 
   @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) =>
       traverse(TStateM, (a) => TStateM.modify((/*=B*/ previous) => bMonoid.append(previous, f(a)))).state(bMonoid.zero()).run() as dynamic/*=B*/;

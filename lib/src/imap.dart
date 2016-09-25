@@ -55,7 +55,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && pairs() == other.pairs());
 
-  @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", Nil)).intercalate(StringMi, ", ")}}";
+  @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", nil/*<String>*/())).intercalate(StringMi, ", ")}}";
 }
 
 IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);

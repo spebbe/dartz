@@ -49,7 +49,7 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
 
   group("traversable laws", () {
     test("identity traverse", () {
-      qc.check(forall(enumeration, (fa) => equality(T.traverse(IdM, fa, giveDollar), T.map(fa, giveDollar))));
+      qc.check(forall(enumeration, (fa) => equality(T.traverse/*<Object>*/(IdM, fa, giveDollar), T.map(fa, giveDollar))));
     });
 
     test("purity", () {

@@ -1,3 +1,4 @@
+import 'package:enumerators/enumerators.dart';
 import 'package:test/test.dart';
 import 'package:enumerators/combinators.dart' as c;
 import 'package:dartz/dartz.dart';
@@ -43,7 +44,9 @@ void main() {
 
   group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), c.ints.map(some)));
 
-  final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none());
+  final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none()) as Enumeration<Option<int>>;
 
   group("OptionTr", () => checkTraversableLaws(OptionTr, intOptions));
+
+  group("Option FoldableOps", () => checkFoldableOpsProperties(intOptions));
 }

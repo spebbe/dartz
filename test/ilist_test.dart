@@ -1,3 +1,4 @@
+import 'package:enumerators/enumerators.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:propcheck/propcheck.dart';
@@ -7,7 +8,7 @@ import 'laws.dart';
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
-  final intILists = intLists.map((l) => new IList.from(l));
+  final intILists = intLists.map((l) => new IList.from(l)) as Enumeration<IList<int>>;
 
   test("grab bag", () {
     final l = iota(3).map((i) => i + 1);
@@ -130,5 +131,7 @@ void main() {
   test("to/from iterable", () {
     qc.check(forall(intILists, (IList l) => l == new IList.from(l.toIterable())));
   });
+
+  group("IList FoldableOps", () => checkFoldableOpsProperties(intILists));
 
 }

@@ -44,6 +44,22 @@ void checkFoldableLaws(Foldable F, Enumeration enumeration, {bool equality(a, b)
   });
 }
 
+void checkFoldableOpsProperties(Enumeration<FoldableOps> enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
+  qc = qc != null ? qc : defaultQC;
+
+  group("foldable ops properties", () {
+    test("foldLeftWithIndex properties", () {
+      qc.check(forall(enumeration, (FoldableOps fa) =>
+          equality(fa.foldLeftWithIndex/*<IList<int>>*/(nil(), (p, i, _) => cons(i, p)).reverse(), iota(fa.length()))));
+    });
+
+    test("foldRightWithIndex properties", () {
+      qc.check(forall(enumeration, (FoldableOps fa) =>
+          equality(fa.foldRightWithIndex/*<IList<int>>*/(nil(), (i, _, p) => cons(i, p)), iota(fa.length()))));
+    });
+  });
+}
+
 void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
   qc = qc != null ? qc : defaultQC;
 

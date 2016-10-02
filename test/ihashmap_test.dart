@@ -1,3 +1,4 @@
+import 'package:enumerators/enumerators.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:dartz/dartz.dart';
@@ -7,7 +8,7 @@ import 'package:propcheck/propcheck.dart';
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intMaps = c.mapsOf(c.ints, c.ints);
-  final intIHashMaps = intMaps.map((m) => new IHashMap.from(m));
+  final intIHashMaps = intMaps.map((m) => new IHashMap.from(m)) as Enumeration<IHashMap<int, int>>;
 
   test("create from Map", () {
     qc.check(forall(intMaps, (Map<int, int> m) {
@@ -26,4 +27,6 @@ void main() {
   });
 
   group("IHashMapTr", () => checkTraversableLaws(IHashMapTr, intIHashMaps));
+
+  group("IHashMap FoldableOps", () => checkFoldableOpsProperties(intIHashMaps));
 }

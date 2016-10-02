@@ -1,3 +1,4 @@
+import 'package:enumerators/enumerators.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:propcheck/propcheck.dart';
@@ -22,7 +23,7 @@ void main() {
 
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intMaps = c.mapsOf(c.ints, c.ints);
-  final intIMaps = intMaps.map(imap);
+  final intIMaps = intMaps.map(imap) as Enumeration<IMap<int, int>>;
 
   test("create from Map", () {
     qc.check(forall(intMaps, (Map<int, int> m) {
@@ -46,4 +47,5 @@ void main() {
 
   group("IMapMi", () => checkMonoidLaws(IMapMi, c.ints.map((i) => imap({i: i}))));
 
+  group("IMap FoldableOps", () => checkFoldableOpsProperties(intIMaps));
 }

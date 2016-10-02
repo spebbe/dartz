@@ -6,7 +6,11 @@ abstract class Foldable<F> {
 
   /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, fa, curry2(f))(z);
 
+  /*=B*/ foldRightWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(int i, a, /*=B*/ previous)) => foldRight(fa, tuple2(z, length(fa)-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1;
+
   /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => foldMap/*<Endo<B>>*/(DualEndoMi, fa, curry2(flip(f)))(z);
+
+  /*=B*/ foldLeftWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, a)) => foldLeft(fa, tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
 
   Option/*<A>*/ foldMapO/*<A>*/(Semigroup/*<A>*/ si, F fa, /*=A*/ f(a)) => foldMap(new OptionMonoid/*<A>*/(si), fa, composeF(some, f));
 
@@ -40,7 +44,11 @@ abstract class FoldableOps<F, A> {
 
   /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, curry2(f))(z);
 
+  /*=B*/ foldRightWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(int i, A a, /*=B*/ previous)) => foldRight/*<Tuple2<B, int>>*/(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1;
+
   /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => foldMap/*<Endo<B>>*/(DualEndoMi, curry2(flip(f)))(z);
+
+  /*=B*/ foldLeftWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, A a)) => foldLeft/*<Tuple2<B, int>>*/(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
 
   Option/*<B>*/ foldMapO/*<B>*/(Semigroup/*<B>*/ si, /*=B*/ f(A a)) => foldMap/*<Option<B>>*/(new OptionMonoid/*<B>*/(si), composeF(some, f));
 

@@ -1,3 +1,4 @@
+import 'package:enumerators/src/enumeration.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:propcheck/propcheck.dart';
@@ -7,7 +8,7 @@ import 'laws.dart';
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
-  final intSets = intLists.map((il) => new ISet<int>.fromIListWithOrder(IntOrder, ilist(il as List<int>)));
+  final intSets = intLists.map((il) => new ISet<int>.fromIListWithOrder(IntOrder, ilist(il as List<int>))) as Enumeration<ISet<int>>;
 
   test("insertion", () {
     qc.check(forall(intLists,
@@ -33,4 +34,6 @@ void main() {
   group("ISetMonoid", () => checkMonoidLaws(new ISetMonoid(IntOrder), intSets));
 
   group("ISetTreeFo", () => checkFoldableLaws(ISetFo, intSets));
+
+  group("ISet FoldableOps", () => checkFoldableOpsProperties(intSets));
 }

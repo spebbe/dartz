@@ -1,3 +1,4 @@
+import 'package:enumerators/enumerators.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:dartz/dartz.dart';
@@ -7,7 +8,7 @@ import 'laws.dart';
 void main() {
 
   final intLists = c.listsOf(c.ints);
-  final intIVectors = intLists.map(ivector);
+  final intIVectors = intLists.map(ivector) as Enumeration<IVector<int>>;
 
   group("IVectorM", () => checkMonadLaws(IVectorMP));
 
@@ -33,5 +34,7 @@ void main() {
     expect(v2.set(3, "d"), some(ivector(["a", "b", "c", "d", "b", "a"])));
     expect(v2.set(6, "ö"), none());
   });
+
+  group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
 
 }

@@ -40,7 +40,7 @@ Conveyor<From<String>, String> _bufferLines(Option<String> spill) =>
       final buffered = (spill|"") + s;
       final lines = ilist(buffered.split("\n"));
       return lines.reverse().uncons(Pipe.halt, (newSpill, completeLines) =>
-          completeLines.foldLeft/*<Conveyor<From<String>, String>>*/(_bufferLines(some(newSpill)), (rest, line) => Conveyor.produce(line, rest))
+          completeLines.foldLeft/*<Conveyor<From<String>, String>>*/(_bufferLines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
       );
     }, () => spill.fold(Pipe.halt, Pipe.produce));
 
@@ -50,9 +50,7 @@ final Conveyor<From<String>, String> toUppercase = Pipe.lift((String s) => s.toU
 
 Conveyor<From/*<A>*/, dynamic/*=A*/> skipDuplicates/*<A>*/([Eq/*<A>*/ _eq]) {
   final Eq/*<A>*/ eq = _eq ?? ObjectEq;
-  Conveyor<From/*<A>*/, dynamic/*=A*/> loop(Option/*<A>*/ last) =>
-      Pipe.consume((/*=A*/ a) => last.map((lastA) => eq.eq(lastA, a)) | false
-          ? loop(last)
-          : Pipe.produce(a, loop(some(a))));
-  return loop(none());
+  Conveyor<From/*<A>*/, dynamic/*=A*/> loop(/*=A*/ lastA) =>
+      Pipe.consume((/*=A*/ a) => eq.eq(lastA, a) ? loop(lastA) : Pipe.produce(a, loop(a)));
+  return Pipe.consume((/*=A*/ a) => Pipe.produce(a, loop(a)));
 }

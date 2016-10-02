@@ -49,7 +49,11 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _elementsByIndex.foldLeft(z, f);
 
+  @override /*=B*/ foldLeftWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, A a)) => _elementsByIndex.foldLeftKV(z, (previous, i, a) => f(previous, i+_prepended, a));
+
   @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _elementsByIndex.foldRight(z, f);
+
+  @override /*=B*/ foldRightWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(int i, A a, /*=B*/ previous)) => _elementsByIndex.foldRightKV(z, (i, a, previous) => f(i+_prepended, a, previous));
 
   @override int length() => _prepended + _appended;
 

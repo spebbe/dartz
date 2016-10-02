@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.6
+
+- foldLeftWithIndex and foldRightWithIndex on Foldable/FoldableOps
+- Specialized foldLeftWithIndex/foldRightWithIndex implementations on IVector
+- Source.fromStream (Conveyor) now takes a Stream thunk instead of a direct Stream
+- Minor cleanups in streaming IO example
+
 ## 0.3.5
 
 - Improved resource safety of Conveyor primitives

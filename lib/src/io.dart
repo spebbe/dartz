@@ -57,3 +57,4 @@ class IOMonad extends MonadOpsMonad<Free<IOOp, dynamic>> with MonadCatch<Free<IO
 }
 
 final IOMonad IOM = new IOMonad();
+final MonadCatch<Free<IOOp, dynamic>> IOMC = IOM;

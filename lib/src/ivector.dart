@@ -17,6 +17,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   Option<A> get(int index) => _elementsByIndex.get(index - _prepended);
 
+  Option<A> operator [](int i) => get(i);
+
   Option<IVector<A>> set(int index, A a) => _elementsByIndex.set(index - _prepended, a).map((newElements) => new IVector._internal(newElements, _prepended, _appended));
 
   @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);

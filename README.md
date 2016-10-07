@@ -8,7 +8,7 @@ Functional programming in Dart
 * Option, Either, State, Tuple, Free and other tools for programming in a functional style
 * Evaluation, a Reader+Writer+State+Either+Future swiss army knife monad
 * Type class instances (Monoids, Traversable Functors, Monads and so on) for included types, as well as for several standard Dart types
-* Conveyor, an ultra experimental implementation of pure functional streaming
+* Conveyor, an implementation of pure functional streaming
 * [Examples](https://github.com/spebbe/dartz/tree/master/example), showcasing core concepts
 
 
@@ -18,9 +18,10 @@ A good place to start learning is the excellent [Functional Programming in Scala
 
 ##### Status
 
-* Super experimental!
-* Somewhat exotic structure/API, since dartz is trying to jam type classes for higher kinded types into a language that lacks support for real type classes and higher kinded types... At least we have basic [parametric polymorphism for functions/methods](https://github.com/dart-lang/dev_compiler/blob/master/doc/GENERIC_METHODS.md) now!!!
+* Basic type class structure and collection classes are relatively stable
+* Optimized for dart2js/node/v8, with performance on the dart vm being of distant secondary concern
 * Most things are stack safe and reasonably efficient, but there are a couple of exceptions and plenty of room for further optimizations
+* The streaming/conveyor stuff is highly experimental
 
 ##### License/Disclaimer
 

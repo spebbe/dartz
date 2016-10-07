@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- New mini library, dartz_streaming!
+- Moved Conveyor and friends to dartz_streaming
+- Added lots of stream combinators for general use, IO and text processing
+- Added Execute IO primitive for running external commands
+- Beefed up mock IO interpreter
+
 ## 0.3.6
 
 - foldLeftWithIndex and foldRightWithIndex on Foldable/FoldableOps

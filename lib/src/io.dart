@@ -39,6 +39,19 @@ class CloseFile extends IOOp<Unit> {
 }
 Free<IOOp, Unit> closeFile(FileRef file) => liftF(new CloseFile(file));
 
+class ExecutionResult {
+  final int exitCode;
+  final String stdout;
+  final String stderr;
+  ExecutionResult(this.exitCode, this.stdout, this.stderr);
+}
+class Execute extends IOOp<ExecutionResult> {
+  final String command;
+  final IList<String> arguments;
+  Execute(this.command, this.arguments);
+}
+Free<IOOp, ExecutionResult> execute(String command, IList<String> arguments) => liftF(new Execute(command, arguments));
+
 class Attempt<A> extends IOOp<Either<Object, A>> {
   final Free<IOOp, A> fa;
   Attempt(this.fa);

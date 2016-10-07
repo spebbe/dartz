@@ -36,6 +36,9 @@ Evaluation<String, IVector<String>, IVector<String>, int, dynamic> mockIOInterpr
   } else if (io is WriteBytes) {
     return MockM.pure(unit);
 
+  } else if (io is Execute) {
+    return MockM.pure(new ExecutionResult(0, "<<< Mocked result of '${io.command} ${io.arguments.intercalate(StringMi, " ")}' >>>", ""));
+
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
   }

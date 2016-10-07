@@ -17,15 +17,15 @@ main() async {
 
   // Interpret IO program using mock interpreter.
   // Execution is only affected by the input vector argument.
-  final actualOutput = await mockPerformIO(greeter, ivector(["Björn", "dartz", "q"]));
+  final actualOutput = await mockPerformIO(greeter, imap({"stdin": ivector(["Björn", "dartz", "q"])}));
   final expectedOutput = right(tuple3(ivector([
-    "Please enter your name (or 'q' to quit):",
-    "Hello Björn!",
-    "Please enter your name (or 'q' to quit):",
-    "Hello dartz!",
-    "Please enter your name (or 'q' to quit):",
-    "Bye!"
-  ]), 3, unit));
+    "stdout: Please enter your name (or 'q' to quit):",
+    "stdout: Hello Björn!",
+    "stdout: Please enter your name (or 'q' to quit):",
+    "stdout: Hello dartz!",
+    "stdout: Please enter your name (or 'q' to quit):",
+    "stdout: Bye!"
+  ]), imap({"stdin": 3}), unit));
   print("greeter produces expected output for mocked input: ${actualOutput == expectedOutput}");
 
   // Interpret IO program using side-effecting console interpreter.

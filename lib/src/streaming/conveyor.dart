@@ -1,7 +1,7 @@
-part of dartz;
+part of dartz_streaming;
 
 /*
-  WARNING: Very, very experimental, buggy and incomplete! Will most likely change substantially over time.
+  WARNING: Experimental, incomplete and somewhat buggy! Not fully stack safe yet! Will most likely change substantially over time.
   Design similar to the "Process" construct from chapter 15 of "Functional Programming in Scala" by Paul Chiusano and Rúnar Bjarnason.
  */
 
@@ -139,6 +139,10 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> intersperse(O sep) => pipe(Pipe.intersperse(sep));
 
+  Conveyor<F, O> buffer(Monoid<O> monoid, int n) => pipe(Pipe.buffer(monoid, n));
+
+  Conveyor<F, O> skipDuplicates([Eq/*<O>*/ eq]) => pipe(Pipe.skipDuplicates(eq));
+
   Conveyor<F, dynamic/*=O3*/> tee/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Conveyor/*<Both<O, O2>, O3>*/ t) => t.interpret/*<Conveyor<F, O3>>*/(
       (h, t) => produce/*<F, O3>*/(h, tee/*<O2, O3>*/(c2, t))
       ,(side, recv) => side == Tee._getL
@@ -161,6 +165,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap(id);
 
   Conveyor<F, dynamic/*=O2*/> through/*<O2>*/(Conveyor<F, ChannelF<F, O, dynamic/*=O2*/>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(id);
+
+  Conveyor<F, dynamic/*=O2*/> onto/*<O2>*/(Conveyor<F, dynamic/*=O2*/> f(Conveyor<F, O> c)) => f(this);
 }
 
 class _Produce<F, O> extends Conveyor<F, O> {
@@ -199,118 +205,6 @@ class _Halt<F, O> extends Conveyor<F, O> {
 class _End {}
 
 class _Kill {}
-
-class Nowhere {}
-
-class Source {
-  static Conveyor/*<F, A>*/ eval/*<F, A>*/(/*=F*/ fa) =>
-      Conveyor.consume(fa, (ea) => ea.fold(Conveyor.halt, Conveyor.produce));
-
-  static Conveyor/*<F, A>*/ eval_/*<F, A>*/(/*=F*/ fa) =>
-      Conveyor.consume(fa, (ea) => ea.fold(Conveyor.halt, (_) => Conveyor.halt(Conveyor.End)));
-
-  static Conveyor/*<F, O>*/ resource/*<F, R, O>*/(/*=F*/ acquire, Conveyor<dynamic/*=F*/, dynamic/*=O*/> use(/*=R*/ r), Conveyor<dynamic/*=F*/, dynamic/*=O*/> release(/*=R*/ r)) =>
-      eval/*<F, R>*/(acquire).bind((r) => use(r).onComplete(() => release(r)));
-
-  static Conveyor<Nowhere, dynamic/*=O*/> fromFoldable/*<F, O>*/(/*=F*/ fo, Foldable/*<F>*/ foldable) => foldable.collapse(conveyorMP(), fo);
-
-  static dynamic/*=F*/ materialize/*<F, O>*/(Conveyor<Nowhere, dynamic/*=O*/> s, ApplicativePlus/*<F>*/ ap) =>
-      s.interpret((h, t) => ap.prependElement(materialize/*<F, O>*/(t, ap), h),
-          (req, recv) => materialize/*<F, O>*/(recv(left(Conveyor.End)), ap),
-          (err) => err == Conveyor.End ? ap.empty() : throw err);
-
-  static Conveyor<Nowhere, dynamic/*=O*/> fromIVector/*<F, O>*/(/*=IVector<O>*/ v) => fromFoldable(v, IVectorTr);
-  static IVector/*<O>*/ toIVector/*<O>*/(Conveyor<Nowhere, dynamic/*=O*/> s) => materialize/*<IVector, O>*/(s, IVectorMP) as dynamic/*=IVector<O>*/;
-
-  static Conveyor<Nowhere, dynamic/*=O*/> fromIList/*<F, O>*/(/*=IList<O>*/ v) => fromFoldable(v, IListTr);
-  static IList/*<O>*/ toIList/*<O>*/(Conveyor<Nowhere, dynamic/*=O*/> s) => materialize/*<IList, O>*/(s, IListMP) as dynamic/*=IList<O>*/;
-
-  static Conveyor<Task, dynamic/*=A*/> fromStream/*<A>*/(Stream/*<A>*/ s()) => Source.resource(Task.delay(() => new StreamIterator(s())),
-      (StreamIterator/*<A>*/ it) => Source.eval/*<Task, bool>*/(new Task(it.moveNext)).repeat().takeWhile(id).flatMap((_) => Source.eval(Task.delay(() => it.current))),
-      (StreamIterator/*<A>*/ it) => Source.eval_(new Task(() => new Future.value(unit).then((_) => it.cancel()))));
-
-  static Conveyor/*<F, O>*/ constant/*<F, O>*/(Monad/*<F>*/ monad, /*=O*/ o) => eval/*<F, O>*/(monad.pure(o)).repeat();
-
-  static Conveyor/*<F, int>*/ intsFrom/*<F, O>*/(Monad/*<F>*/ monad, int from) => constant(monad, 1).pipe(Pipe.scan(from-1, (int a, int b) => a+b));
-}
-
-class From<A> {}
-
-class Pipe {
-  static final From _get = new From();
-
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> produce/*<I, O>*/(/*=O*/ h, [Conveyor/*<From<I>, O>*/ t]) =>
-      Conveyor.produce(h, t);
-
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> consume/*<I, O>*/(Function1/*<I, Conveyor<From<I>, O>>*/ recv, [Function0/*<Conveyor<From<I>, O>>*/ fallback]) =>
-      Conveyor.consume(_get as dynamic/*=From<I>*/, (ea) => ea.fold(
-          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
-          ,(/*=I*/ i) => Conveyor.Try(() => recv(i))));
-
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> halt/*<I, O>*/() => Conveyor.halt(Conveyor.End);
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> identity/*<I>*/() => lift(id);
-
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> lift/*<I, O>*/(Function1/*<I, O>*/ f) => consume/*<I, O>*/((i) => produce(f(i))).repeatUntilExhausted();
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> take/*<I>*/(int n) => n <= 0 ? halt() : consume((i) => produce(i, take/*<I>*/(n-1)));
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> takeWhile/*<I>*/(bool f(/*=I*/ i)) => consume((i) => f(i) ? produce(i, takeWhile/*<I>*/(f)) : halt());
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> drop/*<I>*/(int n) => consume((i) => n > 0 ? drop/*<I>*/(n-1) : produce(i, identity()));
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> dropWhile/*<I>*/(bool f(/*=I*/ i)) => consume((i) => f(i) ? dropWhile/*<I>*/(f) : identity());
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> filter/*<I>*/(bool f(/*=I*/ i)) => consume/*<I, I>*/((i) => f(i) ? produce(i) : halt()).repeatUntilExhausted();
-
-  static Conveyor<From/*<I>*/, dynamic/*=O*/> scan/*<I, O>*/(/*=O*/ z, Function2/*<O, I, O>*/ f) {
-    Conveyor/*<From<I>, O>*/ go(/*=O*/ previous) => consume((/*=I*/ i) {
-      final current = f(previous, i);
-      return produce(current, go(current));
-    });
-    return go(z);
-  }
-
-  static Conveyor<From/*<I>*/, dynamic/*=I*/> intersperse/*<I>*/(/*=I*/ sep) => Pipe.consume/*<I, I>*/((i) => Pipe.produce(i, Pipe.produce(sep))).repeatUntilExhausted();
-
-  static Conveyor<From/*<I>*/, Tuple2/*<Option<I>, I>*/> window2/*<I>*/() {
-    Conveyor<From/*<I>*/, Tuple2/*<Option<I>, I>*/> go(Option/*<I>*/ prev) =>
-        Pipe.consume/*<I, Tuple2<Option<I>, I>>*/((/*=I*/ i) => Pipe.produce/*<I, Tuple2<Option<I>, I>>*/(tuple2(prev, i)).lazyPlus(() => go(some(i))));
-    return go(none());
-  }
-
-  static Conveyor<From/*<I>*/, Tuple2/*<I, I>*/> window2All/*<I>*/() => window2/*<I>*/().flatMap((t) => t.value1.fold(halt, (v1) => produce(tuple2(v1, t.value2))));
-}
-
-class Both<L, R> {}
-
-class Tee {
-  static final Both _getL = new Both();
-  static final Both _getR = new Both();
-
-  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> produce/*<L, R, O>*/(/*=O*/ h, [Conveyor<Both/*<L, R>*/, dynamic/*=O*/> t]) => Conveyor.produce(h, t);
-
-  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> consumeL/*<L, R, O>*/(Function1/*<L, Conveyor<Both<L, R>, O>>*/ recv, [Function0/*<Conveyor<Both<L, R>, O>>*/ fallback]) =>
-      Conveyor.consume/*<Both<L, R>, L, O>*/(_getL as dynamic/*=Both<L, R>*/, (ea) => ea.fold(
-          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
-          ,(/*=L*/ l) => Conveyor.Try(() => recv(l))));
-
-  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> consumeR/*<L, R, O>*/(Function1/*<R, Conveyor<Both<L, R>, O>>*/ recv, [Function0/*<Conveyor<Both<L, R>, O>>*/ fallback]) =>
-      Conveyor.consume/*<Both<L, R>, R, O>*/(_getR as dynamic/*=Both<L, R>*/, (ea) => ea.fold(
-          (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
-          ,(/*=R*/ r) => Conveyor.Try(() => recv(r))));
-
-  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> halt/*<L, R, O>*/() => Conveyor.halt(Conveyor.End);
-
-  static Conveyor<Both/*<L, R>*/, dynamic/*=O*/> zipWith/*<L, R, O>*/(Function2/*<L, R, O>*/ f) =>
-      consumeL/*<L, R, O>*/((/*=L*/ l) => consumeR((/*=R*/ r) => produce(f(l, r)))).repeatUntilExhausted();
-
-  static Conveyor<Both/*<L, R>*/, Tuple2/*<L, R>*/> zip/*<L, R>*/() => zipWith(tuple2);
-
-  static Conveyor<Both/*<I, I>*/, dynamic/*=I*/> interleave/*<I>*/() =>
-      consumeL/*<I, I, I>*/((/*=I*/ i1) => consumeR((/*=I*/ i2) => produce(i1, produce(i2)))).repeatUntilExhausted();
-
-}
 
 final MonadPlus<Conveyor> ConveyorMP = new MonadPlusOpsMonadPlus<Conveyor>((a) => Conveyor.produce(a), () => Conveyor.halt(Conveyor.End));
 MonadPlus<Conveyor/*<F, O>*/> conveyorMP/*<F, O>*/() => ConveyorMP;

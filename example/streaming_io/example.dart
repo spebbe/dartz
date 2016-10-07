@@ -1,6 +1,8 @@
 library streaming_io_example;
 
-import 'combinators.dart';
+import 'package:dartz/dartz_streaming.dart';
+import 'package:dartz/dartz_unsafe.dart';
+
 import 'dart:io';
 
 main() async {
@@ -13,21 +15,22 @@ main() async {
   // 3, 4. Finds single line comments and removes consecutive duplicates
   // 3, 4. Finds single line comments and removes consecutive duplicates
   // 5. Stops after five comments are consumed
-  final firstFiveCommentsInThisFile = fileLineReader(pathToThisFile)
+  final firstFiveCommentsInThisFile = IO.fileLineReader(pathToThisFile)
       .map((line) => line.trim())
       .filter((line) => line.startsWith("//"))
-      .pipe(skipDuplicates())
-      .take(5);
+      .skipDuplicates()
+      .take(5)
+      .appendElement("---");
 
   // This is the sixth comment. It might never be read from the file,
   // since the Conveyor finishes as soon as the fifth comment is consumed.
   // The file will be closed as soon as the Conveyor finishes.
 
-  await unsafeConveyIO(firstFiveCommentsInThisFile.to(stdoutSink));
+  await unsafeConveyIO(firstFiveCommentsInThisFile.to(IO.stdoutWriter));
 
   // Conveyors are pure values, and can safely be reused:
-  await unsafeConveyIO(firstFiveCommentsInThisFile.to(stdoutSink));
+  await unsafeConveyIO(firstFiveCommentsInThisFile.to(IO.stdoutWriter));
 
   // ...and composed further:
-  await unsafeConveyIO(firstFiveCommentsInThisFile.pipe(toUppercase).to(stdoutSink));
+  await unsafeConveyIO(firstFiveCommentsInThisFile.map((s) => s.toUpperCase()).to(IO.stdoutWriter));
 }

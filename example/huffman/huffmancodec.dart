@@ -71,7 +71,7 @@ class HuffmanCodec {
           return codes.put(leafNode.char, code.reverse());
         }
     );
-    return buildCodes(tree, imap({}), nil());
+    return buildCodes(tree, emptyMap(), nil());
   }
 
   // Technique: Monadic traversal over IList with Option as applicative effect

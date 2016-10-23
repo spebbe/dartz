@@ -5,16 +5,14 @@ import 'package:propcheck/propcheck.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
-IMap<String, IList<String>> parseName(String name) {
-  final IList<String> parts = ilist(name.split(" ")).reverse();
-  return (parts.headOption >= (last) => parts.tailOption.map((first) => imap({last: first}))) | imap({}) as IMap<String, IList<String>>;
-}
-
 void main() {
   test("demo", () {
     final boyz = ilist(["Nick Jonas", "Joe Jonas", "Isaac Hanson", "Justin Bieber", "Taylor Hanson", "Kevin Jonas", "Zac Hanson"]);
 
     final boyzByLastName = imap({"Jonas": ilist(["Nick", "Joe", "Kevin"]), "Hanson": ilist(["Isaac", "Taylor", "Zac"]), "Bieber": ilist(["Justin"])});
+
+    IMap<String, IList<String>> parseName(String name) => ilist(name.split(" ")).reverse().uncons(emptyMap, singletonMap);
+
     expect(boyz.foldMap(imapMonoid(IListMi), parseName), boyzByLastName);
 
     final numberOfBoyzByLastName = imap({"Jonas": 3, "Bieber": 1, "Hanson": 3});

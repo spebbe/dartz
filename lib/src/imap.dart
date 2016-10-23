@@ -60,6 +60,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
 IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);
 IMap/*<K, V>*/ imapWithOrder/*<K, V>*/(Order/*<K>*/ o, Map/*<K, V>*/ m) => new IMap.fromWithOrder(o, m);
+IMap/*<K, V>*/ emptyMap/*<K, V>*/() => new IMap.empty();
+IMap/*<K, V>*/ singletonMap/*<K, V>*/(/*=K*/ k, /*=V*/ v) => new IMap/*<K, V>*/.empty().put(k, v);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
   final Semigroup<V> _vSemigroup;

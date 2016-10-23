@@ -63,7 +63,7 @@ void main() {
     });
 
     test("failing evaluation 2", () async {
-      expect(await pop.foldMap(M, rpnInterpreter).run(imap({}), Nil),
+      expect(await pop.foldMap(M, rpnInterpreter).run(emptyMap(), nil()),
           left("Stack underflow"));
     });
   });

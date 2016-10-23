@@ -54,4 +54,4 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 
 // Technique: Interpret Free monad and run resulting Evaluation using reader (mocked inputs) and initial state (index in input vector)
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>> mockPerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io, IMap<String, IVector<String>> input) =>
-    io.foldMap(MockM, mockIOInterpreter).run(input, imap({})) as Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>>;
+    io.foldMap(MockM, mockIOInterpreter).run(input, emptyMap()) as Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>>;

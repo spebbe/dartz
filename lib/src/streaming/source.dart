@@ -29,7 +29,9 @@ class Source {
       (StreamIterator/*<A>*/ it) => Source.eval/*<Task, bool>*/(new Task(it.moveNext)).repeat().takeWhile(id).flatMap((_) => Source.eval(Task.delay(() => it.current))),
       (StreamIterator/*<A>*/ it) => Source.eval_(new Task(() => new Future.value(unit).then((_) => it.cancel()))));
 
-  static Conveyor/*<F, O>*/ constant/*<F, O>*/(Monad/*<F>*/ monad, /*=O*/ o) => eval/*<F, O>*/(monad.pure(o)).repeat();
+  static Conveyor/*<F, O>*/ pure/*<F, O>*/(Monad/*<F>*/ monad, /*=O*/ o) => eval/*<F, O>*/(monad.pure(o));
+
+  static Conveyor/*<F, O>*/ constant/*<F, O>*/(Monad/*<F>*/ monad, /*=O*/ o) => pure(monad, o).repeat();
 
   static Conveyor/*<F, int>*/ intsFrom/*<F, O>*/(Monad/*<F>*/ monad, int from) => constant(monad, 1).pipe(Pipe.scan(from-1, (int a, int b) => a+b));
 }

@@ -34,7 +34,7 @@ Future consoleIOInterpreter(IOOp io) {
     return unwrapFileRef(io.file).then((f) => f.writeFrom(io.bytes.toList()).then((_) => unit));
 
   } else if (io is Execute) {
-    return Process.run(io.command, io.arguments.toList());
+    return Process.run(io.command, io.arguments.toList()).then((pr) => new ExecutionResult(pr.exitCode, pr.stdout, pr.stderr));
 
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");

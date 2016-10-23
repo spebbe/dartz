@@ -14,7 +14,7 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   static Conveyor/*<F, O>*/ produce/*<F, O>*/(/*=O*/ head, [Conveyor/*<F, O>*/ tail]) => new _Produce(head, tail ?? halt(End));
   static Conveyor/*<F, O>*/ consume/*<F, A, O>*/(/*=F*/ req, Function1<Either<Object, dynamic/*=A*/>, Conveyor/*<F, O>*/> recv) => new _Consume/*<F, A, O>*/(req, recv);
-  static Conveyor/*<F, O>*/ halt/*<F, O>*/(Object err) => new _Halt(err);
+  static Conveyor/*<F, O>*/ halt/*<F, O>*/([Object err]) => new _Halt(err ?? End);
 
   static final End = new _End();
   static final Kill = new _Kill();

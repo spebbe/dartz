@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.1
+
+- Helpers for composing Free algebras and interpreters through coproduct nesting
+- Free composition example
+- Moved Free IO primitives into IOOps, for easy composition with other Free algebras
+- emptyMap and singletonMap convenience functions for IMap
+- Some more convenience functions for Conveyor
+
 ## 0.4.0
 
 - New mini library, dartz_streaming!

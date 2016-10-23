@@ -1,5 +1,5 @@
 name: dartz
-version: 0.4.0
+version: 0.4.1
 homepage: https://github.com/spebbe/dartz
 description: Functional Programming in Dart.
 author: Björn Sperber <spebbe@gmail.com>

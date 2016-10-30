@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2
+
+- Aggressive internal optimizations in IList, for speed and memory efficiency
+- Much faster map and bind/flatMap IList operations, especially on V8
+- Slightly faster map operations on IMap and IVector
+
 ## 0.4.1
 
 - Helpers for composing Free algebras and interpreters through coproduct nesting

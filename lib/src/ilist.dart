@@ -1,7 +1,7 @@
 part of dartz;
 
-// (stack safety - tail call elimination) => icky mutating loops
-// everything should be externally RT though and mostly stack safe.
+// Internally implemented using imperative loops and mutations, for stack safety and performance.
+// The external API should be safe and referentially transparent, though.
 
 abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, A>, ApplicativeOps<IList, A>, ApplicativePlusOps<IList, A>, MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A>, TraversableMonadPlusOps<IList, A> {
   Option<A> get headOption;
@@ -14,21 +14,47 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
   IList<A> _unsafeTail();
 
+  void _unsafeSetTail(IList<A> newTail);
+
   IList();
 
-  factory IList.from(Iterable<A> iterable) => iterable.fold/*<IList<A>>*/(nil(), (a, h) => new Cons(h, a)).reverse();
+  factory IList.from(Iterable<A> iterable) {
+    final IList<A> aNil = Nil as dynamic/*=IList<A>*/;
+    final Iterator<A> it = iterable.iterator;
+    if (!it.moveNext()) {
+      return aNil;
+    }
+    Cons<A> result = new Cons(it.current, aNil);
+    final IList<A> resultHead = result;
+    while(it.moveNext()) {
+      final next = new Cons(it.current, aNil);
+      result._unsafeSetTail(next);
+      result = next;
+    }
+    return resultHead;
+  }
 
   @override IList/*<B>*/ pure/*<B>*/(/*=B*/ b) => new Cons(b, nil());
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
-    var result = gApplicative.pure(Nil);
-    var current = this;
+    IList resultHead = Nil;
+    dynamic/*=G*/ result = gApplicative.pure(resultHead);
+    IList<A> current = this;
     while (current._isCons()) {
       final gb = f(current._unsafeHead());
-      result = gApplicative.map2(result, gb, (a, h) => new Cons(h, a));
+      result = gApplicative.map2(result, gb, (/*=IList*/ a, h) {
+        if (a._isCons()) {
+          final next = new Cons(h, Nil);
+          a._unsafeSetTail(next);
+          return next;
+        } else {
+          resultHead = new Cons(h, Nil);
+          return resultHead;
+        }
+      });
       current = current._unsafeTail();
     }
-    return gApplicative.map(result, (l) => l.reverse());
+    return gApplicative.map(result, (_) => resultHead);
   }
 
   @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
@@ -43,38 +69,63 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   }
 
   @override IList/*<B>*/ bind/*<B>*/(IList/*<B>*/ f(A a)) {
-    List/*<B>*/ mresult = [];
+    final IList/*<B>*/ bNil = Nil as dynamic/*=IList<B>*/;
+    if (!_isCons()) {
+      return bNil;
+    }
+    Cons/*<B>*/ result = null;
+    IList/*<B>*/ resultHead = null;
     var current = this;
-    while (current._isCons()) {
-      final IList/*<B>*/ sublist = f(current._unsafeHead());
-      var subcurrent = sublist;
-      while (subcurrent._isCons()) {
-        mresult.add(subcurrent._unsafeHead());
-        subcurrent = subcurrent._unsafeTail();
+    var sub = f(current._unsafeHead());
+    while(current._isCons() && !sub._isCons()) {
+      current = current._unsafeTail();
+      if (current._isCons()) {
+        sub = f(current._unsafeHead());
+      }
+    }
+    if (sub._isCons()) {
+      result = new Cons(sub._unsafeHead(), bNil);
+      resultHead = result;
+      sub = sub._unsafeTail();
+      while(sub._isCons()) {
+        final next = new Cons(sub._unsafeHead(), bNil);
+        result._unsafeSetTail(next);
+        result = next;
+        sub = sub._unsafeTail();
       }
       current = current._unsafeTail();
     }
-
-    IList/*<B>*/ result = nil();
-    for (int i = mresult.length - 1; i >= 0; i--) {
-      result = new Cons(mresult[i], result);
+    while (current._isCons()) {
+      sub = f(current._unsafeHead());
+      while(sub._isCons()) {
+        final next = new Cons(sub._unsafeHead(), bNil);
+        result._unsafeSetTail(next);
+        result = next;
+        sub = sub._unsafeTail();
+      }
+      current = current._unsafeTail();
     }
-    return result;
+    return resultHead ?? bNil;
   }
 
   @override IList/*<B>*/ flatMap/*<B>*/(IList/*<B>*/ f(A a)) => bind(f);
 
-  @override IList /*<B>*/ map/*<B>*/(/*=B*/ f(A a)) {
-    List /*<B>*/ mresult = [];
-    var current = this;
-    while (current._isCons()) {
-      mresult.add(f(current._unsafeHead()));
-      current = current._unsafeTail();
+  @override IList/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) {
+    final IList/*<B>*/ bNil = Nil as dynamic/*=IList<B>*/;
+    if (!_isCons()) {
+      return bNil;
     }
-
-    IList /*<B>*/ result = nil();
-    for (int i = mresult.length - 1; i >= 0; i--) {
-      result = new Cons(mresult[i], result);
+    Cons/*<B>*/ last = new Cons(f(_unsafeHead()), bNil);
+    if (!_unsafeTail()._isCons()) {
+      return last;
+    }
+    final result = last;
+    var current = _unsafeTail();
+    while (current._isCons()) {
+      final next = new Cons(f(current._unsafeHead()), bNil);
+      last._unsafeSetTail(next);
+      last = next;
+      current = current._unsafeTail();
     }
     return result;
   }
@@ -174,10 +225,11 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
 class Cons<A> extends IList<A> {
   final A _head;
-  final IList<A> _tail;
+  IList<A> _tail; // ...it's a secret...
   bool _isCons() => true;
   A _unsafeHead() => _head;
   IList<A> _unsafeTail() => _tail;
+  void _unsafeSetTail(IList<A> newTail) { _tail = newTail; } // move along, people -- nothing to see here! certainly no secretly mutable state...
 
   Cons(this._head, this._tail);
 
@@ -190,6 +242,7 @@ class _Nil<A> extends IList<A> {
   bool _isCons() => false;
   A _unsafeHead() => throw new UnsupportedError("_unsafeHead called on _Nil");
   IList<A> _unsafeTail() => throw new UnsupportedError("_unsafeTail called on _Nil");
+  void _unsafeSetTail(IList<A> newTail) => throw new UnsupportedError("_unsafeSetTail called on _Nil");
 
   @override Option<A> get headOption => none();
 

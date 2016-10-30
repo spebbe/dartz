@@ -250,7 +250,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, emptyIMapAVLNode(), emptyIMapAVLNode());
 
-  @override _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => emptyIMapAVLNode();
+  @override _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => this as dynamic/*=_IMapAVLNode<K, V2>*/;
 
   @override operator ==(other) => identical(_emptyIMapAVLNode, other);
 

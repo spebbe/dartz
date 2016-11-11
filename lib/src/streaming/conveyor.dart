@@ -141,6 +141,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> buffer(Monoid<O> monoid, int n) => pipe(Pipe.buffer(monoid, n));
 
+  Conveyor<F, IVector<O>> chunk(int n) => pipe(Pipe.chunk(n));
+
   Conveyor<F, O> skipDuplicates([Eq/*<O>*/ eq]) => pipe(Pipe.skipDuplicates(eq));
 
   Conveyor<F, dynamic/*=O3*/> tee/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Conveyor/*<Both<O, O2>, O3>*/ t) => t.interpret/*<Conveyor<F, O3>>*/(

@@ -61,4 +61,7 @@ class Pipe {
         consume((/*=A*/ a) => eq.eq(lastA, a) ? loop(lastA) : produce(a, loop(a)));
     return consume((/*=A*/ a) => produce(a, loop(a)));
   }
+
+  static Conveyor/*<From<Option<A>>, A>*/ uniteOption/*<A>*/() => consume/*<Option<A>, A>*/((oa) => oa.fold(halt, produce)).repeatUntilExhausted();
+
 }

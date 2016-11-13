@@ -18,6 +18,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   Option<V> get(K k) => _tree.get(_order, k);
 
+  Option<V> operator[](K k) => get(k);
+
   IMap<K, V> modify(K k, V f(V v), V dflt) => new IMap(_order, _tree.modify(_order, k, f, dflt));
 
   Option<IMap<K, V>> set(K k, V v) => _tree.set(_order, k, v).map((newTree) => new IMap(_order, newTree));

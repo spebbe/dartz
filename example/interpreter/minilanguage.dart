@@ -82,7 +82,7 @@ Evaluation<String, IMap<String, Value>, IVector<String>, int, Value> interpret(E
     return M.write(ivector([exp.name]))
         .andThen(M.ask())
         .bind((env) =>
-        M.liftOption(env.get(exp.name), () => "unbound variable: ${exp.name}"));
+        M.liftOption(env[exp.name], () => "unbound variable: ${exp.name}"));
 
   } else if (exp is Plus) {
     return evaluate(exp.left)

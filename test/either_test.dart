@@ -12,8 +12,8 @@ void main() {
     final IMap<String, String> englishToSwedishMap = imap({"one": "ett", "two": "två"});
 
     Either<String, int> stringToInt(String intString) => catching(() => int.parse(intString)).leftMap((_) => "could not parse '$intString' to int");
-    Either<String, String> intToEnglish(int i) => intToEnglishMap.get(i).toEither(() => "could not translate '$i' to english");
-    Either<String, String> englishToSwedish(String english) => englishToSwedishMap.get(english).toEither(() => "could not translate '$english' to swedish");
+    Either<String, String> intToEnglish(int i) => intToEnglishMap[i].toEither(() => "could not translate '$i' to english");
+    Either<String, String> englishToSwedish(String english) => englishToSwedishMap[english].toEither(() => "could not translate '$english' to swedish");
     Either<String, String> intStringToSwedish(String intString) => stringToInt(intString).bind(intToEnglish).bind(englishToSwedish);
 
     expect(intStringToSwedish("1"), right("ett"));

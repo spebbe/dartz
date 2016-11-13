@@ -13,7 +13,7 @@ void main() {
   test("create from Map", () {
     qc.check(forall(intMaps, (Map<int, int> m) {
       final IHashMap<int, int> im = new IHashMap.from(m);
-      return m.length == im.length() &&  m.keys.every((i) => some(m[i]) == im.get(i));
+      return m.length == im.length() &&  m.keys.every((i) => some(m[i]) == im[i]);
     }));
   });
 
@@ -22,7 +22,7 @@ void main() {
       final Map<int, int> expected = new Map.from(m1);
       m2.keys.forEach((i) => expected.remove(i));
       final actual = m2.keys.fold(new IHashMap.from(m1), (IHashMap<int, int> p, k) => p.remove(k));
-      return expected.keys.length == actual.length() && expected.keys.every((i) => some(expected[i]) == actual.get(i));
+      return expected.keys.length == actual.length() && expected.keys.every((i) => some(expected[i]) == actual[i]);
     }));
   });
 

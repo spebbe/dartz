@@ -28,7 +28,7 @@ void main() {
 
   Evaluation<String, IMap<String, double>, IList<String>, IList<double>, dynamic> rpnInterpreter(RPNOp<dynamic> op) {
     if (op is PushSymbol) {
-      return M.asks((IMap<String, double> symbols) => symbols.get(op.symbol)) >= (Option<double> symbolValue) {
+      return M.asks((IMap<String, double> symbols) => symbols[op.symbol]) >= (Option<double> symbolValue) {
         return symbolValue.fold(() =>
             M.raiseError("Undefined symbol: ${op.symbol}"),
             (double value) => M.write(ilist(["Pushing value of ${op.symbol}: $value"])) >> M.modify((IList<double> stack) => new Cons(value, stack)));

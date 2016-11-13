@@ -13,9 +13,9 @@ class _MockFileRef implements FileRef {
 }
 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockReadFile(String fileName) =>
-    MockM.gets((counters) => counters.get(fileName)|0) >= (int i) =>
-    MockM.asks((inputs) => inputs.get(fileName)|emptyVector/*<String>*/()) >= (IVector<String> vs) =>
-    MockM.pure(vs.get(i)|null) << MockM.modify((counters) => counters.put(fileName, i+1));
+    MockM.gets((counters) => counters[fileName]|0) >= (int i) =>
+    MockM.asks((inputs) => inputs[fileName]|emptyVector/*<String>*/()) >= (IVector<String> vs) =>
+    MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1));
 
 // Technique: Interpret Free monad into Evaluation
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockIOInterpreter(IOOp io) {

@@ -16,6 +16,8 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
   Option<V> get(K k) => _map.get(k.hashCode).bind((candidates) =>
       candidates.find((candidate) => candidate.value1 == k).map((candidate) => candidate.value2));
 
+  Option<V> operator[](K k) => get(k);
+
   IHashMap<K, V> put(K k, V v) => new IHashMap.internal(_map.modify(k.hashCode,
       (existing) => new Cons(tuple2(k, v), existing.filter((kv) => kv.value1 != k)),
       new Cons(tuple2(k, v), nil())));

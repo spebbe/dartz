@@ -59,14 +59,13 @@ class Pipe {
     Conveyor/*<From<A>, IVector<A>>*/ go(int i, IVector/*<A>*/ sofar) =>
         consume(
             (a) => i > 1 ? go(i-1, sofar.appendElement(a)) : produce(sofar.appendElement(a), go(n, emptyVector()))
-        ,() => sofar.length() == 0 ? halt() : produce(sofar));
+            ,() => sofar.length() == 0 ? halt() : produce(sofar));
     return go(n, emptyVector());
   }
 
   static Conveyor/*<From<A>, A>*/ skipDuplicates/*<A>*/([Eq/*<A>*/ _eq]) {
     final Eq/*<A>*/ eq = _eq ?? (ObjectEq as dynamic/*=Eq<A>*/);
-    Conveyor/*<From<A>, A>*/ loop(/*=A*/ lastA) =>
-        consume((/*=A*/ a) => eq.eq(lastA, a) ? loop(lastA) : produce(a, loop(a)));
+    Conveyor/*<From<A>, A>*/ loop(/*=A*/ lastA) => consume((/*=A*/ a) => eq.eq(lastA, a) ? loop(lastA) : produce(a, loop(a)));
     return consume((/*=A*/ a) => produce(a, loop(a)));
   }
 

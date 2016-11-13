@@ -4,13 +4,13 @@ abstract class Foldable<F> {
   // def foldMap[A, B: Monoid](fa: Option[A], f: A => B): B
   /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, F fa, /*=B*/ f(a));
 
-  /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, fa, curry2(f))(z);
+  /*=B*/ foldRight/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(endoMi(), fa, curry2(f))(z);
 
-  /*=B*/ foldRightWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(int i, a, /*=B*/ previous)) => foldRight(fa, tuple2(z, length(fa)-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1;
+  /*=B*/ foldRightWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(int i, a, /*=B*/ previous)) => foldRight(fa, tuple2(z, length(fa)-1), (a, /*=Tuple2<B, int>*/ t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1;
 
-  /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => foldMap/*<Endo<B>>*/(DualEndoMi, fa, curry2(flip(f)))(z);
+  /*=B*/ foldLeft/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, a)) => foldMap/*<Endo<B>>*/(dualEndoMi(), fa, curry2(flip(f)))(z);
 
-  /*=B*/ foldLeftWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, a)) => foldLeft(fa, tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
+  /*=B*/ foldLeftWithIndex/*<B>*/(F fa, /*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, a)) => foldLeft(fa, tuple2(z, 0), (/*=Tuple2<B, int>*/ t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
 
   Option/*<A>*/ foldMapO/*<A>*/(Semigroup/*<A>*/ si, F fa, /*=A*/ f(a)) => foldMap(new OptionMonoid/*<A>*/(si), fa, composeF(some, f));
 
@@ -42,11 +42,11 @@ abstract class Foldable<F> {
 abstract class FoldableOps<F, A> {
   /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a));
 
-  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(EndoMi, curry2(f))(z);
+  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => foldMap/*<Endo<B>>*/(endoMi(), curry2(f))(z);
 
   /*=B*/ foldRightWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(int i, A a, /*=B*/ previous)) => foldRight/*<Tuple2<B, int>>*/(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1;
 
-  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => foldMap/*<Endo<B>>*/(DualEndoMi, curry2(flip(f)))(z);
+  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => foldMap/*<Endo<B>>*/(dualEndoMi(), curry2(flip(f)))(z);
 
   /*=B*/ foldLeftWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, A a)) => foldLeft/*<Tuple2<B, int>>*/(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
 

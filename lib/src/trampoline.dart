@@ -15,7 +15,7 @@ abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeO
       if (fa is _TBind) {
         var fa2 = fa._fa as dynamic/*=Trampoline<A>*/;
         Function f2 = fa._f;
-        current = new _TBind(fa2, (a2) => new _TBind(f2(a2), f));
+        current = new _TBind(fa2, (a2) => new _TBind(f2(a2) as dynamic/*=Trampoline*/, f));
       } else {
         current = f((fa as dynamic/*=_TPure*/)._a) as dynamic/*=Trampoline<A>*/;
       }

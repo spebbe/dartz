@@ -79,4 +79,4 @@ class IVectorMonoid<A> extends Monoid<IVector<A>> {
 }
 
 final Monoid<IVector> IVectorMi = new IVectorMonoid();
-Monoid<IVector/*<A>*/> ivectorMi/*<A>*/() => IVectorMi;
+Monoid<IVector/*<A>*/> ivectorMi/*<A>*/() => IVectorMi as dynamic/*=Monoid<IVector<A>>*/;

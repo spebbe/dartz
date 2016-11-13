@@ -88,7 +88,7 @@ void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck q
 
   group("monad laws", () {
     test("left identity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.pure(a), double), double(a))));
+      qc.check(forall(c.ints, (int a) => equality(M.bind(M.pure(a), double), double(a))));
     });
 
     test("right identity", () {
@@ -96,7 +96,7 @@ void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck q
     });
 
     test("associativity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (x) => M.bind(double(x), inc)))));
+      qc.check(forall(c.ints, (a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (int x) => M.bind(double(x), inc)))));
     });
   });
 

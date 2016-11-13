@@ -208,7 +208,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     }
   }
 
-  Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => super.partition(f);
+  Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => super.partition(f) as dynamic/*=Tuple2<IList<A>, IList<A>>*/;
 
   @override IList<A> prependElement(A a) => new Cons(a, this);
 
@@ -263,6 +263,7 @@ class IListMonoid extends Monoid<IList> {
 }
 
 final Monoid<IList> IListMi = new IListMonoid();
+Monoid<IList/*<A>*/> ilistMi/*<A>*/() => IListMi as dynamic/*=Monoid<IList<A>>*/;
 
 class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad<M> _stackedM;

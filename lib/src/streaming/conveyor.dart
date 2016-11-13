@@ -209,4 +209,4 @@ class _End {}
 class _Kill {}
 
 final MonadPlus<Conveyor> ConveyorMP = new MonadPlusOpsMonadPlus<Conveyor>((a) => Conveyor.produce(a), () => Conveyor.halt(Conveyor.End));
-MonadPlus<Conveyor/*<F, O>*/> conveyorMP/*<F, O>*/() => ConveyorMP;
+MonadPlus<Conveyor/*<F, O>*/> conveyorMP/*<F, O>*/() => ConveyorMP as dynamic/*=MonadPlus<Conveyor<F, O>>*/;

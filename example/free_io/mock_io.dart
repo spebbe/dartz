@@ -39,7 +39,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.pure(unit);
 
   } else if (io is ReadBytes) {
-    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? nil() : ilist(UTF8.encode(s)));
+    return mockReadFile((io.file as _MockFileRef).name).map((String s) => s == null ? nil() : ilist(UTF8.encode(s)));
 
   } else if (io is WriteBytes) {
     return MockM.write(ivector(["${(io.file as _MockFileRef).name}: ${UTF8.decode(io.bytes.toList())}"]));

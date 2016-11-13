@@ -81,7 +81,7 @@ class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
 Monoid<IMap/*<K, V>*/> imapMonoid/*<K, V>*/(Semigroup/*<V>*/ si) => new IMapMonoid/*<K, V>*/(si);
 
 final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
-Monoid<IMap/*<K, V>*/> imapMi/*<K, V>*/() => IMapMi;
+Monoid<IMap/*<K, V>*/> imapMi/*<K, V>*/() => IMapMi as dynamic/*=Monoid<IMap<K, V>>*/;
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
 
@@ -147,15 +147,15 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(_left);
+        return llRotate(_left as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
       } else {
-        return doubleLrRotate(_left);
+        return doubleLrRotate(_left as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(_right);
+        return rrRotate(_right as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
       } else {
-        return doubleRlRotate(_right);
+        return doubleRlRotate(_right as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
       }
     } else {
       return this;
@@ -164,11 +164,11 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   _NonEmptyIMapAVLNode<K, V> llRotate(_NonEmptyIMapAVLNode<K, V> l) => new _NonEmptyIMapAVLNode(l._k, l._v, l._left, new _NonEmptyIMapAVLNode(_k, _v, l._right, _right));
 
-  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(l._right));
+  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(l._right as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/));
 
   _NonEmptyIMapAVLNode<K, V> rrRotate(_NonEmptyIMapAVLNode<K, V> r) => new _NonEmptyIMapAVLNode(r._k, r._v, new _NonEmptyIMapAVLNode(_k, _v, _left, r._left), r._right);
 
-  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left));
+  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/));
 
   /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) {
     final leftResult = _left.foldLeft(z, f);
@@ -189,9 +189,9 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._v);
       } else if (o == Ordering.LT) {
-        current = current._left;
+        current = current._left as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/;
       } else {
-        current = current._right;
+        current = current._right as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/;
       }
     }
     return none();

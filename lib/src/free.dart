@@ -35,6 +35,6 @@ class Bind<F, I, A> extends Free<F, A> {
 }
 
 final Monad<Free> FreeM = new MonadOpsMonad<Free>((a) => new Pure(a));
-Monad<Free/*<F, A>*/> freeM/*<F, A>*/() => FreeM;
+Monad<Free/*<F, A>*/> freeM/*<F, A>*/() => FreeM as dynamic/*=Monad<Free<F, A>>*/;
 
 Free/*<F, A>*/ liftF/*<F, A>*/(/*=F*/ fa) => new Bind(fa, (a) => new Pure(a));

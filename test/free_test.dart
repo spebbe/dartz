@@ -19,12 +19,12 @@ Free<RPNOp, Unit> push(double value) => liftF(new Push(value));
 class Pop extends RPNOp<double> {}
 final Free<RPNOp, double> pop = liftF(new Pop());
 
-final Free<RPNOp, dynamic> dup = pop >= (i) => push(i) >> push(i);
+final Free<RPNOp, dynamic> dup = pop >= (double i) => push(i) >> push(i);
 
-final Free<RPNOp, dynamic> multiply = pop >= (a) => pop >= (b) => push(a*b);
+final Free<RPNOp, dynamic> multiply = pop >= (double a) => pop >= (double b) => push(a*b);
 
 void main() {
-  final M = new EvaluationMonad<String, IMap<String, double>, IList<String>, IList<double>>(IListMi);
+  final M = new EvaluationMonad<String, IMap<String, double>, IList<String>, IList<double>>(ilistMi());
 
   Evaluation<String, IMap<String, double>, IList<String>, IList<double>, dynamic> rpnInterpreter(RPNOp<dynamic> op) {
     if (op is PushSymbol) {

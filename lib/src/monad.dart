@@ -6,7 +6,7 @@ abstract class Monad<F> implements Applicative<F> {
   F join(F ffa) => bind(ffa, (F f) => f);
 
   @override F map(F fa, f(_)) => bind(fa, (a) => pure(f(a)));
-  @override F ap(F fa, F ff) => bind(ff, (f) => map(fa, f));
+  @override F ap(F fa, F ff) => bind(ff, (f(_)) => map(fa, f));
   
   Monad<F> /* Monad<F<G<_>>> */ composeM(Monad G, Traversable GT) => new ComposedMonad(this, G, GT);
 }

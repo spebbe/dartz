@@ -64,7 +64,7 @@ class Pipe {
   }
 
   static Conveyor/*<From<A>, A>*/ skipDuplicates/*<A>*/([Eq/*<A>*/ _eq]) {
-    final Eq/*<A>*/ eq = _eq ?? ObjectEq;
+    final Eq/*<A>*/ eq = _eq ?? (ObjectEq as dynamic/*=Eq<A>*/);
     Conveyor/*<From<A>, A>*/ loop(/*=A*/ lastA) =>
         consume((/*=A*/ a) => eq.eq(lastA, a) ? loop(lastA) : produce(a, loop(a)));
     return consume((/*=A*/ a) => produce(a, loop(a)));

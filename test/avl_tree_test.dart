@@ -11,12 +11,12 @@ void main() {
 
   test("min", () {
     qc.check(forall(intTrees,
-        (AVLTree<int> t) => t.concatenateO(NumMinSi) == t.min()));
+        (AVLTree<num> t) => t.concatenateO(NumMinSi) == t.min()));
   });
 
   test("max", () {
     qc.check(forall(intTrees,
-        (AVLTree<int> t) => t.concatenateO(NumMaxSi) == t.max()));
+        (AVLTree<num> t) => t.concatenateO(NumMaxSi) == t.max()));
   });
 
   test("demo", () {

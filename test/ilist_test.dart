@@ -36,11 +36,11 @@ void main() {
     expect(EitherM.sequenceL(new IList.from([right(1), right(2), right(3)])), right(ilist([1,2,3])));
 
     final l1 = ilist([1,2,3,4]);
-    expect(IListTr.traverse(EitherM, l1, (i) => i<4 ? right(i) : left("too big")), left("too big"));
+    expect(IListTr.traverse(EitherM, l1, (int i) => i<4 ? right(i) : left("too big")), left("too big"));
     expect(IListTr.sequence(EitherM, l1.map((i) => right(i))), right(ilist([1,2,3,4])));
 
-    expect(IListTr.foldMap/*<int>*/(NumSumMi, l1, id), 10);
-    expect(IListTr.foldRight/*<int>*/(l1, 0, (a, b) => a+b), 10);
+    expect(IListTr.foldMap/*<num>*/(NumSumMi, l1, id), 10);
+    expect(IListTr.foldRight/*<int>*/(l1, 0, (int a, int b) => a+b), 10);
 
     expect(ilist([2,4,6]).any((i) => i%2==0), true);
     expect(ilist([2,4,6]).any((i) => i%2==1), false);
@@ -104,7 +104,7 @@ void main() {
 
   test("stack safety (foldRight)", () {
     final IList<int> massive = IdM.replicate(20000, 1);
-    expect(massive.foldRight(0, (a,b) => a+b), 20000);
+    expect(massive.foldRight/*<int>*/(0, (a,b) => a+b), 20000);
   });
 
   test("stack safety (foldMap)", () {
@@ -113,7 +113,7 @@ void main() {
   });
 
   test("stack safety (concatenate)", () {
-    final IList<int> massive = IdM.replicate(20000, 1);
+    final IList<num> massive = IdM.replicate(20000, 1);
     expect(massive.concatenate(NumSumMi), 20000);
   });
 

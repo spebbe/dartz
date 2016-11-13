@@ -30,4 +30,4 @@ class TaskMonadCatch extends Functor<Task> with Applicative<Task>, Monad<Task>, 
 }
 
 final MonadCatch<Task> TaskMC = new TaskMonadCatch();
-MonadCatch<Task/*<A>*/> taskMC/*<A>*/() => TaskMC;
+MonadCatch<Task/*<A>*/> taskMC/*<A>*/() => TaskMC as dynamic/*=MonadCatch<Task<A>>*/;

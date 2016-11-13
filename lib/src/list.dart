@@ -29,7 +29,7 @@ MonadPlus<List/*<A>*/> listMP/*<A>*/() => ListMP as dynamic/*=MonadPlus<List<A>>
 final Traversable<List> ListTr = ListMP;
 
 final Monoid<List> ListMi = new ListMonoid();
-Monoid<List/*<A>*/> listMi/*<A>*/() => ListMi;
+Monoid<List/*<A>*/> listMi/*<A>*/() => ListMi as dynamic/*=Monoid<List<A>>*/;
 
 class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
   Monad<M> _stackedM;
@@ -37,7 +37,7 @@ class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
   Monad underlying() => ListMP;
 
   @override M pure(a) => _stackedM.pure([a]);
-  M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => new List.from(l1)..addAll(l2)));
+  M _concat(M a, M b) => _stackedM.bind(a, (Iterable l1) => _stackedM.map(b, (Iterable l2) => new List.from(l1)..addAll(l2)));
   @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map(f).reduce(_concat)));
 }
 

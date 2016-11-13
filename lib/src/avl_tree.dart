@@ -95,15 +95,15 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(_left);
+        return llRotate(_left as dynamic/*=_NonEmptyAVLNode<A>*/);
       } else {
-        return doubleLrRotate(_left);
+        return doubleLrRotate(_left as dynamic/*=_NonEmptyAVLNode<A>*/);
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(_right);
+        return rrRotate(_right as dynamic/*=_NonEmptyAVLNode<A>*/);
       } else {
-        return doubleRlRotate(_right);
+        return doubleRlRotate(_right as dynamic/*=_NonEmptyAVLNode<A>*/);
       }
     } else {
       return this;
@@ -112,11 +112,11 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   _NonEmptyAVLNode<A> llRotate(_NonEmptyAVLNode<A> l) => new _NonEmptyAVLNode<A>(l._a, l._left, new _NonEmptyAVLNode<A>(_a, l._right, _right));
 
-  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right));
+  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right as dynamic/*=_NonEmptyAVLNode<A>*/));
 
   _NonEmptyAVLNode<A> rrRotate(_NonEmptyAVLNode<A> r) => new _NonEmptyAVLNode<A>(r._a, new _NonEmptyAVLNode(_a, _left, r._left), r._right);
 
-  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left));
+  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left as dynamic/*=_NonEmptyAVLNode<A>*/));
 
   /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
     final leftResult = _left.foldLeft(z, f);
@@ -137,9 +137,9 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
       if (o == Ordering.EQ) {
         return some(current._a);
       } else if (o == Ordering.LT) {
-        current = current._left;
+        current = current._left as dynamic/*=_NonEmptyAVLNode<A>*/;
       } else {
-        current = current._right;
+        current = current._right as dynamic/*=_NonEmptyAVLNode<A>*/;
       }
     }
     return none();

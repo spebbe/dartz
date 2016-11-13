@@ -2,7 +2,7 @@ part of dartz_streaming;
 
 class Text {
 
-  static final Conveyor<From<IList<int>>, String> decodeUtf8 = Pipe.lift((l) => l.toList()).pipe(_decodeUtf8());
+  static final Conveyor<From<IList<int>>, String> decodeUtf8 = Pipe.lift((IList<int> l) => l.toList()).pipe(_decodeUtf8());
 
   static final Conveyor<From<String>, IList<int>> encodeUtf8 = Pipe.lift(composeF(ilist, UTF8.encode));
 

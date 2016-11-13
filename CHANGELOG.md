@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.3
+
+- Added uniteOption to Pipe
+- Added chunk to Pipe and Conveyor
+- Square bracket syntax as alternative to get(K key) on IMap and IHashMap
+- Got rid of all implicit down casts by disabling them in the analysis options
+- Cleaner types on Pipe
+
 ## 0.4.2
 
 - Aggressive internal optimizations in IList, for speed and memory efficiency

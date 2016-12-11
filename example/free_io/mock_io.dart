@@ -47,6 +47,9 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
   } else if (io is Execute) {
     return MockM.pure(new ExecutionResult(0, "<<< Mocked result of '${io.command} ${io.arguments.intercalate(StringMi, " ")}' >>>", ""));
 
+  } else if (io is Delay) {
+    return io.a.foldMap(MockM, mockIOInterpreter);
+
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
   }

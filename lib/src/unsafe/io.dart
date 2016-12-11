@@ -36,6 +36,9 @@ Future unsafeIOInterpreter(IOOp io) {
   } else if (io is Execute) {
     return Process.run(io.command, io.arguments.toList()).then((pr) => new ExecutionResult(pr.exitCode, pr.stdout as dynamic/*=String*/, pr.stderr as dynamic/*=String*/));
 
+  } else if (io is Delay) {
+    return new Future.delayed(io.duration, () => unsafePerformIO(io.a));
+
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");
   }

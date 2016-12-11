@@ -45,6 +45,12 @@ class Execute extends IOOp<ExecutionResult> {
   Execute(this.command, this.arguments);
 }
 
+class Delay<A> extends IOOp<A> {
+  final Duration duration;
+  final Free<IOOp,A> a;
+  Delay(this.duration, this.a);
+}
+
 class Attempt<A> extends IOOp<Either<Object, A>> {
   final Free<IOOp, A> fa;
   Attempt(this.fa);
@@ -82,6 +88,8 @@ class IOOps<F> extends FreeOps<F, IOOp> {
   Free<F, Unit> closeFile(FileRef file) => liftOp(new CloseFile(file));
 
   Free<F, ExecutionResult> execute(String command, IList<String> arguments) => liftOp(new Execute(command, arguments));
+
+  Free<F, dynamic/*=A*/> delay/*<A>*/(Duration duration, Free<IOOp, dynamic/*=A*/> a) => liftOp(new Delay(duration, a));
 
   Free<F, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftOp(new Attempt(fa));
 

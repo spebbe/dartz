@@ -35,7 +35,7 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
   @override bool operator ==(other) => identical(this, other) || (other is ISet && _tree == other._tree);
 
-  @override String toString() => "iset<$_tree>";
+  @override String toString() => "iset<${_tree.toIList().map((a) => a.toString()).intercalate(StringMi, ", ")}>";
 }
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();

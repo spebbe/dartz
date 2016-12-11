@@ -57,12 +57,14 @@ class Fail<A> extends IOOp<A> {
 
 class IOMonad extends MonadOpsMonad<Free<IOOp, dynamic>> with MonadCatch<Free<IOOp, dynamic>> {
   IOMonad() : super((a) => new Pure(a));
+  @override Free/*<IOOp, A>*/ pure/*<A>*/(/*=A*/ a) => new Pure(a);
   @override Free<IOOp, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftF(new Attempt(fa));
   @override Free<IOOp, dynamic> fail(Object err) => liftF(new Fail(err));
 }
 
 final IOMonad IOM = new IOMonad();
 final MonadCatch<Free<IOOp, dynamic>> IOMC = IOM;
+MonadCatch/*<Free<IOOp, A>>*/ iomc/*<A>*/() => IOMC as dynamic/*=MonadCatch<Free<IOOp, A>>*/;
 
 class IOOps<F> extends FreeOps<F, IOOp> {
   IOOps(FreeComposer<F, IOOp> composer) : super(composer);

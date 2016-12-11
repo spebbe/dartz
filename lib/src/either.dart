@@ -66,6 +66,7 @@ class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
 final EitherMonad EitherM = new EitherMonad();
 EitherMonad/*<L>*/ eitherM/*<L>*/() => EitherM as dynamic/*=EitherMonad<L>*/;
 final Traversable<Either> EitherTr = new TraversableOpsTraversable<Either>();
+Traversable<Either/*<L, R>*/> eitherTr/*<L, R>*/() => EitherTr as dynamic/*=Traversable<Either<L, R>>*/;
 
 class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad _stackedM;

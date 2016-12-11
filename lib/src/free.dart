@@ -7,6 +7,7 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
   @override Free/*<F, B>*/ map/*<B>*/(/*=B*/ f(A a)) => bind((a) => pure(f(a)));
   @override Free/*<F, B>*/ bind/*<B>*/(Free/*<F, B>*/ f(A a));
   @override Free/*<F, B>*/ andThen/*<B>*/(Free/*<F, B>*/ next) => bind((_) => next);
+  @override Free/*<F, B>*/ replace/*<B>*/(/*=B*/ b) => map((_) => b);
   /*=GA*/ foldMap/*<G, GA>*/(Monad/*<G>*/ gMonad, /*=G*/ f(_));
 }
 

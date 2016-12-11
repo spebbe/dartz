@@ -64,6 +64,7 @@ class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
 final OptionMonadPlus OptionMP = new OptionMonadPlus();
 MonadPlus<Option/*<A>*/> optionMP/*<A>*/() => OptionMP as dynamic/*=MonadPlus<Option<A>>*/;
 final Traversable<Option> OptionTr = new TraversableOpsTraversable<Option>();
+Traversable<Option/*<A>*/> optionTr/*<A>*/() => OptionTr as dynamic/*=Traversable<Option<A>>*/;
 
 class OptionTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad _stackedM;

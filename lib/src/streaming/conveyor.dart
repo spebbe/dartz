@@ -135,6 +135,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, dynamic/*=O2*/> fold/*<O2>*/(/*=O2*/ z, Function2/*<O2, O, O2>*/ f) => pipe(Pipe.scan(z, f)).lastOr(z);
 
+  Conveyor<F, dynamic/*=O2*/> foldWhile/*<O2>*/(/*=O2*/ z, Function2/*<O2, O, O2>*/ f, Function1/*<O2, bool>*/ p) => pipe(Pipe.scanWhile(z, f, p)).lastOr(z);
+
   Conveyor<F, O> concatenate(Monoid<O> monoid) => pipe(Pipe.scan(monoid.zero(), monoid.append)).lastOr(monoid.zero());
 
   Conveyor<F, O> intersperse(O sep) => pipe(Pipe.intersperse(sep));

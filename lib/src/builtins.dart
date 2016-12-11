@@ -9,6 +9,14 @@ class NumSumMonoid extends Monoid<num> {
 
 final Monoid<num> NumSumMi = new NumSumMonoid();
 
+class IntSumMonoid extends Monoid<int> {
+  @override int zero() => 0;
+  @override int append(int n1, int n2) => n1+n2;
+}
+
+final Monoid<int> IntSumMi = new IntSumMonoid();
+
+
 class NumProductMonoid extends Monoid<num> {
   @override num zero() => 1;
   @override num append(num n1, num n2) => n1*n2;

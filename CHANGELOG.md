@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.4
+
+- Tightened types of some overrides and helpers
+- Added free IO primitive Delay
+- Added scanWhile to Pipe
+- Added foldWhile to Conveyor
+- Added repeatEval and repeatEval_ to Source
+
 ## 0.4.3
 
 - Added uniteOption to Pipe

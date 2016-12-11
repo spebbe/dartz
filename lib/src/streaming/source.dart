@@ -6,8 +6,18 @@ class Source {
   static Conveyor/*<F, A>*/ eval/*<F, A>*/(/*=F*/ fa) =>
       Conveyor.consume(fa, (ea) => ea.fold(Conveyor.halt, Conveyor.produce));
 
+  static Conveyor/*<F, A>*/ repeatEval/*<F, A>*/(/*=F*/ fa) {
+    final Conveyor/*<F, A>*/ convinceTypeSystem = eval(fa);
+    return convinceTypeSystem.repeat();
+  }
+
   static Conveyor/*<F, A>*/ eval_/*<F, A>*/(/*=F*/ fa) =>
       Conveyor.consume(fa, (ea) => ea.fold(Conveyor.halt, (_) => Conveyor.halt(Conveyor.End)));
+
+  static Conveyor/*<F, A>*/ repeatEval_/*<F, A>*/(/*=F*/ fa) {
+    final Conveyor/*<F, A>*/ convinceTypeSystem = eval_(fa);
+    return convinceTypeSystem.repeat();
+  }
 
   static Conveyor/*<F, O>*/ resource/*<F, R, O>*/(/*=F*/ acquire, Conveyor<dynamic/*=F*/, dynamic/*=O*/> use(/*=R*/ r), Conveyor<dynamic/*=F*/, dynamic/*=O*/> release(/*=R*/ r)) =>
       eval/*<F, R>*/(acquire).bind((r) => use(r).onComplete(() => release(r)));

@@ -4,7 +4,7 @@ class FreeOps<F, O> {
   final FreeComposer<F, O> composer;
   FreeOps(this.composer);
 
-  Free<F, A> liftOp/*<A>*/(O o) => composer.lift(o);
+  Free<F, dynamic/*=A*/> liftOp/*<A>*/(O o) => composer.lift(o);
 }
 
 abstract class FreeComposer<F, C> {
@@ -37,7 +37,7 @@ class Free2<First, Second> {
   Free<Either<First, Second>, dynamic/*=A*/> liftFirst/*<A>*/(Free<First, dynamic/*=A*/> first) => first.foldMap(FreeM, firstComposer.lift);
   Free<Either<First, Second>, dynamic/*=A*/> liftSecond/*<A>*/(Free<Second, dynamic/*=A*/> second) => second.foldMap(FreeM, secondComposer.lift);
 
-  Function1/*<Free<Either<First, Second>, dynamic>, F>*/ interpreter/*<F>*/(Monad/*F>*/ M, /*=F*/ firstInterpreter(First first), /*=F*/ secondInterpreter(Second second)) {
+  Function1/*<Free<Either<First, Second>, dynamic>, F>*/ interpreter/*<F>*/(Monad/*<F>*/ M, /*=F*/ firstInterpreter(First first), /*=F*/ secondInterpreter(Second second)) {
     final interpreter = composeInterpreters(firstInterpreter, secondInterpreter);
     return (fa) => fa.foldMap(M, interpreter);
   }
@@ -52,7 +52,7 @@ class Free3<First, Second, Third> {
   Free<Either<Either<First, Second>, Third>, dynamic/*=A*/> liftSecond/*<A>*/(Free<Second, dynamic/*=A*/> second) => second.foldMap(FreeM, secondComposer.lift);
   Free<Either<Either<First, Second>, Third>, dynamic/*=A*/> liftThird/*<A>*/(Free<Third, dynamic/*=A*/> third) => third.foldMap(FreeM, thirdComposer.lift);
 
-  Function1/*<Free<Either<Either<First, Second>, Third>, dynamic>, F>*/ interpreter/*<F>*/(Monad/*F>*/ M, firstInterpreter(First op), secondInterpreter(Second op), thirdInterpreter(Third op)) {
+  Function1/*<Free<Either<Either<First, Second>, Third>, dynamic>, F>*/ interpreter/*<F>*/(Monad/*<F>*/ M, firstInterpreter(First op), secondInterpreter(Second op), thirdInterpreter(Third op)) {
     final interpreter = composeInterpreters(composeInterpreters(firstInterpreter, secondInterpreter), thirdInterpreter);
     return (fa) => fa.foldMap(M, interpreter);
   }

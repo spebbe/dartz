@@ -66,7 +66,7 @@ abstract class FoldableOps<F, A> {
 
   Option<A> maximum(Order<A> oa) => concatenateO(new MaxSemigroup<A>(oa));
 
-  A intercalate(Monoid<A> mi, A a) => foldRight(none/*<A>*/(), (A ca, Option oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
+  A intercalate(Monoid<A> mi, A a) => foldRight(none/*<A>*/(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
   /*=G*/ collapse/*<G>*/(ApplicativePlus/*<G>*/ ap) => foldLeft(ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 

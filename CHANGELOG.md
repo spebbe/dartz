@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.5
+
+- Added minSi and maxSi to Order
+- Added reverse to TraversableMonadPlus
+- Added zip to IList
+
 ## 0.4.4
 
 - Tightened types of some overrides and helpers

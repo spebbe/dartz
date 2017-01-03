@@ -6,6 +6,9 @@ abstract class TraversableMonadPlus<F> implements Traversable<F>, MonadPlus<F> {
       foldRight(fa, tuple2(empty(), empty()), (/*=A*/ a, acc) => f(a)
           ? acc.map1((xs) => prependElement(xs, a))
           : acc.map2((xs) => prependElement(xs, a)));
+
+  // TODO: Only requires Foldable and ApplicativePlus
+  F reverse(F fa) => foldLeft(fa, empty(), prependElement);
 }
 
 abstract class TraversableMonadPlusOps<F, A> implements TraversableOps<F, A>, MonadPlusOps<F, A> {
@@ -14,4 +17,7 @@ abstract class TraversableMonadPlusOps<F, A> implements TraversableOps<F, A>, Mo
       foldRight(tuple2(empty(), empty()), (A a, acc) => f(a)
           ? acc.map1((xs) => (xs as dynamic/*=TraversableMonadPlusOps<F, A>*/).prependElement(a))
           : acc.map2((xs) => (xs as dynamic/*=TraversableMonadPlusOps<F, A>*/).prependElement(a)));
+
+  // TODO: Only requires Foldable and ApplicativePlus
+  F reverse() => foldLeft(empty(), (r, e) => (r as dynamic/*=TraversableMonadPlusOps<F, A>*/).prependElement(e));
 }

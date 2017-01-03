@@ -221,6 +221,26 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   IList<A> sort(Order<A> oa) => uncons(nil, (pivot, rest) => rest
       .partition((e) => oa.lt(e, pivot))
       .apply((smaller, larger) => smaller.sort(oa).plus(larger.sort(oa).prependElement(pivot))));
+
+  IList<Tuple2<A, dynamic/*=B*/>> zip/*<B>*/(IList/*<B>*/ bs) {
+    final IList/*<Tuple2<A, B>>*/ abNil = Nil as dynamic/*=IList<Tuple2<A, B>>*/;
+    if (!(_isCons() && bs._isCons())) {
+      return abNil;
+    } else {
+      final IList/*<Tuple2<A, B>>*/ result = new Cons(tuple2(this._unsafeHead(), bs._unsafeHead()), abNil);
+      var thisCurrent = this._unsafeTail();
+      var bsCurrent = bs._unsafeTail();
+      var resultCurrent = result;
+      while(thisCurrent._isCons() && bsCurrent._isCons()) {
+        final next = new Cons(tuple2(thisCurrent._unsafeHead(), bsCurrent._unsafeHead()), abNil);
+        resultCurrent._unsafeSetTail(next);
+        resultCurrent = next;
+        thisCurrent = thisCurrent._unsafeTail();
+        bsCurrent = bsCurrent._unsafeTail();
+      }
+      return result;
+    }
+  }
 }
 
 class Cons<A> extends IList<A> {

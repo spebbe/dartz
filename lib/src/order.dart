@@ -21,7 +21,11 @@ abstract class Order<A> extends Eq<A> {
 
   A min(A a1, A a2) => lt(a1, a2) ? a1 : a2;
 
+  Semigroup<A> minSi() => new MinSemigroup(this);
+
   A max(A a1, A a2) => gte(a1, a2) ? a1 : a2;
+
+  Semigroup<A> maxSi() => new MaxSemigroup(this);
 
   Tuple2<A, A> sort(A a1, A a2) => lte(a1, a2) ? tuple2(a1, a2) : tuple2(a2, a1);
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+
+- Swallowed a chunk of purist pride:
+  - Added toIterable and iterator operations to Option, Either and all immutable collections
+  - Added iterables/iterators for pairs, keys and values to IMap and IHashMap
+
 ## 0.4.5
 
 - Added minSi and maxSi to Order

@@ -20,6 +20,11 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   @override Option<A> plus(Option<A> o2) => orElse(() => o2);
 
   @override String toString() => fold(() => 'None', (a) => 'Some($a)');
+
+  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+
+  Iterable<A> toIterable() => fold(() => _emptyIterable as dynamic/*=Iterable<A>*/, (a) => new _SingletonIterable(a));
+  Iterator<A> iterator() => toIterable().iterator;
 }
 
 class Some<A> extends Option<A> {
@@ -87,3 +92,19 @@ class OptionMonoid<A> extends Monoid<Option<A>> {
   @override Option<A> append(Option<A> oa1, Option<A> oa2) => oa1.fold(() => oa2, (a1) => oa2.fold(() => oa1, (a2) => some(_tSemigroup.append(a1, a2))));
 }
 Monoid<Option/*<A>*/> optionMi/*<A>*/(Semigroup/*<A>*/ si) => new OptionMonoid/*<A>*/(si);
+
+class _SingletonIterable<A> extends Iterable<A> {
+  final A _singleton;
+  _SingletonIterable(this._singleton);
+  @override Iterator<A> get iterator => new _SingletonIterator(_singleton);
+}
+
+class _SingletonIterator<A> extends Iterator<A> {
+  final A _singleton;
+  int _moves = 0;
+  _SingletonIterator(this._singleton);
+  @override A get current => _moves == 1 ? _singleton : null;
+  @override bool moveNext() => ++_moves == 1;
+}
+
+final _emptyIterable = new Iterable.empty();

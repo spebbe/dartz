@@ -36,6 +36,12 @@ class ISet<A> extends FoldableOps<ISet, A> {
   @override bool operator ==(other) => identical(this, other) || (other is ISet && _tree == other._tree);
 
   @override String toString() => "iset<${_tree.toIList().map((a) => a.toString()).intercalate(StringMi, ", ")}>";
+
+  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+
+  Iterable<A> toIterable() => _tree.toIterable();
+
+  Iterator<A> iterator() => _tree.iterator();
 }
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();

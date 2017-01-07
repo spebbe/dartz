@@ -26,6 +26,12 @@ void main() {
     }));
   });
 
+  test("pair iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV/*<IList<Tuple2<int, int>>>*/(nil(), (k, v, p) => cons(tuple2(k, v), p)) == ilist(m.pairIterable()))));
+
+  test("key iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV/*<IList<int>>*/(nil(), (k, v, p) => cons(k, p)) == ilist(m.keyIterable()))));
+
+  test("value iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV/*<IList<int>>*/(nil(), (k, v, p) => cons(v, p)) == ilist(m.valueIterable()))));
+
   group("IHashMapTr", () => checkTraversableLaws(IHashMapTr, intIHashMaps));
 
   group("IHashMap FoldableOps", () => checkFoldableOpsProperties(intIHashMaps));

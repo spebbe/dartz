@@ -16,6 +16,11 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
+
+  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+
+  Iterable<R> toIterable() => fold((_) => _emptyIterable as dynamic/*=Iterable<R>*/, (r) => new _SingletonIterable(r));
+  Iterator<R> iterator() => toIterable().iterator;
 }
 
 class Left<L, R> extends Either<L, R> {

@@ -36,4 +36,6 @@ void main() {
   group("ISetTreeFo", () => checkFoldableLaws(ISetFo, intSets));
 
   group("ISet FoldableOps", () => checkFoldableOpsProperties(intSets));
+
+  test("iterable", () => qc.check(forall(intSets, (ISet<int> s) => s.toIList() == ilist(s.toIterable()))));
 }

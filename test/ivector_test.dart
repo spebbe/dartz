@@ -1,4 +1,5 @@
 import 'package:enumerators/enumerators.dart';
+import 'package:propcheck/propcheck.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
 import 'package:dartz/dartz.dart';
@@ -6,7 +7,7 @@ import 'laws.dart';
 
 
 void main() {
-
+  final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
   final intIVectors = intLists.map(ivector) as Enumeration<IVector<int>>;
 
@@ -36,5 +37,7 @@ void main() {
   });
 
   group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
+
+  test("iterable", () => qc.check(forall(intIVectors, (IVector<int> v) => v == ivector(v.toIterable()))));
 
 }

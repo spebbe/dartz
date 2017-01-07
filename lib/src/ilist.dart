@@ -140,12 +140,6 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
-
-  Iterable<A> toIterable() => new _IListIterable<A>(this);
-
-  Iterator<A> iterator() => new _IListIterator<A>(this);
-
   @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
 
   @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
@@ -214,9 +208,9 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
   @override IList<A> appendElement(A a) => this.plus(new Cons(a, nil()));
 
-  Option/*<B>*/ unconsO/*<B>*/(/*=B*/ f(A head, IList<A> tail)) => OptionMP.map2(headOption, tailOption, f);
+  Option/*<B>*/ unconsO/*<B>*/(/*=B*/ f(A head, IList<A> tail)) => _isCons() ? some(f(_unsafeHead(), _unsafeTail())) : none();
 
-  /*=B*/ uncons/*<B>*/(/*=B*/ z(), /*=B*/ f(A head, IList<A> tail)) => unconsO(f).getOrElse(z);
+  /*=B*/ uncons/*<B>*/(/*=B*/ z(), /*=B*/ f(A head, IList<A> tail)) => _isCons() ? f(_unsafeHead(), _unsafeTail()) : z();
 
   IList<A> sort(Order<A> oa) => uncons(nil, (pivot, rest) => rest
       .partition((e) => oa.lt(e, pivot))
@@ -241,6 +235,14 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
       return result;
     }
   }
+
+  // PURISTS BEWARE: mutable List/Iterable/Iterator integrations below -- proceed with caution!
+
+  List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
+
+  Iterable<A> toIterable() => new _IListIterable<A>(this);
+
+  Iterator<A> iterator() => new _IListIterator<A>(this);
 }
 
 class Cons<A> extends IList<A> {
@@ -315,7 +317,7 @@ class _IListIterable<A> extends Iterable<A> {
 }
 
 class _IListIterator<A> extends Iterator<A> {
-  bool started = false;
+  bool _started = false;
   IList<A> _l;
   A _current = null;
 
@@ -326,7 +328,7 @@ class _IListIterator<A> extends Iterator<A> {
   bool moveNext() {
     final IList/*<A>*/ curr = _l;
     if (curr._isCons()) {
-      if (started) {
+      if (_started) {
         final IList/*<A>*/ next = curr._unsafeTail();
         _l = next;
         if (next._isCons()) {
@@ -338,7 +340,7 @@ class _IListIterator<A> extends Iterator<A> {
         }
       } else {
         _current = curr._unsafeHead();
-        started = true;
+        _started = true;
         return true;
       }
     } else {

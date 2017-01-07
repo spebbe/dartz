@@ -33,6 +33,12 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
   @override bool operator ==(other) => identical(this, other) || (other is AVLTree && _order == other._order && toIList() == other.toIList());
 
   @override String toString() => 'avltree<${toIList()}>';
+
+  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+
+  Iterable<A> toIterable() => new _AVLTreeIterable<A>(this);
+
+  Iterator<A> iterator() => toIterable().iterator;
 }
 
 abstract class _AVLNode<A> {
@@ -48,6 +54,7 @@ abstract class _AVLNode<A> {
   int get height;
   int get balance;
   Option<Tuple2<_AVLNode<A>, A>> _removeMax();
+  bool get empty;
 }
 
 class _NonEmptyAVLNode<A> extends _AVLNode<A> {
@@ -148,6 +155,8 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   Option<A> min() => _left == emptyAVLNode ? some(_a) : _left.min();
 
   Option<A> max() => _right == emptyAVLNode ? some(_a) : _right.max();
+
+  bool get empty => false;
 }
 
 class _EmptyAVLNode<A> extends _AVLNode<A> {
@@ -174,6 +183,8 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
   @override Option<Tuple2<_AVLNode<A>, A>> _removeMax() => none();
 
   @override operator ==(other) => identical(emptyAVLNode, other);
+
+  bool get empty => true;
 }
 
 _AVLNode/*<A>*/ emptyAVLNode/*<A>*/() => const _EmptyAVLNode();
@@ -190,3 +201,68 @@ class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
 }
 
 final Foldable<AVLTree> AVLTreeFo = new FoldableOpsFoldable<AVLTree>();
+
+class _AVLTreeIterable<A> extends Iterable<A> {
+  final AVLTree<A> _tree;
+  _AVLTreeIterable(this._tree);
+  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator<A>(_tree._root as dynamic/*=_NonEmptyAVLNode<A>*/);
+}
+
+class _AVLTreeIterator<A> extends Iterator<A> {
+
+  bool _started = false;
+  _NonEmptyAVLNode<A> _currentNode = null;
+  IList<_NonEmptyAVLNode<A>> _path = nil();
+
+  _AVLTreeIterator(this._currentNode);
+
+  @override A get current => _currentNode != null ? _currentNode._a : null;
+
+  @override bool moveNext() {
+    if (_currentNode != null) {
+      if (_started) {
+        return _descend();
+      } else {
+        _descendLeft();
+        _started = true;
+        return true;
+      }
+    } else {
+      _currentNode = null;
+      return false;
+    }
+  }
+
+  bool _descend() {
+    if (!_currentNode._right.empty) {
+      _currentNode = _currentNode._right as dynamic/*=_NonEmptyAVLNode<A>*/;
+      _descendLeft();
+      return true;
+    } else {
+      if (_path._isCons()) {
+        _currentNode = _path._unsafeHead();
+        _path = _path._unsafeTail();
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  void _descendLeft() {
+    var current = _currentNode;
+    var currentLeft = current._left;
+    while(true) {
+      if (!currentLeft.empty) {
+        final _NonEmptyAVLNode<A> cl = currentLeft as dynamic/*=_NonEmptyAVLNode<A>*/;
+        _path = cons(current, _path);
+        current = cl;
+        currentLeft = cl._left;
+      } else {
+        _currentNode = current;
+        return;
+      }
+    }
+  }
+
+}

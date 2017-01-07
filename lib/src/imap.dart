@@ -58,6 +58,24 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && pairs() == other.pairs());
 
   @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", nil/*<String>*/())).intercalate(StringMi, ", ")}}";
+
+  // PURISTS BEWARE: mutable Iterable/Iterator integrations -- proceed with caution!
+
+  Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable<K, V>(this);
+
+  Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
+
+  Iterable<K> keyIterable() => new _IMapKeyIterable<K, V>(this);
+
+  Iterator<K> keyIterator() => keyIterable().iterator;
+
+  Iterable<V> valueIterable() => new _IMapValueIterable<K, V>(this);
+
+  Iterator<V> valueIterator() => valueIterable().iterator;
+
+  Iterable<Tuple2<K, V>> toIterable() => pairIterable();
+
+  Iterator<Tuple2<K, V>> iterator() => pairIterator();
 }
 
 IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);
@@ -99,6 +117,7 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt);
   _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v));
+  bool get empty;
 }
 
 class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -227,6 +246,8 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       return new _NonEmptyIMapAVLNode(_k, f(_v), _left, _right);
     }
   }
+
+  bool get empty => false;
 }
 
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -256,7 +277,100 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override operator ==(other) => identical(_emptyIMapAVLNode, other);
 
+  bool get empty => true;
 }
 
 final _IMapAVLNode _emptyIMapAVLNode = new _EmptyIMapAVLNode();
 _IMapAVLNode/*<K, V>*/ emptyIMapAVLNode/*<K, V>*/() => _emptyIMapAVLNode as dynamic/*=_IMapAVLNode<K, V>*/;
+
+abstract class _IMapIterable<K, V, A> extends Iterable<A> {
+  final IMap<K, V> _m;
+  _IMapIterable(this._m);
+}
+
+class _IMapPairIterable<K, V> extends _IMapIterable<K, V, Tuple2<K, V>> {
+  _IMapPairIterable(IMap<K, V> m) : super(m);
+  @override Iterator<Tuple2<K, V>> get iterator => _m._tree.empty ? new _IMapPairIterator(null) : new _IMapPairIterator<K, V>(_m._tree as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
+}
+
+class _IMapKeyIterable<K, V> extends _IMapIterable<K, V, K> {
+  _IMapKeyIterable(IMap<K, V> m) : super(m);
+  @override Iterator<K> get iterator => _m._tree.empty ? new _IMapKeyIterator(null) : new _IMapKeyIterator<K, V>(_m._tree as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
+}
+
+class _IMapValueIterable<K, V> extends _IMapIterable<K, V, V> {
+  _IMapValueIterable(IMap<K, V> m) : super(m);
+  @override Iterator<V> get iterator => _m._tree.empty ? new _IMapValueIterator(null) : new _IMapValueIterator<K, V>(_m._tree as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/);
+}
+
+abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
+
+  bool _started = false;
+  _NonEmptyIMapAVLNode<K, V> _currentNode = null;
+  IList<_NonEmptyIMapAVLNode<K, V>> _path = nil();
+
+  _IMapAVLNodeIterator(this._currentNode);
+
+  @override bool moveNext() {
+    if (_currentNode != null) {
+      if (_started) {
+        return _descend();
+      } else {
+        _descendLeft();
+        _started = true;
+        return true;
+      }
+    } else {
+      _currentNode = null;
+      return false;
+    }
+  }
+
+  bool _descend() {
+    if (!_currentNode._right.empty) {
+      _currentNode = _currentNode._right as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/;
+      _descendLeft();
+      return true;
+    } else {
+      if (_path._isCons()) {
+        _currentNode = _path._unsafeHead();
+        _path = _path._unsafeTail();
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  void _descendLeft() {
+    var current = _currentNode;
+    var currentLeft = current._left;
+    while(true) {
+      if (!currentLeft.empty) {
+        final _NonEmptyIMapAVLNode<K, V> cl = currentLeft as dynamic/*=_NonEmptyIMapAVLNode<K, V>*/;
+        _path = cons(current, _path);
+        current = cl;
+        currentLeft = cl._left;
+      } else {
+        _currentNode = current;
+        return;
+      }
+    }
+  }
+
+}
+
+class _IMapPairIterator<K, V> extends _IMapAVLNodeIterator<K, V, Tuple2<K, V>> {
+  _IMapPairIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
+  @override Tuple2<K, V> get current => _currentNode != null ? tuple2(_currentNode._k, _currentNode._v) : null;
+}
+
+class _IMapKeyIterator<K, V> extends _IMapAVLNodeIterator<K, V, K> {
+  _IMapKeyIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
+  @override K get current => _currentNode != null ? _currentNode._k : null;
+}
+
+class _IMapValueIterator<K, V> extends _IMapAVLNodeIterator<K, V, V> {
+  _IMapValueIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
+  @override V get current => _currentNode != null ? _currentNode._v : null;
+}

@@ -56,4 +56,9 @@ void main() {
   group("EitherTr", () => checkTraversableLaws(EitherTr, intEithers));
 
   group("Either FoldableOps", () => checkFoldableOpsProperties(intEithers));
+
+  test("iterable", () {
+    expect(right(1).toIterable().toList(), [1]);
+    expect(left("nope").toIterable().toList(), []);
+  });
 }

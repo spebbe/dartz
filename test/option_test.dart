@@ -49,4 +49,9 @@ void main() {
   group("OptionTr", () => checkTraversableLaws(OptionTr, intOptions));
 
   group("Option FoldableOps", () => checkFoldableOpsProperties(intOptions));
+
+  test("iterable", () {
+    expect(some(1).toIterable().toList(), [1]);
+    expect(none().toIterable().toList(), []);
+  });
 }

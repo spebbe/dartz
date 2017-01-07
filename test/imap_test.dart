@@ -39,6 +39,12 @@ void main() {
     }));
   });
 
+  test("pair iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.pairs() == ilist(m.pairIterable()))));
+
+  test("key iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.keys() == ilist(m.keyIterable()))));
+
+  test("value iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.values() == ilist(m.valueIterable()))));
+
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
   group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoid(IListMi), c.ints.map((i) => imap({i: ilist([i])}))));

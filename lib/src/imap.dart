@@ -14,6 +14,16 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   factory IMap.fromWithOrder(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.emptyWithOrder(kOrder), (IMap<K, V> p, K k) => p.put(k, m[k]));
 
+  factory IMap.fromIterables(Iterable<K> keys, Iterable<V> values, [Order<K> kOrder]) {
+    IMap<K, V> result = new IMap.emptyWithOrder(kOrder ?? comparableOrder());
+    final Iterator<K> keyIterator = keys.iterator;
+    final Iterator<V> valueIterator = values.iterator;
+    while(keyIterator.moveNext() && valueIterator.moveNext()) {
+      result = result.put(keyIterator.current, valueIterator.current);
+    }
+    return result;
+  }
+
   IMap<K, V> put(K k, V v) => new IMap(_order, _tree.insert(_order, k, v));
 
   Option<V> get(K k) => _tree.get(_order, k);

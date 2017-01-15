@@ -45,6 +45,8 @@ void main() {
 
   test("value iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.values() == ilist(m.valueIterable()))));
 
+  test("create from iterables", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m == new IMap.fromIterables(m.keyIterable(), m.valueIterable()))));
+
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
   group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoid(IListMi), c.ints.map((i) => imap({i: ilist([i])}))));

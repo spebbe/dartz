@@ -42,3 +42,4 @@ part 'src/monad_catch.dart';
 part 'src/task.dart';
 part 'src/io.dart';
 part 'src/free_composition.dart';
+part 'src/lens.dart';

@@ -213,7 +213,7 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   Option<V> get(Order<K> order, K k) {
     var current = this;
-    while(current is _NonEmptyIMapAVLNode) {
+    while(!current.empty) {
       final Ordering o = order.order(k, current._k);
       if (o == Ordering.EQ) {
         return some(current._v);

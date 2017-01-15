@@ -139,7 +139,7 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   Option<A> get(Order<A> order, A a) {
     var current = this;
-    while(current is _NonEmptyAVLNode) {
+    while(!current.empty) {
       final Ordering o = order.order(a, current._a);
       if (o == Ordering.EQ) {
         return some(current._a);

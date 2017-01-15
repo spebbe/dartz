@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+- Added experimental Lens implementation and example!
+- Added IMap.fromIterables
+- Slightly faster get operations on IMap and AVLTree
+
 ## 0.5.0
 
 - Swallowed a chunk of purist pride:

@@ -36,6 +36,67 @@ void main() {
     expect(v2.set(6, "ö"), none());
   });
 
+  test("IVector update", () {
+    qc.check(forall2(intLists, c.ints, (List<int> l, int i) {
+      if (l.length == 0) {
+        return true;
+      } else {
+        final index = i % l.length;
+        final im = new IVector.from(l).setIfPresent(index, i);
+        l[index] = i;
+        return im == new IVector.from(l);
+      }
+    }));
+  });
+
+  test("IVector removeFirst", () {
+    qc.check(forall(intLists, (List<int> l) {
+      final v = new IVector.from(l);
+      if (l.length > 0) {
+        final removed = l.removeAt(0);
+        return v.removeFirst().fold(() => false, (t) => t.value1 == removed && t.value2 == new IVector.from(l));
+      } else {
+        return v.removeFirst() == none();
+      }
+    }));
+  });
+
+  test("IVector dropFirst", () {
+    qc.check(forall(intLists, (List<int> l) {
+      final v = new IVector.from(l);
+      if (l.length > 0) {
+        l.removeAt(0);
+        return v.dropFirst() == new IVector.from(l);
+      } else {
+        return v.dropFirst() == v;
+      }
+    }));
+  });
+
+  test("IVector removeLast", () {
+    qc.check(forall(intLists, (List<int> l) {
+      final v = new IVector.from(l);
+      if (l.length > 0) {
+        final removed = l.removeLast();
+        return v.removeLast().fold(() => false, (t) => t.value1 == removed && t.value2 == new IVector.from(l));
+      } else {
+        return v.removeLast() == none();
+      }
+    }));
+  });
+
+  test("IVector dropLast", () {
+    qc.check(forall(intLists, (List<int> l) {
+      final v = new IVector.from(l);
+      if (l.length > 0) {
+        l.removeLast();
+        return v.dropLast() == new IVector.from(l);
+      } else {
+        return v.dropLast() == v;
+      }
+    }));
+  });
+
   group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
 
   test("iterable", () => qc.check(forall(intIVectors, (IVector<int> v) => v == ivector(v.toIterable()))));

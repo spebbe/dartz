@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.2
+
+- Improved performance of set operation on IMap and IVector
+- Added setIfPresent to IMap
+- Added setIfPresent, removeFirst, dropFirst, removeLast and dropLast to IVector
+- Added window and windowAll to Pipe and Conveyor
+
 ## 0.5.1
 
 - Added experimental Lens implementation and example!

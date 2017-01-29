@@ -32,7 +32,15 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   IMap<K, V> modify(K k, V f(V v), V dflt) => new IMap(_order, _tree.modify(_order, k, f, dflt));
 
-  Option<IMap<K, V>> set(K k, V v) => _tree.set(_order, k, v).map((newTree) => new IMap(_order, newTree));
+  Option<IMap<K, V>> set(K k, V v) {
+    final newMap = setIfPresent(k, v);
+    return identical(this, newMap) ? none() : some(newMap);
+  }
+
+  IMap<K, V> setIfPresent(K k, V v) {
+    final newTree = _tree.setIfPresent(_order, k, v);
+    return identical(_tree, newTree) ? this : new IMap(_order, newTree);
+  }
 
   IMap<K, V> remove(K k) => new IMap(_order, _tree.remove(_order, k));
 
@@ -89,7 +97,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 }
 
 IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);
-IMap/*<K, V>*/ imapWithOrder/*<K, V>*/(Order/*<K>*/ o, Map/*<K, V>*/ m) => new IMap.fromWithOrder(o, m);
+IMap/*<K, V>*/ imapWithOrder/*<K, K2 extends K, V>*/(Order/*<K>*/ o, Map/*<K2, V>*/ m) => new IMap/*<K, V>*/.fromWithOrder(o, m);
 IMap/*<K, V>*/ emptyMap/*<K, V>*/() => new IMap.empty();
 IMap/*<K, V>*/ singletonMap/*<K, V>*/(/*=K*/ k, /*=V*/ v) => new IMap/*<K, V>*/.empty().put(k, v);
 
@@ -124,7 +132,7 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   int get height;
   int get balance;
   Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax();
-  Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v);
+  _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt);
   _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v));
   bool get empty;
@@ -233,14 +241,16 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     return new _NonEmptyIMapAVLNode/*<K, V2>*/(_k, newV, newLeft, newRight);
   }
 
-  @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) {
+  @override _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v) {
     final Ordering o = order.order(k, _k);
     if (o == Ordering.LT) {
-      return _left.set(order, k, v).map((newLeft) => new _NonEmptyIMapAVLNode(_k, _v, newLeft, _right));
+      final newLeft = _left.setIfPresent(order, k, v);
+      return identical(newLeft, _left) ? this : new _NonEmptyIMapAVLNode(_k, _v, newLeft, _right);
     } else if (o == Ordering.GT) {
-      return _right.set(order, k, v).map((newRight) => new _NonEmptyIMapAVLNode(_k, _v, _left, newRight));
+      final newRight = _right.setIfPresent(order, k, v);
+      return identical(newRight, _right) ? this : new _NonEmptyIMapAVLNode(_k, _v, _left, newRight);
     } else {
-      return some(new _NonEmptyIMapAVLNode(_k, v, _left, _right));
+      return new _NonEmptyIMapAVLNode(_k, v, _left, _right);
     }
   }
 
@@ -279,7 +289,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax() => none();
 
-  @override Option<_IMapAVLNode<K, V>> set(Order<K> order, K k, V v) => none();
+  @override _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v) => this;
 
   @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, emptyIMapAVLNode(), emptyIMapAVLNode());
 

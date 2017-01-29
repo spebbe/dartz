@@ -147,6 +147,10 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> skipDuplicates([Eq/*<O>*/ eq]) => pipe(Pipe.skipDuplicates(eq));
 
+  Conveyor<F, IVector<O>> window(int n) => pipe(Pipe.window(n));
+
+  Conveyor<F, IVector<O>> windowAll(int n) => pipe(Pipe.windowAll(n));
+
   Conveyor<F, dynamic/*=O3*/> tee/*<O2, O3>*/(Conveyor<F, dynamic/*=O2*/> c2, Conveyor/*<Both<O, O2>, O3>*/ t) => t.interpret/*<Conveyor<F, O3>>*/(
       (h, t) => produce/*<F, O3>*/(h, tee/*<O2, O3>*/(c2, t))
       ,(side, recv) => side == Tee._getL

@@ -79,4 +79,7 @@ class Pipe {
 
   static Conveyor/*<From<Option<A>>, A>*/ uniteOption/*<A>*/() => consume/*<Option<A>, A>*/((oa) => oa.fold(halt, produce)).repeatUntilExhausted();
 
+  static Conveyor/*<From<A>, IVector<A>>*/ window/*<A>*/(int n) => Pipe.scan(emptyVector/*<A>*/(), (IVector/*<A>*/ v, /*=A*/ i) => v.length() >= n ? v.dropFirst().appendElement(i) : v.appendElement(i));
+
+  static Conveyor/*<From<A>, IVector<A>>*/ windowAll/*<A>*/(int n) => window/*<A>*/(n).filter((l) => l.length() >= n);
 }

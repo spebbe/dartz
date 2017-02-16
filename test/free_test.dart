@@ -53,12 +53,12 @@ void main() {
 
   group("free RPN interpreter demo", (){
     test("successful evaluation", () async {
-      expect(await circleArea.foldMap(M, rpnInterpreter).run(imap({"PI": 3.14159, "r": 5.0}), Nil),
+      expect(await circleArea.foldMap(M, rpnInterpreter).run(imap({"PI": 3.14159, "r": 5.0}), nil()),
           right(tuple3(ilist(["Pushing value of PI: 3.14159", "Pushing value of r: 5.0"]), Nil, 78.53975)));
     });
 
     test("failing evaluation 1", () async {
-      expect(await circleArea.foldMap(M, rpnInterpreter).run(imap({"PI": 3.14159, "radius": 5.0}), Nil),
+      expect(await circleArea.foldMap(M, rpnInterpreter).run(imap({"PI": 3.14159, "radius": 5.0}), nil()),
           left("Undefined symbol: r"));
     });
 

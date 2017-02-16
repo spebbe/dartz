@@ -69,3 +69,4 @@ final Order<double> DoubleOrder = new ComparableOrder<double>();
 
 final Order<String> StringOrder = new ComparableOrder<String>();
 
+/*=T*/ cast/*<T>*/(dynamic d) => d as dynamic/*=T*/;

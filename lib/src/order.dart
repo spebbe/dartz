@@ -44,8 +44,8 @@ class _AnonymousOrder<A> extends Order<A> {
   @override Ordering order(A a1, A a2) => _f(a1, a2);
 }
 
-Order/*<A>*/ order/*<A>*/(OrderF/*<A>*/ f) => new _AnonymousOrder(f);
-Order/*<A>*/ orderBy/*<A, B>*/(Order/*<B>*/ o, /*=B*/ by(/*=A*/ a)) => new _AnonymousOrder((/*=A*/ a1, /*=A*/ a2) => o.order(by(a1), by(a2)));
+Order<A> order<A>(OrderF<A> f) => new _AnonymousOrder(f);
+Order<A> orderBy<A, B>(Order<B> o, B by(A a)) => new _AnonymousOrder((A a1, A a2) => o.order(by(a1), by(a2)));
 
 class ComparableOrder<A extends Comparable> extends Order<A> {
   @override Ordering order(A a1, A a2) {
@@ -55,7 +55,7 @@ class ComparableOrder<A extends Comparable> extends Order<A> {
 }
 
 final Order _comparableOrder = new ComparableOrder();
-Order/*<A>*/ comparableOrder/*<A>*/() => _comparableOrder as dynamic/*=Order<A>*/;
+Order<A> comparableOrder<A>() => cast(_comparableOrder);
 
 class ToStringOrder<A extends Object> extends Order<A> {
   Ordering order(A a1, A a2) => _comparableOrder.order(a1.toString(), a2.toString());

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0
+
+- Migrated to non-commented generic method syntax
+  - Requires sdk >= 1.21.0
+
 ## 0.5.7
 
 - Added efficient operations related to lower/upper bounds to IMap:

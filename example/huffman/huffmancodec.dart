@@ -12,7 +12,7 @@ abstract class _HuffmanNode {
   final num frequency;
   final String char;
   _HuffmanNode(this.frequency, this.char);
-  /*=A*/ fold/*<A>*/(/*=A*/ ifInternal(_InternalHuffmanNode node), /*=A*/ ifLeaf(_LeafHuffmanNode node));
+  A fold<A>(A ifInternal(_InternalHuffmanNode node), A ifLeaf(_LeafHuffmanNode node));
   // Technique: Composing Order instances into two level Order
   static final order = orderBy(NumOrder, (_HuffmanNode node) => node.frequency).andThen(orderBy(StringOrder, (_HuffmanNode node) => node.char));
 }
@@ -20,11 +20,11 @@ class _InternalHuffmanNode extends _HuffmanNode {
   final _HuffmanNode left;
   final _HuffmanNode right;
   _InternalHuffmanNode(num frequency, String char, this.left, this.right): super(frequency, char);
-  @override /*=A*/fold/*<A>*/(/*=A*/ ifInternal(_InternalHuffmanNode node), /*=A*/ ifLeaf(_LeafHuffmanNode node)) => ifInternal(this);
+  @override A fold<A>(A ifInternal(_InternalHuffmanNode node), A ifLeaf(_LeafHuffmanNode node)) => ifInternal(this);
 }
 class _LeafHuffmanNode extends _HuffmanNode {
   _LeafHuffmanNode(num frequency, String char): super(frequency, char);
-  @override /*=A*/ fold/*<A>*/(/*=A*/ ifInternal(_InternalHuffmanNode node), /*=A*/ ifLeaf(_LeafHuffmanNode node)) => ifLeaf(this);
+  @override A fold<A>(A ifInternal(_InternalHuffmanNode node), A ifLeaf(_LeafHuffmanNode node)) => ifLeaf(this);
 }
 
 enum Bit { ZERO, ONE }

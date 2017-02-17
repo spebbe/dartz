@@ -4,13 +4,13 @@ part of dartz;
 // If possible, use IList and its associated instances instead.
 
 class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List> {
-  @override List/*<A>*/ pure/*<A>*/(/*=A*/ a) => [a];
-  @override List/*<B>*/ bind/*<A, B>*/(List/*<A>*/ fa, List/*<B>*/ f(/*=A*/ a)) => fa.expand(f).toList();
+  @override List<A> pure<A>(A a) => [a];
+  @override List<B> bind<A, B>(List<A> fa, List<B> f(A a)) => fa.expand(f).toList();
 
-  @override List/*<A>*/ empty/*<A>*/() => [];
-  @override List/*<A>*/ plus/*<A>*/(List/*<A>*/ f1, List/*<A>*/ f2) => new List.from(f1)..addAll(f2);
+  @override List<A> empty<A>() => [];
+  @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);
 
-  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, List fas, /*=G*/ f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
+  @override G traverse<G>(Applicative<G> gApplicative, List fas, G f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
     return gApplicative.lift2((List a, b) {
       final r = new List.from(a);
       r.add(b);
@@ -25,21 +25,21 @@ class ListMonoid<A> extends Monoid<List<A>> {
 }
 
 final ListTraversableMonadPlus ListMP = new ListTraversableMonadPlus();
-MonadPlus<List/*<A>*/> listMP/*<A>*/() => ListMP as dynamic/*=MonadPlus<List<A>>*/;
+MonadPlus<List<A>> listMP<A>() => cast(ListMP);
 final Traversable<List> ListTr = ListMP;
 
 final Monoid<List> ListMi = new ListMonoid();
-Monoid<List/*<A>*/> listMi/*<A>*/() => ListMi as dynamic/*=Monoid<List<A>>*/;
+Monoid<List<A>> listMi<A>() => cast(ListMi);
 
 class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
   Monad<M> _stackedM;
   ListTMonad(this._stackedM);
   Monad underlying() => ListMP;
 
-  @override M pure(a) => _stackedM.pure([a]);
+  @override M pure<A>(A a) => _stackedM.pure([a]);
   M _concat(M a, M b) => _stackedM.bind(a, (Iterable l1) => _stackedM.map(b, (Iterable l2) => new List.from(l1)..addAll(l2)));
-  @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map(f).reduce(_concat)));
+  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map(f).reduce(_concat)));
 }
 
-Monad/*<M>*/ listTMonad/*<M>*/(Monad/*<M>*/ mmonad) => new ListTMonad/*<M>*/(mmonad);
+Monad<M> listTMonad<M>(Monad<M> mmonad) => new ListTMonad(mmonad);
 

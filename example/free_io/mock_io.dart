@@ -14,10 +14,10 @@ class _MockFileRef implements FileRef {
 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockReadFile(String fileName) =>
     MockM.gets((counters) => counters[fileName]|0) >= (int i) =>
-    MockM.asks((inputs) => inputs[fileName]|emptyVector/*<String>*/()) >= (IVector<String> vs) =>
+    MockM.asks((inputs) => inputs[fileName]|emptyVector<String>()) >= (IVector<String> vs) =>
     MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1));
 
-Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic/*=A*/> _interpret/*<A>*/(Free<IOOp, dynamic/*=A*/> op) =>
+Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, A> _interpret<A>(Free<IOOp, A> op) =>
   op.foldMap(MockM, mockIOInterpreter);
 
 // Technique: Interpret Free monad into Evaluation
@@ -61,5 +61,5 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 }
 
 // Technique: Interpret Free monad and run resulting Evaluation using reader (mocked inputs) and initial state (index in input vector)
-Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>> mockPerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io, IMap<String, IVector<String>> input) =>
+Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockPerformIO<A>(Free<IOOp, A> io, IMap<String, IVector<String>> input) =>
     _interpret(io).run(input, emptyMap());

@@ -6,14 +6,14 @@ class ISet<A> extends FoldableOps<ISet, A> {
   ISet(this._tree);
   factory ISet.emptyWithOrder(Order<A> order) => new ISet(new AVLTree<A>(order, emptyAVLNode()));
   factory ISet.empty() => new ISet<A>.emptyWithOrder(comparableOrder());
-  factory ISet.fromFoldableWithOrder(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.emptyWithOrder(order), (p, a) => p.insert(a as dynamic/*=A*/));
+  factory ISet.fromFoldableWithOrder(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.emptyWithOrder(order), (p, a) => p.insert(cast(a)));
   factory ISet.fromFoldable(Foldable foldable, fa) => new ISet<A>.fromFoldableWithOrder(comparableOrder(), foldable, fa);
   factory ISet.fromIListWithOrder(Order<A> order, IList<A> l) => new ISet.fromFoldableWithOrder(order, IListTr, l);
   factory ISet.fromIList(IList<A> l) => new ISet<A>.fromIListWithOrder(comparableOrder(), l);
 
-  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => _tree.foldMap(bMonoid, f);
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _tree.foldLeft(z, f);
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _tree.foldRight(z, f);
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _tree.foldMap(bMonoid, f);
+  @override B foldLeft<B>(B z, B f(B previous, A a)) => _tree.foldLeft(z, f);
+  @override B foldRight<B>(B z, B f(A a, B previous)) => _tree.foldRight(z, f);
 
   ISet<A> insert(A a) => new ISet(_tree.insert(a));
 
@@ -48,7 +48,7 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();
 
-ISet/*<A>*/ iset/*<A>*/(Iterable/*<A>*/ l) => new ISet.fromIList(ilist(l));
+ISet<A> iset<A>(Iterable<A> l) => new ISet.fromIList(ilist(l));
 
 class ISetMonoid<A> extends Monoid<ISet<A>> {
   final Order<A> _aOrder;
@@ -59,4 +59,4 @@ class ISetMonoid<A> extends Monoid<ISet<A>> {
   @override ISet<A> append(ISet<A> a1, ISet<A> a2) => a1.union(a2);
 }
 
-Monoid<ISet/*<A>*/> isetMi/*<A>*/(Order/*<A>*/ o) => new ISetMonoid/*<A>*/(o);
+Monoid<ISet<A>> isetMi<A>(Order<A> o) => new ISetMonoid(o);

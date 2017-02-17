@@ -34,23 +34,23 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
   Option<IHashMap<K, V>> set(K k, V v) => get(k).map((_) => put(k, v)); // TODO: optimize
 
-  @override IHashMap<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => new IHashMap/*<K, V2>*/.internal(_map.map((kvs) => kvs.map((kv) => kv.map2(f))));
+  @override IHashMap<K, V2> map<V2>(V2 f(V v)) => new IHashMap.internal(_map.map((kvs) => kvs.map((kv) => kv.map2(f))));
 
   Map<K, V> toMap() => foldLeftKV(new Map(), (Map<K, V> p, K k, V v) => p..[k] = v);
 
-  /*=B*/ foldLeftKV/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) =>
+  B foldLeftKV<B>(B z, B f(B previous, K k, V v)) =>
       _map.foldLeft(z, (prev, kvs) => kvs.foldLeft(prev, (pprev, kv) => f(pprev, kv.value1, kv.value2)));
 
-  /*=B*/ foldRightKV/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) =>
+  B foldRightKV<B>(B z, B f(K k, V v, B previous)) =>
       _map.foldRight(z, (kvs, prev) => kvs.foldRight(prev, (kv, pprev) => f(kv.value1, kv.value2, pprev)));
 
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, V v)) =>
+  @override B foldLeft<B>(B z, B f(B previous, V v)) =>
       _map.foldLeft(z, (prev, kvs) => kvs.foldLeft(prev, (pprev, kv) => f(pprev, kv.value2)));
 
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(V v, /*=B*/ previous)) =>
+  @override B foldRight<B>(B z, B f(V v, B previous)) =>
       _map.foldRight(z, (kvs, prev) => kvs.foldRight(prev, (kv, pprev) => f(kv.value2, pprev)));
 
-  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(V v)) =>
+  @override G traverse<G>(Applicative<G> gApplicative, G f(V v)) =>
       _map.foldLeft(gApplicative.pure(new IHashMap.empty()),
           (prev, kvs) => kvs.foldLeft(prev,
               (pprev, kv) => gApplicative.map2(pprev, f(kv.value2),
@@ -81,4 +81,4 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();
 
-IHashMap/*<K, V>*/ ihashmap/*<K, V>*/(Map/*<K, V>*/ m) => new IHashMap.from(m);
+IHashMap<K, V> ihashmap<K, V>(Map<K, V> m) => new IHashMap.from(m);

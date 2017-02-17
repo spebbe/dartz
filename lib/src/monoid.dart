@@ -15,4 +15,4 @@ class _AnonymousMonoid<A> extends Monoid<A> {
   @override A append(A a1, A a2) => _append(a1, a2);
 }
 
-Monoid/*<A>*/ monoid/*<A>*/(/*=A*/ zero(), /*=A*/ append(/*=A*/ t1, /*=A*/ t2)) => new _AnonymousMonoid/*<A>*/(zero, append);
+Monoid<A> monoid<A>(A zero(), A append(A t1, A t2)) => new _AnonymousMonoid(zero, append);

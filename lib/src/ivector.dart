@@ -31,11 +31,11 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   IVector<A> setIfPresent(int index, A a) => new IVector._internal(_elementsByIndex.setIfPresent(_offset+index, a), _offset, _length);
 
-  @override IVector/*<B>*/ pure/*<B>*/(/*=B*/ b) => emptyVector/*<B>*/().appendElement(b);
+  @override IVector<B> pure<B>(B b) => emptyVector<B>().appendElement(b);
 
-  @override IVector/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
+  @override IVector<B> map<B>(B f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
 
-  @override IVector/*<B>*/ bind/*<B>*/(IVector/*<B>*/ f(A a)) => foldLeft(emptyVector(), (IVector/*<B>*/ p, A a) => p.plus(f(a)));
+  @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (IVector<B> p, A a) => p.plus(f(a)));
 
   @override IVector<A> empty() => emptyVector();
 
@@ -55,17 +55,17 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
     }
   }
 
-  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) =>
+  @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) =>
       _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
           (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _elementsByIndex.foldLeft(z, f);
+  @override B foldLeft<B>(B z, B f(B previous, A a)) => _elementsByIndex.foldLeft(z, f);
 
-  @override /*=B*/ foldLeftWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, int i, A a)) => _elementsByIndex.foldLeftKV(z, (previous, i, a) => f(previous, _offset+i, a));
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) => _elementsByIndex.foldLeftKV(z, (previous, i, a) => f(previous, _offset+i, a));
 
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _elementsByIndex.foldRight(z, f);
+  @override B foldRight<B>(B z, B f(A a, B previous)) => _elementsByIndex.foldRight(z, f);
 
-  @override /*=B*/ foldRightWithIndex/*<B>*/(/*=B*/ z, /*=B*/ f(int i, A a, /*=B*/ previous)) => _elementsByIndex.foldRightKV(z, (i, a, previous) => f(_offset+i, a, previous));
+  @override B foldRightWithIndex<B>(B z, B f(int i, A a, B previous)) => _elementsByIndex.foldRightKV(z, (i, a, previous) => f(_offset+i, a, previous));
 
   @override int length() => _length;
 
@@ -82,13 +82,13 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   Iterator<A> iterator() => _elementsByIndex.valueIterator();
 }
 
-IVector/*<A>*/ ivector/*<A>*/(Iterable/*<A>*/ iterable) => new IVector.from(iterable);
+IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);
 
 final IVector _emptyVector = new IVector.emptyVector();
-IVector/*<A>*/ emptyVector/*<A>*/() => _emptyVector as dynamic/*=IVector<A>*/;
+IVector<A> emptyVector<A>() => cast(_emptyVector);
 
 final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonadPlus<IVector>((a) => emptyVector().appendElement(a), emptyVector);
-MonadPlus<IVector/*<A>*/> ivectorMP/*<A>*/() => IVectorMP as dynamic/*=MonadPlus<IVector<A>>*/;
+MonadPlus<IVector<A>> ivectorMP<A>() => cast(IVectorMP);
 final Traversable<IVector> IVectorTr = new TraversableOpsTraversable<IVector>();
 
 class IVectorMonoid<A> extends Monoid<IVector<A>> {
@@ -97,4 +97,4 @@ class IVectorMonoid<A> extends Monoid<IVector<A>> {
 }
 
 final Monoid<IVector> IVectorMi = new IVectorMonoid();
-Monoid<IVector/*<A>*/> ivectorMi/*<A>*/() => IVectorMi as dynamic/*=Monoid<IVector<A>>*/;
+Monoid<IVector<A>> ivectorMi<A>() => cast(IVectorMi);

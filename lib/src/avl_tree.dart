@@ -14,11 +14,11 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   AVLTree<A> remove(A a) => new AVLTree(_order, _root.remove(_order, a));
 
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => _root.foldLeft(z, f);
+  @override B foldLeft<B>(B z, B f(B previous, A a)) => _root.foldLeft(z, f);
 
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => _root.foldRight(z, f);
+  @override B foldRight<B>(B z, B f(A a, B previous)) => _root.foldRight(z, f);
 
-  @override  /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
 
   factory AVLTree.fromIList(Order<A> order, IList<A> l) => l.foldLeft(new AVLTree<A>(order, emptyAVLNode()), (AVLTree<A> tree, A a) => tree.insert(a));
 
@@ -48,8 +48,8 @@ abstract class _AVLNode<A> {
 
   _AVLNode<A> insert(Order<A> order, A a);
   _AVLNode<A> remove(Order<A> order, A a);
-  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a));
-  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous));
+  B foldLeft<B>(B z, B f(B previous, A a));
+  B foldRight<B>(B z, B f(A a, B previous));
   Option<A> get(Order<A> order, A a);
   Option<A> min();
   Option<A> max();
@@ -76,10 +76,10 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     final Ordering o = order.order(a, _a);
     if (o == Ordering.LT) {
       final _AVLNode<A> newLeft = _left.insert(order, a);
-      return new _NonEmptyAVLNode/*<A>*/(_a, newLeft, _right)._rebalance();
+      return new _NonEmptyAVLNode(_a, newLeft, _right)._rebalance();
     } else if (o == Ordering.GT) {
       final _AVLNode<A> newRight = _right.insert(order, a);
-      return new _NonEmptyAVLNode/*<A>*/(_a, _left, newRight)._rebalance();
+      return new _NonEmptyAVLNode(_a, _left, newRight)._rebalance();
     } else {
       return new _NonEmptyAVLNode(a, _left, _right);
     }
@@ -88,52 +88,52 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   _AVLNode<A> remove(Order<A> order, A a) {
     final Ordering o = order.order(a, _a);
     if (o == Ordering.LT) {
-      return new _NonEmptyAVLNode<A>(_a, _left.remove(order, a), _right)._rebalance();
+      return new _NonEmptyAVLNode(_a, _left.remove(order, a), _right)._rebalance();
     } else if (o == Ordering.GT) {
-      return new _NonEmptyAVLNode/*<A>*/(_a, _left, _right.remove(order, a))._rebalance();
+      return new _NonEmptyAVLNode(_a, _left, _right.remove(order, a))._rebalance();
     } else {
-      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyAVLNode/*<A>*/(lr.value2, lr.value1, _right)._rebalance());
+      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyAVLNode(lr.value2, lr.value1, _right)._rebalance());
     }
   }
 
   Option<Tuple2<_AVLNode<A>, A>> _removeMax() =>
       _right._removeMax().fold(() => some(tuple2(_left, _a)),
-          (rightResult) => some(tuple2(new _NonEmptyAVLNode/*<A>*/(_a, _left, rightResult.value1)._rebalance(), rightResult.value2)));
+          (rightResult) => some(tuple2(new _NonEmptyAVLNode(_a, _left, rightResult.value1)._rebalance(), rightResult.value2)));
 
   _AVLNode<A> _rebalance() {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(_left as dynamic/*=_NonEmptyAVLNode<A>*/);
+        return llRotate(cast(_left));
       } else {
-        return doubleLrRotate(_left as dynamic/*=_NonEmptyAVLNode<A>*/);
+        return doubleLrRotate(cast(_left));
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(_right as dynamic/*=_NonEmptyAVLNode<A>*/);
+        return rrRotate(cast(_right));
       } else {
-        return doubleRlRotate(_right as dynamic/*=_NonEmptyAVLNode<A>*/);
+        return doubleRlRotate(cast(_right));
       }
     } else {
       return this;
     }
   }
 
-  _NonEmptyAVLNode<A> llRotate(_NonEmptyAVLNode<A> l) => new _NonEmptyAVLNode<A>(l._a, l._left, new _NonEmptyAVLNode<A>(_a, l._right, _right));
+  _NonEmptyAVLNode<A> llRotate(_NonEmptyAVLNode<A> l) => new _NonEmptyAVLNode(l._a, l._left, new _NonEmptyAVLNode(_a, l._right, _right));
 
-  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right as dynamic/*=_NonEmptyAVLNode<A>*/));
+  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(cast(l._right)));
 
-  _NonEmptyAVLNode<A> rrRotate(_NonEmptyAVLNode<A> r) => new _NonEmptyAVLNode<A>(r._a, new _NonEmptyAVLNode(_a, _left, r._left), r._right);
+  _NonEmptyAVLNode<A> rrRotate(_NonEmptyAVLNode<A> r) => new _NonEmptyAVLNode(r._a, new _NonEmptyAVLNode(_a, _left, r._left), r._right);
 
-  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left as dynamic/*=_NonEmptyAVLNode<A>*/));
+  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(cast(r._left)));
 
-  /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
+  B foldLeft<B>(B z, B f(B previous, A a)) {
     final leftResult = _left.foldLeft(z, f);
     final midResult = f(leftResult, _a);
     return _right.foldLeft(midResult, f);
   }
 
-  /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) {
+  B foldRight<B>(B z, B f(A a, B previous)) {
     final rightResult =_right.foldRight(z, f);
     final midResult = f(_a, rightResult);
     return _left.foldRight(midResult, f);
@@ -146,9 +146,9 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
       if (o == Ordering.EQ) {
         return some(current._a);
       } else if (o == Ordering.LT) {
-        current = current._left as dynamic/*=_NonEmptyAVLNode<A>*/;
+        current = cast(current._left);
       } else {
-        current = current._right as dynamic/*=_NonEmptyAVLNode<A>*/;
+        current = cast(current._right);
       }
     }
     return none();
@@ -164,9 +164,9 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 class _EmptyAVLNode<A> extends _AVLNode<A> {
   const _EmptyAVLNode();
 
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) => z;
+  @override B foldLeft<B>(B z, B f(B previous, A a)) => z;
 
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => z;
+  @override B foldRight<B>(B z, B f(A a, B previous)) => z;
 
   @override Option<A> get(Order<A> order, A a) => none();
 
@@ -192,8 +192,7 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 }
 
 _AVLNode _emptyAVLNode = const _EmptyAVLNode();
-_AVLNode/*<A>*/ emptyAVLNode/*<A>*/() => _emptyAVLNode as dynamic/*=_AVLNode<A>*/;
-
+_AVLNode<A> emptyAVLNode<A>() => cast(_emptyAVLNode);
 
 class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
   final Order<A> _tOrder;
@@ -210,7 +209,7 @@ final Foldable<AVLTree> AVLTreeFo = new FoldableOpsFoldable<AVLTree>();
 class _AVLTreeIterable<A> extends Iterable<A> {
   final AVLTree<A> _tree;
   _AVLTreeIterable(this._tree);
-  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator<A>(_tree._root as dynamic/*=_NonEmptyAVLNode<A>*/);
+  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator<A>(cast(_tree._root));
 }
 
 class _AVLTreeIterator<A> extends Iterator<A> {
@@ -240,7 +239,7 @@ class _AVLTreeIterator<A> extends Iterator<A> {
 
   bool _descend() {
     if (!_currentNode._right.empty) {
-      _currentNode = _currentNode._right as dynamic/*=_NonEmptyAVLNode<A>*/;
+      _currentNode = cast(_currentNode._right);
       _descendLeft();
       return true;
     } else {
@@ -259,7 +258,7 @@ class _AVLTreeIterator<A> extends Iterator<A> {
     var currentLeft = current._left;
     while(true) {
       if (!currentLeft.empty) {
-        final _NonEmptyAVLNode<A> cl = currentLeft as dynamic/*=_NonEmptyAVLNode<A>*/;
+        final _NonEmptyAVLNode<A> cl = cast(currentLeft);
         _path = cons(current, _path);
         current = cl;
         currentLeft = cl._left;

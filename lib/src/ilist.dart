@@ -19,7 +19,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   IList();
 
   factory IList.from(Iterable<A> iterable) {
-    final IList<A> aNil = Nil as dynamic/*=IList<A>*/;
+    final IList<A> aNil = cast(Nil);
     final Iterator<A> it = iterable.iterator;
     if (!it.moveNext()) {
       return aNil;
@@ -34,20 +34,20 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return resultHead;
   }
 
-  @override IList/*<B>*/ pure/*<B>*/(/*=B*/ b) => new Cons(b, nil());
+  @override IList<B> pure<B>(B b) => new Cons(b, nil());
 
-  @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
+  @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) {
     var result = gApplicative.pure(Nil);
     var current = this;
     while(current._isCons()) {
       final gb = f(current._unsafeHead());
-      result = gApplicative.map2(result, gb, (/*=IList*/ a, h) => new Cons(h, a));
+      result = gApplicative.map2(result, gb, (IList a, h) => new Cons(h, a));
       current = current._unsafeTail();
     }
     return gApplicative.map(result, (l) => l.reverse());
   }
 
-  @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
+  @override G traverse_<G>(Applicative<G> gApplicative, G f(A a)) {
     var result = gApplicative.pure(unit);
     var current = this;
     while (current._isCons()) {
@@ -58,13 +58,13 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  @override IList/*<B>*/ bind/*<B>*/(IList/*<B>*/ f(A a)) {
-    final IList/*<B>*/ bNil = Nil as dynamic/*=IList<B>*/;
+  @override IList<B> bind<B>(IList<B> f(A a)) {
+    final IList<B> bNil = cast(Nil);
     if (!_isCons()) {
       return bNil;
     }
-    Cons/*<B>*/ result = null;
-    IList/*<B>*/ resultHead = null;
+    Cons<B> result = null;
+    IList<B> resultHead = null;
     var current = this;
     var sub = f(current._unsafeHead());
     while(current._isCons() && !sub._isCons()) {
@@ -98,14 +98,14 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return resultHead ?? bNil;
   }
 
-  @override IList/*<B>*/ flatMap/*<B>*/(IList/*<B>*/ f(A a)) => bind(f);
+  @override IList<B> flatMap<B>(IList<B> f(A a)) => bind(f);
 
-  @override IList/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) {
-    final IList/*<B>*/ bNil = Nil as dynamic/*=IList<B>*/;
+  @override IList<B> map<B>(B f(A a)) {
+    final IList<B> bNil = cast(Nil);
     if (!_isCons()) {
       return bNil;
     }
-    Cons/*<B>*/ last = new Cons(f(_unsafeHead()), bNil);
+    Cons<B> last = new Cons(f(_unsafeHead()), bNil);
     if (!_unsafeTail()._isCons()) {
       return last;
     }
@@ -120,7 +120,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, A a)) {
+  @override B foldLeft<B>(B z, B f(B previous, A a)) {
     var result = z;
     var current = this;
     while (current._isCons()) {
@@ -130,9 +130,9 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(A a, /*=B*/ previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
+  @override B foldRight<B>(B z, B f(A a, B previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
 
-  @override /*=B*/ foldMap/*<B>*/(Monoid/*<B>*/ bMonoid, /*=B*/ f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
 
   IList<A> reverse() => foldLeft(nil(), (a, h) => new Cons(h, a));
 
@@ -142,7 +142,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
 
   @override IList<A> filter(bool predicate(A a)) {
-    var rresult = nil/*<A>*/();
+    var rresult = nil<A>();
     var current = this;
     while(current._isCons()) {
       final currentHead = current._unsafeHead();
@@ -194,26 +194,26 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
   @override int get hashCode => foldLeft(0, (hash, a) => hash ^ a.hashCode);
 
-  Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => super.partition(f) as dynamic/*=Tuple2<IList<A>, IList<A>>*/;
+  Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => cast(super.partition(f));
 
   @override IList<A> prependElement(A a) => new Cons(a, this);
 
   @override IList<A> appendElement(A a) => this.plus(new Cons(a, nil()));
 
-  Option/*<B>*/ unconsO/*<B>*/(/*=B*/ f(A head, IList<A> tail)) => _isCons() ? some(f(_unsafeHead(), _unsafeTail())) : none();
+  Option<B> unconsO<B>(B f(A head, IList<A> tail)) => _isCons() ? some(f(_unsafeHead(), _unsafeTail())) : none();
 
-  /*=B*/ uncons/*<B>*/(/*=B*/ z(), /*=B*/ f(A head, IList<A> tail)) => _isCons() ? f(_unsafeHead(), _unsafeTail()) : z();
+  B uncons<B>(B z(), B f(A head, IList<A> tail)) => _isCons() ? f(_unsafeHead(), _unsafeTail()) : z();
 
   IList<A> sort(Order<A> oa) => uncons(nil, (pivot, rest) => rest
       .partition((e) => oa.lt(e, pivot))
       .apply((smaller, larger) => smaller.sort(oa).plus(larger.sort(oa).prependElement(pivot))));
 
-  IList<Tuple2<A, dynamic/*=B*/>> zip/*<B>*/(IList/*<B>*/ bs) {
-    final IList/*<Tuple2<A, B>>*/ abNil = Nil as dynamic/*=IList<Tuple2<A, B>>*/;
+  IList<Tuple2<A, B>> zip<B>(IList<B> bs) {
+    final IList<Tuple2<A, B>> abNil = cast(Nil);
     if (!(_isCons() && bs._isCons())) {
       return abNil;
     } else {
-      final IList/*<Tuple2<A, B>>*/ result = new Cons(tuple2(this._unsafeHead(), bs._unsafeHead()), abNil);
+      final IList<Tuple2<A, B>> result = new Cons(tuple2(this._unsafeHead(), bs._unsafeHead()), abNil);
       var thisCurrent = this._unsafeTail();
       var bsCurrent = bs._unsafeTail();
       var resultCurrent = result;
@@ -264,11 +264,11 @@ class _Nil<A> extends IList<A> {
 }
 
 final IList Nil = new _Nil();
-IList/*<A>*/ nil/*<A>*/() => Nil as dynamic/*=IList<A>*/;
-IList/*<A>*/ cons/*<A>*/(/*=A*/ head, IList/*<A>*/ tail) => new Cons(head, tail);
+IList<A> nil<A>() => cast(Nil);
+IList<A> cons<A>(A head, IList<A> tail) => new Cons(head, tail);
 
 final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, Nil), () => Nil);
-MonadPlus<IList/*<A>*/> ilistMP/*<A>*/() => IListMP as dynamic/*=MonadPlus<IList<A>>*/;
+MonadPlus<IList<A>> ilistMP<A>() => cast(IListMP);
 final Traversable<IList> IListTr = new TraversableOpsTraversable<IList>();
 
 class IListMonoid extends Monoid<IList> {
@@ -277,28 +277,28 @@ class IListMonoid extends Monoid<IList> {
 }
 
 final Monoid<IList> IListMi = new IListMonoid();
-Monoid<IList/*<A>*/> ilistMi/*<A>*/() => IListMi as dynamic/*=Monoid<IList<A>>*/;
+Monoid<IList<A>> ilistMi<A>() => cast(IListMi);
 
 class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad<M> _stackedM;
   IListTMonad(this._stackedM);
   Monad underlying() => IListMP;
 
-  @override M pure(a) => _stackedM.pure(new Cons(a, Nil));
+  @override M pure<A>(A a) => _stackedM.pure(new Cons(a, Nil));
 
   M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.plus(l2)));
 
-  @override M bind(M mla, M f(_)) => _stackedM.bind(mla, (IList l) => l.map(f).foldLeft(_stackedM.pure(Nil), _concat));
+  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map(f).foldLeft(_stackedM.pure(Nil), _concat));
 }
 
 Monad ilistTMonad(Monad mmonad) => new IListTMonad(mmonad);
 
 IList<int> iota(int n) {
-  Trampoline<IList<int>> go(int i, IList<int> result) => i > 0 ? tcall/*<IList<int>>*/(() => go(i-1, new Cons(i-1, result))) : treturn(result);
+  Trampoline<IList<int>> go(int i, IList<int> result) => i > 0 ? tcall<IList<int>>(() => go(i-1, new Cons(i-1, result))) : treturn(result);
   return go(n, nil()).run();
 }
 
-IList/*<A>*/ ilist/*<A>*/(Iterable/*<A>*/ iterable) => new IList.from(iterable);
+IList<A> ilist<A>(Iterable<A> iterable) => new IList.from(iterable);
 
 class _IListIterable<A> extends Iterable<A> {
   final IList<A> _l;
@@ -318,10 +318,10 @@ class _IListIterator<A> extends Iterator<A> {
   @override A get current => _current;
 
   bool moveNext() {
-    final IList/*<A>*/ curr = _l;
+    final IList<A> curr = _l;
     if (curr._isCons()) {
       if (_started) {
-        final IList/*<A>*/ next = curr._unsafeTail();
+        final IList<A> next = curr._unsafeTail();
         _l = next;
         if (next._isCons()) {
           _current = next._unsafeHead();

@@ -67,14 +67,14 @@ class Gather<A> extends IOOp<IList<A>> {
 }
 
 class IOMonad extends FreeMonad<IOOp> with MonadCatch<Free<IOOp, dynamic>> {
-  @override Free/*<IOOp, A>*/ pure/*<A>*/(/*=A*/ a) => new Pure(a);
-  @override Free<IOOp, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftF(new Attempt(fa));
-  @override Free<IOOp, dynamic> fail(Object err) => liftF(new Fail(err));
+  @override Free<IOOp, A> pure<A>(A a) => new Pure(a);
+  @override Free<IOOp, Either<Object, A>> attempt<A>(Free<IOOp, A> fa) => liftF(new Attempt(fa));
+  @override Free<IOOp, A> fail<A>(Object err) => liftF(new Fail(err));
 }
 
 final IOMonad IOM = new IOMonad();
 final MonadCatch<Free<IOOp, dynamic>> IOMC = IOM;
-MonadCatch/*<Free<IOOp, A>>*/ iomc/*<A>*/() => IOMC as dynamic/*=MonadCatch<Free<IOOp, A>>*/;
+MonadCatch<Free<IOOp, A>> iomc<A>() => cast(IOMC);
 
 class IOOps<F> extends FreeOps<F, IOOp> {
   IOOps(FreeComposer<F, IOOp> composer) : super(composer);
@@ -93,13 +93,13 @@ class IOOps<F> extends FreeOps<F, IOOp> {
 
   Free<F, ExecutionResult> execute(String command, IList<String> arguments) => liftOp(new Execute(command, arguments));
 
-  Free<F, dynamic/*=A*/> delay/*<A>*/(Duration duration, Free<IOOp, dynamic/*=A*/> a) => liftOp(new Delay(duration, a));
+  Free<F, A> delay<A>(Duration duration, Free<IOOp, A> a) => liftOp(new Delay(duration, a));
 
-  Free<F, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftOp(new Attempt(fa));
+  Free<F, Either<Object, A>> attempt<A>(Free<IOOp, A> fa) => liftOp(new Attempt(fa));
 
-  Free<F, dynamic/*=A*/> fail/*<A>*/(Object failure) => liftOp(new Fail(failure));
+  Free<F, A> fail<A>(Object failure) => liftOp(new Fail(failure));
 
-  Free<F, IList/*<A>*/> gather/*<A>*/(IList<Free<IOOp, dynamic/*=A*/>> ops) => liftOp(new Gather(ops));
+  Free<F, IList<A>> gather<A>(IList<Free<IOOp, A>> ops) => liftOp(new Gather(ops));
 }
 
-final io = new IOOps(new IdFreeComposer());
+final io = new IOOps<IOOp>(new IdFreeComposer());

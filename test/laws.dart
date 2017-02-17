@@ -50,12 +50,12 @@ void checkFoldableOpsProperties(Enumeration<FoldableOps> enumeration, {bool equa
   group("foldable ops properties", () {
     test("foldLeftWithIndex properties", () {
       qc.check(forall(enumeration, (FoldableOps fa) =>
-          equality(fa.foldLeftWithIndex/*<IList<int>>*/(nil(), (p, i, _) => cons(i, p)).reverse(), iota(fa.length()))));
+          equality(fa.foldLeftWithIndex<IList<int>>(nil(), (p, i, _) => cons(i, p)).reverse(), iota(fa.length()))));
     });
 
     test("foldRightWithIndex properties", () {
       qc.check(forall(enumeration, (FoldableOps fa) =>
-          equality(fa.foldRightWithIndex/*<IList<int>>*/(nil(), (i, _, p) => cons(i, p)), iota(fa.length()))));
+          equality(fa.foldRightWithIndex<IList<int>>(nil(), (i, _, p) => cons(i, p)), iota(fa.length()))));
     });
   });
 }
@@ -65,7 +65,7 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
 
   group("traversable laws", () {
     test("identity traverse", () {
-      qc.check(forall(enumeration, (fa) => equality(T.traverse/*<Object>*/(IdM, fa, giveDollar), T.map(fa, giveDollar))));
+      qc.check(forall(enumeration, (fa) => equality(T.traverse<Object>(IdM, fa, giveDollar), T.map(fa, giveDollar))));
     });
 
     test("purity", () {

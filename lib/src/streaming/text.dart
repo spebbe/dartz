@@ -14,7 +14,7 @@ class Text {
         final buffered = (spill|"") + s;
         final lines = ilist(buffered.split("\n"));
         return lines.reverse().uncons(Pipe.halt, (newSpill, completeLines) =>
-            completeLines.foldLeft/*<Conveyor<From<String>, String>>*/(_lines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
+            completeLines.foldLeft<Conveyor<From<String>, String>>(_lines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
         );
       }, () => spill.fold(Pipe.halt, Pipe.produce));
 

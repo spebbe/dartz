@@ -41,7 +41,7 @@ void main() {
       return M.get() >= (IList<double> stack) {
         return stack.headOption.fold(() =>
             M.raiseError("Stack underflow"),
-            (double value) => M.put(stack.tailOption | nil/*<double>*/()) >> M.pure(value));
+            (double value) => M.put(stack.tailOption | nil<double>()) >> M.pure(value));
       };
 
     } else {

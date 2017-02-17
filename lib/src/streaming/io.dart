@@ -2,13 +2,13 @@ part of dartz_streaming;
 
 class IO {
 
-  static final Conveyor<Free<IOOp, dynamic>, String> stdinReader = Source.eval/*<Free<IOOp, dynamic>, String>*/(io.readln()).repeat().takeWhile((s) => s != null);
+  static final Conveyor<Free<IOOp, dynamic>, String> stdinReader = Source.eval<Free<IOOp, dynamic>, String>(io.readln()).repeat().takeWhile((s) => s != null);
 
   static final Conveyor<Free<IOOp, dynamic>, SinkF<Free<IOOp, dynamic>, String>> stdoutWriter = Source.constant(IOM, (String s) => Source.eval_(io.println(s)));
 
   static Conveyor<Free<IOOp, dynamic>, IList<int>> fileReader(String path, [int chunkBytes = 4096]) => Source.resource(
       io.openFile(path, true),
-      (FileRef file) => Source.eval /*<Free<IOOp, dynamic>, IList<int>>*/(io.readBytes(file, chunkBytes)).repeat().takeWhile((bytes) => bytes != nil()),
+      (FileRef file) => Source.eval<Free<IOOp, dynamic>, IList<int>>(io.readBytes(file, chunkBytes)).repeat().takeWhile((bytes) => bytes != nil()),
       (FileRef file) => Source.eval_(io.closeFile(file)));
 
   static Conveyor<Free<IOOp, dynamic>, String> fileLineReader(String path, [Conveyor<From<IList<int>>, String> _decoder, int chunkBytes = 4096]) =>

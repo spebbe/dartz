@@ -34,7 +34,7 @@ Future unsafeIOInterpreter(IOOp io) {
     return unwrapFileRef(io.file).then((f) => f.writeFrom(io.bytes.toList()).then((_) => unit));
 
   } else if (io is Execute) {
-    return Process.run(io.command, io.arguments.toList()).then((pr) => new ExecutionResult(pr.exitCode, pr.stdout as dynamic/*=String*/, pr.stderr as dynamic/*=String*/));
+    return Process.run(io.command, io.arguments.toList()).then((pr) => new ExecutionResult(pr.exitCode, cast(pr.stdout), cast(pr.stderr)));
 
   } else if (io is Delay) {
     return new Future.delayed(io.duration, () => unsafePerformIO(io.a));
@@ -47,7 +47,7 @@ Future unsafeIOInterpreter(IOOp io) {
   }
 }
 
-Future/*<A>*/ unsafePerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io) => io.foldMap(FutureM, unsafeIOInterpreter);
+Future<A> unsafePerformIO<A>(Free<IOOp, A> io) => io.foldMap(FutureM, unsafeIOInterpreter);
 
-Future<Either<Object, IList/*<A>*/>> unsafeConveyIO/*<A>*/(Conveyor<Free<IOOp, dynamic>, dynamic/*=A*/> conveyor) =>
-    unsafePerformIO/*<Either<Object, IList<A>>>*/(IOM.attempt(conveyor.runLog(IOM)));
+Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) =>
+    unsafePerformIO<Either<Object, IList<A>>>(IOM.attempt(conveyor.runLog(IOM)));

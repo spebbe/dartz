@@ -71,7 +71,7 @@ class FunVal extends Value {
 // Technique: Instantiate EvaluationMonad, specifying types for either, reader, writer and state
 final EvaluationMonad<String, IMap<String, Value>, IVector<String>, int> M = new EvaluationMonad(ivectorMi());
 
-final tick = M.modify((i) => i+1);
+final tick = M.modify((int i) => i+1);
 
 // Technique: Interpreting custom ADT into Evaluation
 Evaluation<String, IMap<String, Value>, IVector<String>, int, Value> interpret(Exp exp) {

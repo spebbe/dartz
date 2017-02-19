@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.3
+
+- Reworked Free to be stack safe in more cases
+  - Implementations more similar to the ones in scalaz and cats
+  - Still a work in progress, but works for basic use cases
+- Added TraversableMonad instance for Function0
+
 ## 0.5.2
 
 - Improved performance of set operation on IMap and IVector

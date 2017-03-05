@@ -95,6 +95,8 @@ class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic
 
   Evaluation<E, R, W, S, Unit> modify(S f(S s)) => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), f(s), unit))));
 
+  Evaluation<E, R, W, S, Unit> modifyE(Either<E, S> f(S s)) => new Evaluation(_W, (r, s) => new Future.value(f(s).map((s2) => new Tuple3(_W.zero(), s2, unit))));
+
   Evaluation<E, R, W, S, Unit> write(W w) => new Evaluation(_W, (_, s) => new Future.value(new Right(new Tuple3(w, s, unit))));
 
   Evaluation<E, R, W, S, R> ask() => new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), s, r))));

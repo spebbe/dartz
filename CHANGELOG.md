@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.4
+
+- Added modifyE to EvaluationMonad, for state updates that can fail
+- Either, Option, Evaluation, State, StateT and Free:
+  - Tightened types of various derived operations, such as flatMap, andThen and << 
+
 ## 0.5.3
 
 - Reworked Free to be stack safe in more cases

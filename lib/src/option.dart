@@ -13,6 +13,8 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   @override Option/*<B>*/ pure/*<B>*/(/*=B*/ b) => some(b);
   Option/*<B>*/ map/*<B>*/(/*=B*/ f(A a)) => fold(none, (A a) => some(f(a)));
   @override Option/*<B>*/ bind/*<B>*/(Option/*<B>*/ f(A a)) => fold(none, f);
+  @override Option/*<B>*/ flatMap/*<B>*/(Option/*<B>*/ f(A a)) => fold(none, f);
+  @override Option/*<B>*/ andThen/*<B>*/(Option/*<B>*/ next) => fold(none, (_) => next);
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) => fold(() => gApplicative.pure(none()), (a) => gApplicative.map(f(a), some));
 

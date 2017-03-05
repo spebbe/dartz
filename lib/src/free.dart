@@ -24,6 +24,10 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 */
   /*=MA*/ foldMap/*<M, MA extends M>*/(Monad/*<M>*/ m, /*=M*/ f(F fa)) =>
       cast(/*step().*/fold((a) => m.pure(a), (fa) => f(fa), (ffb, f2) => m.bind(ffb.foldMap(m, f), (c) => f2(c).foldMap(m, f))));
+
+  @override Free<F, dynamic/*=B*/> flatMap/*<B>*/(Free<F, dynamic/*=B*/> f(A a)) => new Bind(this, f);
+  @override Free<F, dynamic/*=B*/> andThen/*<B>*/(Free<F, dynamic/*=B*/> next) => bind((_) => next);
+  @override Free<F, A> operator <<(Free<F, dynamic> next) => bind((a) => next.map((_) => a));
 }
 
 class Pure<F, A> extends Free<F, A> {

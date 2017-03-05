@@ -44,6 +44,8 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
     });
   }
 
+  Evaluation<E, R, W, S, dynamic/*=B*/> flatMap/*<B>*/(Evaluation<E, R, W, S, dynamic/*=B*/> f(A a)) => bind(f);
+
   Evaluation<E, R, W, S, A> handleError(Evaluation<E, R, W, S, A> onError(E err)) {
     return new Evaluation(_W, (R r, S s) {
       final Future<Either<E, Tuple3<W, S, A>>> ran = run(r, s);
@@ -54,7 +56,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
     });
   }
 
-  Evaluation<E, R, W, S, dynamic/*=B*/> andThen/*<B>*/(Evaluation<E, R, W, S, dynamic/*=B*/> next) => bind((_) => next);
+  @override Evaluation<E, R, W, S, dynamic/*=B*/> andThen/*<B>*/(Evaluation<E, R, W, S, dynamic/*=B*/> next) => bind((_) => next);
 
   Future<Either<E, Tuple3<W, S, A>>> run(R r, S s) => _run(r, s);
 
@@ -63,6 +65,8 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
   Future<Either<E, S>> state(R r, S s) => run(r, s).then((e) => e.map((t) => t.value2));
 
   Future<Either<E, A>> value(R r, S s) => run(r, s).then((e) => e.map((t) => t.value3));
+
+  @override Evaluation<E, R, W, S, A> operator <<(Evaluation<E, R, W, S, dynamic> next) => bind((a) => next.map((_) => a));
 }
 
 class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic>> with Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {

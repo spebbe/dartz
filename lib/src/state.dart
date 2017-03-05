@@ -16,6 +16,9 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
     final ran = run(s);
     return f(ran.value1).run(ran.value2);
   });
+  @override State/*<S, B>*/ flatMap/*<B>*/(State/*<S, B>*/ f(A a)) => bind(f);
+  @override State<S, dynamic/*=B*/> andThen/*<B>*/(State<S, dynamic/*=B*/> next) => bind((_) => next);
+  @override State<S, A> operator <<(State<S, dynamic> next) => bind((a) => next.map((_) => a));
 }
 
 class StateMonad<S> extends MonadOpsMonad<State<S, dynamic>> {
@@ -49,6 +52,9 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   @override StateT/*<F, S, B>*/ bind/*<B>*/(StateT/*<F, S, B>*/ f(A a)) => new StateT/*<F, S, B>*/(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));
+  @override StateT/*<F, S, B>*/ flatMap/*<B>*/(StateT/*<F, S, B>*/ f(A a)) => bind(f);
+  @override StateT<F, S, dynamic/*=B*/> andThen/*<B>*/(StateT<F, S, dynamic/*=B*/> next) => bind((_) => next);
+  @override StateT<F, S, A> operator <<(StateT<F, S, dynamic> next) => bind((a) => next.map((_) => a));
 }
 
 class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<StateT<F, S, dynamic>>, Monad<StateT<F, S, dynamic>> {

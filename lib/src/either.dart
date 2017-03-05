@@ -12,6 +12,8 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
   @override Either/*<L, R2>*/ pure/*<R2>*/(/*=R2*/ r2) => right(r2);
   @override Either/*<L, R2>*/ map/*<R2>*/(/*=R2*/ f(R r)) => fold(left, (R r) => right(f(r)));
   @override Either/*<L, R2>*/ bind/*<R2>*/(Either/*<L, R2>*/ f(R r)) => fold(left, f);
+  @override Either/*<L, R2>*/ flatMap/*<R2>*/(Either/*<L, R2>*/ f(R r)) => fold(left, f);
+  @override Either/*<L, R2>*/ andThen/*<R2>*/(Either/*<L, R2>*/ next) => fold(left, (_) => next);
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 

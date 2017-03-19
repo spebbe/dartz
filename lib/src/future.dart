@@ -7,3 +7,4 @@ class FutureMonad extends Functor<Future> with Applicative<Future>, Monad<Future
 }
 
 final FutureMonad FutureM = new FutureMonad();
+Monad/*<Future<A>>*/ futureM/*<A>*/() => FutureM as dynamic/*=Monad<Future<A>>*/;

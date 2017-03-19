@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.5
+
+- Slightly less efficient, but more correct/safe traverse for IList
+- Better type inference for Either and Future Monad instance helpers
+
 ## 0.5.4
 
 - Added modifyE to EvaluationMonad, for state updates that can fail

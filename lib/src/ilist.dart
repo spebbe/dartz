@@ -37,24 +37,14 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   @override IList/*<B>*/ pure/*<B>*/(/*=B*/ b) => new Cons(b, nil());
 
   @override /*=G*/ traverse/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {
-    IList resultHead = Nil;
-    dynamic/*=G*/ result = gApplicative.pure(resultHead);
-    IList<A> current = this;
-    while (current._isCons()) {
+    var result = gApplicative.pure(Nil);
+    var current = this;
+    while(current._isCons()) {
       final gb = f(current._unsafeHead());
-      result = gApplicative.map2(result, gb, (/*=IList*/ a, h) {
-        if (a._isCons()) {
-          final next = new Cons(h, Nil);
-          a._unsafeSetTail(next);
-          return next;
-        } else {
-          resultHead = new Cons(h, Nil);
-          return resultHead;
-        }
-      });
+      result = gApplicative.map2(result, gb, (/*=IList*/ a, h) => new Cons(h, a));
       current = current._unsafeTail();
     }
-    return gApplicative.map(result, (_) => resultHead);
+    return gApplicative.map(result, (l) => l.reverse());
   }
 
   @override /*=G*/ traverse_/*<G>*/(Applicative/*<G>*/ gApplicative, /*=G*/ f(A a)) {

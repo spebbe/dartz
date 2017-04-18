@@ -11,9 +11,9 @@ class Article {
   @override String toString() => "Article(title=$_title, sections=$_sections)";
 
   // Technique: Lenses for accessing/updating relevant properties
-  static final title = lensS((Article article) => article._title, (Article article, String title) => article.copy(title: title));
-  static final sections = lensS((Article article) => article._sections, (Article article, IMap<String, Section> sections) => article.copy(sections: sections));
-  static final section = (String id) => sections.andThenE(imapLensE(id, () => "No section '$id'"));
+  static final title = lensS<Article, String>((article) => article._title, (article, title) => article.copy(title: title));
+  static final sections = lensS<Article, IMap<String, Section>>((article) => article._sections, (article, sections) => article.copy(sections: sections));
+  static final section = (String id) => sections.andThenE<Section, String>(imapLensE(id, () => "No section '$id'"));
 }
 
 class Section {
@@ -23,9 +23,9 @@ class Section {
   Section copy({String title, IVector<Paragraph> paragraphs}) => new Section(title ?? this._title, paragraphs ?? this._paragraphs);
   @override String toString() => "Section(title=$_title, paragraphs=$_paragraphs)";
 
-  static final title = lensS((Section section) => section._title, (Section section, String title) => section.copy(title: title));
-  static final paragraphs = lensS((Section section) => section._paragraphs, (Section section, IVector<Paragraph> paragraphs) => section.copy(paragraphs: paragraphs));
-  static final paragraph = (int index) => paragraphs.andThenE(ivectorLensE(index, () => "No paragraph $index"));
+  static final title = lensS<Section, String>((section) => section._title, (section, title) => section.copy(title: title));
+  static final paragraphs = lensS<Section, IVector<Paragraph>>((section) => section._paragraphs, (section, paragraphs) => section.copy(paragraphs: paragraphs));
+  static final paragraph = (int index) => paragraphs.andThenE<Paragraph, String>(ivectorLensE(index, () => "No paragraph $index"));
 }
 
 class Paragraph {
@@ -34,18 +34,18 @@ class Paragraph {
   Paragraph copy({IVector<String> sentences}) => new Paragraph(sentences ?? this._sentences);
   @override String toString() => "Paragraph(sentences=\n${_sentences.intercalate(StringMi, "\n")})";
 
-  static final sentences = lensS((Paragraph paragraph) => paragraph._sentences, (Paragraph paragraph, IVector<String> sentences) => paragraph.copy(sentences: sentences));
-  static final sentence = (int index) => sentences.andThenE(ivectorLensE(index, () => "No sentence $index"));
+  static final sentences = lensS<Paragraph, IVector<String>>((paragraph) => paragraph._sentences, (paragraph, sentences) => paragraph.copy(sentences: sentences));
+  static final sentence = (int index) => sentences.andThenE<String, String>(ivectorLensE(index, () => "No sentence $index"));
 }
 
 // Technique: Composed lenses for accessing/updating various parts of an article
 final firstParagraph = Section.paragraph(0);
-final firstParagraphSentences = firstParagraph.eAndThen(Paragraph.sentences);
-final firstParagraphThirdSentence = Section.paragraph(0).eAndThenE(Paragraph.sentence(2));
+final firstParagraphSentences = firstParagraph.eAndThen<IVector<String>>(Paragraph.sentences);
+final EitherLens<Section, String, String> firstParagraphThirdSentence = Section.paragraph(0).eAndThenE<String>(Paragraph.sentence(2));
 final abstractSection = Article.section("abstract");
-final abstractSectionTitle = abstractSection.eAndThen(Section.title);
-final abstractSectionFirstParagraphSentences = abstractSection.eAndThenE(firstParagraphSentences);
-final abstractSectionFirstParagraphThirdSentence = abstractSection.eAndThenE(firstParagraphThirdSentence);
+final abstractSectionTitle = abstractSection.eAndThen<String>(Section.title);
+final abstractSectionFirstParagraphSentences = abstractSection.eAndThenE<IVector<String>>(firstParagraphSentences);
+final abstractSectionFirstParagraphThirdSentence = abstractSection.eAndThenE<String>(firstParagraphThirdSentence);
 final missingSection = Article.section("5: A Tempest, A Shipwreck, An Earthquake, And What Else Befell Dr. Pangloss, Candide, And James The Anabaptist");
 final missingSectionFirstParagraphThirdSentence = missingSection.eAndThenE(firstParagraphThirdSentence);
 

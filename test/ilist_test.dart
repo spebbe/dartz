@@ -39,7 +39,7 @@ void main() {
     expect(IListTr.traverse(EitherM, l1, (int i) => i<4 ? right(i) : left("too big")), left("too big"));
     expect(IListTr.sequence(EitherM, l1.map((i) => right(i))), right(ilist([1,2,3,4])));
 
-    expect(IListTr.foldMap<num, num>(NumSumMi, l1, id), 10);
+    expect(IListTr.foldMap<num, num>(NumSumMi, l1, idF<num>()), 10);
     expect(IListTr.foldRight<int, int>(l1, 0, (int a, int b) => a+b), 10);
 
     expect(ilist([2,4,6]).any((i) => i%2==0), true);

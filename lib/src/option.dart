@@ -1,7 +1,7 @@
 part of dartz;
 
 abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Option, A>, ApplicativeOps<Option, A>, ApplicativePlusOps<Option, A>, MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A>, TraversableMonadPlusOps<Option, A> {
-  B fold<B, C extends B>(B ifNone(), C ifSome(A a));
+  B fold<B>(B ifNone(), B ifSome(A a));
 
   B cata<B, B2 extends B>(B ifNone(), B2 ifSome(A a)) => fold(ifNone, ifSome);
   Option<A> orElse(Option<A> other()) => fold(other, (_) => this);
@@ -32,13 +32,13 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 class Some<A> extends Option<A> {
   final A _a;
   Some(this._a);
-  @override B fold<B, C extends B>(B ifNone(), C ifSome(A a)) => ifSome(_a);
+  @override B fold<B>(B ifNone(), B ifSome(A a)) => ifSome(_a);
   @override bool operator ==(other) => other is Some && other._a == _a;
   @override int get hashCode => _a.hashCode;
 }
 
 class None<A> extends Option<A> {
-  @override B fold<B, C extends B>(B ifNone(), C ifSome(A a)) => ifNone();
+  @override B fold<B>(B ifNone(), B ifSome(A a)) => ifNone();
   @override bool operator ==(other) => other is None;
   @override int get hashCode => 0;
 }
@@ -111,4 +111,4 @@ class _SingletonIterator<A> extends Iterator<A> {
   @override bool moveNext() => ++_moves == 1;
 }
 
-final _emptyIterable = new Iterable.empty();
+final _emptyIterable = new Iterable<dynamic>.empty();

@@ -6,9 +6,9 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   G traverse_<G>(Applicative<G> gApplicative, F fa, G f(a)) => gApplicative.map(traverse<G>(gApplicative, fa, f), constF(unit));
 
-  G sequence<G>(Applicative<G> gApplicative, F fa) => traverse(gApplicative, fa, id);
+  G sequence<G>(Applicative<G> gApplicative, F fa) => traverse(gApplicative, fa, cast(id));
 
-  G sequence_<G>(Applicative<G> gApplicative, F fa) => traverse_(gApplicative, fa, id);
+  G sequence_<G>(Applicative<G> gApplicative, F fa) => traverse_(gApplicative, fa, cast(id));
 
   F mapWithIndex<B>(F fa, B f(int i, a)) =>
       traverse<StateT<Trampoline<F>, int, dynamic>>(tstateM<F, int>(), fa, (e) => tstateM<F, int>().get().bind((i) => tstateM<F, int>().put(i+1).replace(f(i, e)))).value(0).run();

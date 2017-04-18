@@ -4,23 +4,24 @@ import 'package:dartz/dartz.dart';
 import 'package:dartz/dartz_unsafe.dart';
 import '../free_io/mock_io.dart' as mockIO;
 import 'free_rand.dart';
+import 'dart:async';
 
 // Technique: Compose IOOp and RandOp algebras, deriving Free algebras and interpreters capable of handling both.
 final ioAndRand = new Free2<IOOp, RandOp>();
-final ioOps = new IOOps(ioAndRand.firstComposer);
-final randOps = new RandOps(ioAndRand.secondComposer);
-final unsafePerformIOAndRand = ioAndRand.interpreter(FutureM, unsafeIOInterpreter, unsafeRandInterpreter);
+final ioOps = new IOOps<Either<IOOp, RandOp>>(ioAndRand.firstComposer);
+final randOps = new RandOps<Either<IOOp, RandOp>>(ioAndRand.secondComposer);
+final unsafePerformIOAndRand = ioAndRand.interpreter<Future>(FutureM, unsafeIOInterpreter, unsafeRandInterpreter);
 
 // Technique: Construct RT program, sequencing both RandOp and IOOp through the composed algebra
 final thinkOfNumber = randOps.nextIntBetween(1, 5);
 final promptUser = ioOps.println("I'm thinking of a number between 1 and 5. Guess which one!");
-final readUserGuess = ioOps.readln().map((s) => catching(() => int.parse(s)).toOption());
-final checkUserGuess = (int myNumber) => (Option<int> maybeUserGuess) => maybeUserGuess.map(
+final readUserGuess = ioOps.readln().map<Option<int>>((s) => catching(() => int.parse(s)).toOption());
+final checkUserGuess = (int myNumber) => (Option<int> maybeUserGuess) => maybeUserGuess.map<Free<Either<IOOp, RandOp>, Unit>>(
     (userGuess) => (userGuess == myNumber)
         ? ioOps.println("O... M... G... you're like telepathic!!!")
         : ioOps.println("Sorry... I was thinking of $myNumber..."))
 | ioOps.println("""ok... that's an unusual "number"... anyway, you're wrong.""");
-final program = thinkOfNumber.bind((myNumber) => promptUser.andThen(readUserGuess.bind(checkUserGuess(myNumber))));
+final program = thinkOfNumber.bind<Unit>((myNumber) => promptUser.andThen(readUserGuess.bind(checkUserGuess(myNumber))));
 
 
 // Technique: Test program using composed mock interpreters

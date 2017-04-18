@@ -2,13 +2,13 @@ part of dartz;
 
 // Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
 abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> with FunctorOps<Either/*<L, dynamic>*/, R>, ApplicativeOps<Either/*<L, dynamic>*/, R>, MonadOps<Either/*<L, dynamic>*/, R>, TraversableMonadOps<Either/*<L, dynamic>*/, R> {
-  B fold<B, C extends B>(B ifLeft(L l), C ifRight(R r));
+  B fold<B>(B ifLeft(L l), B ifRight(R r));
 
   Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);
-  R getOrElse(R dflt()) => fold<R, R>((_) => dflt(), id);
+  R getOrElse(R dflt()) => fold((_) => dflt(), id);
   R operator |(R dflt) => getOrElse(() => dflt);
   Either<L2, R> leftMap<L2>(L2 f(L l)) => fold((L l) => left(f(l)), right);
-  Option<R> toOption() => fold<Option<R>, Option<R>>((_) => none(), some);
+  Option<R> toOption() => fold((_) => none(), some);
 
   @override Either<L, R2> pure<R2>(R2 r2) => right(r2);
   @override Either<L, R2> map<R2>(R2 f(R r)) => fold(left, (R r) => right(f(r)));
@@ -29,7 +29,7 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
 class Left<L, R> extends Either<L, R> {
   final L _l;
   Left(this._l);
-  @override B fold<B, C extends B>(B ifLeft(L l), C ifRight(R r)) => ifLeft(_l);
+  @override B fold<B>(B ifLeft(L l), B ifRight(R r)) => ifLeft(_l);
   @override bool operator ==(other) => other is Left && other._l == _l;
   @override int get hashCode => _l.hashCode;
 }
@@ -37,7 +37,7 @@ class Left<L, R> extends Either<L, R> {
 class Right<L, R> extends Either<L, R> {
   final R _r;
   Right(this._r);
-  @override B fold<B, C extends B>(B ifLeft(L l), C ifRight(R r)) => ifRight(_r);
+  @override B fold<B>(B ifLeft(L l), B ifRight(R r)) => ifRight(_r);
   @override bool operator ==(other) => other is Right && other._r == _r;
   @override int get hashCode => _r.hashCode;
 }

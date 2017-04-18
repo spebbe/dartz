@@ -37,6 +37,8 @@ class Pipe {
     return go(z);
   }
 
+  static Conveyor<From<I>, I> roll<I>(Monoid<I> mi) => scan(mi.zero(), mi.append);
+
   static Conveyor<From<I>, O> scanWhile<I, O>(O z, Function2<O, I, O> f, Function1<O, bool> p) {
     Conveyor<From<I>, O> go(O previous) => consume((I i) {
       final current = f(previous, i);

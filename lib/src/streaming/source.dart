@@ -4,7 +4,7 @@ class Nowhere {}
 
 class Source {
   static Conveyor<F, A> eval<F, A>(F fa) =>
-      Conveyor.consume(fa, (ea) => ea.fold(Conveyor.halt, Conveyor.produce));
+      Conveyor.consume<F, A, A>(fa, (ea) => ea.fold(Conveyor.halt, Conveyor.produce));
 
   static Conveyor<F, A> repeatEval<F, A>(F fa) {
     final Conveyor<F, A> convinceTypeSystem = eval(fa);

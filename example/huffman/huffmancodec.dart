@@ -14,7 +14,7 @@ abstract class _HuffmanNode {
   _HuffmanNode(this.frequency, this.char);
   A fold<A>(A ifInternal(_InternalHuffmanNode node), A ifLeaf(_LeafHuffmanNode node));
   // Technique: Composing Order instances into two level Order
-  static final order = orderBy(NumOrder, (_HuffmanNode node) => node.frequency).andThen(orderBy(StringOrder, (_HuffmanNode node) => node.char));
+  static final order = orderBy<_HuffmanNode, num>(NumOrder, (node) => node.frequency).andThen(orderBy(StringOrder, (_HuffmanNode node) => node.char));
 }
 class _InternalHuffmanNode extends _HuffmanNode {
   final _HuffmanNode left;

@@ -49,10 +49,8 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
 
   Evaluation<E, R, W, S, A> handleError(Evaluation<E, R, W, S, A> onError(E err)) {
     return new Evaluation(_W, (R r, S s) {
-      final Future<Either<E, Tuple3<W, S, A>>> ran = run(r, s);
-      return ran.then((e) {
-        final Future<Either<E, Tuple3<W, S, A>>> folded = e.fold((l) => onError(l).run(r, s), (r) => new Future.value(right(r)));
-        return cast(folded);
+      return run(r, s).then((e) {
+        return e.fold((l) => onError(l).run(r, s), (r) => new Future.value(right(r)));
       });
     });
   }

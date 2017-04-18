@@ -171,9 +171,9 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
 
-  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap(id);
+  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap(cast(id));
 
-  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(id);
+  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(cast(id));
 
   Conveyor<F, O2> onto<O2>(Conveyor<F, O2> f(Conveyor<F, O> c)) => f(this);
 }

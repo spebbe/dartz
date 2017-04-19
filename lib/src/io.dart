@@ -61,8 +61,12 @@ class Fail<A> extends IOOp<A> {
   Fail(this.failure);
 }
 
-class IOMonad extends MonadOpsMonad<Free<IOOp, dynamic>> with MonadCatch<Free<IOOp, dynamic>> {
-  IOMonad() : super((a) => new Pure(a));
+class Gather<A> extends IOOp<IList<A>> {
+  final IList<Free<IOOp, A>> ops;
+  Gather(this.ops);
+}
+
+class IOMonad extends FreeMonad<IOOp> with MonadCatch<Free<IOOp, dynamic>> {
   @override Free/*<IOOp, A>*/ pure/*<A>*/(/*=A*/ a) => new Pure(a);
   @override Free<IOOp, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftF(new Attempt(fa));
   @override Free<IOOp, dynamic> fail(Object err) => liftF(new Fail(err));
@@ -94,6 +98,8 @@ class IOOps<F> extends FreeOps<F, IOOp> {
   Free<F, Either<Object, dynamic/*=A*/>> attempt/*<A>*/(Free<IOOp, dynamic/*=A*/> fa) => liftOp(new Attempt(fa));
 
   Free<F, dynamic/*=A*/> fail/*<A>*/(Object failure) => liftOp(new Fail(failure));
+
+  Free<F, IList/*<A>*/> gather/*<A>*/(IList<Free<IOOp, dynamic/*=A*/>> ops) => liftOp(new Gather(ops));
 }
 
 final io = new IOOps(new IdFreeComposer());

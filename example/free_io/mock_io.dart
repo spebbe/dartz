@@ -17,6 +17,9 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     MockM.asks((inputs) => inputs[fileName]|emptyVector/*<String>*/()) >= (IVector<String> vs) =>
     MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1));
 
+Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic/*=A*/> _interpret/*<A>*/(Free<IOOp, dynamic/*=A*/> op) =>
+  op.foldMap(MockM, mockIOInterpreter);
+
 // Technique: Interpret Free monad into Evaluation
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockIOInterpreter(IOOp io) {
   if (io is Readln) {
@@ -26,8 +29,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.write(ivector(["stdout: ${io.s}"]));
 
   } else if (io is Attempt) {
-    return io.fa.foldMap/*<Evaluation, Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic>>*/(
-        MockM, mockIOInterpreter).map(right).handleError((e) => MockM.pure(left(e)));
+    return _interpret(io.fa).map(right).handleError((e) => MockM.pure(left(e)));
 
   } else if (io is Fail) {
     return MockM.raiseError(io.failure.toString());
@@ -48,7 +50,10 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.pure(new ExecutionResult(0, "<<< Mocked result of '${io.command} ${io.arguments.intercalate(StringMi, " ")}' >>>", ""));
 
   } else if (io is Delay) {
-    return io.a.foldMap(MockM, mockIOInterpreter);
+    return _interpret(io.a);
+
+  } else if (io is Gather) {
+    return io.ops.traverse(MockM, _interpret);
 
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
@@ -57,4 +62,4 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 
 // Technique: Interpret Free monad and run resulting Evaluation using reader (mocked inputs) and initial state (index in input vector)
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>> mockPerformIO/*<A>*/(Free<IOOp, dynamic/*=A*/> io, IMap<String, IVector<String>> input) =>
-    io.foldMap(MockM, mockIOInterpreter).run(input, emptyMap()) as Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, dynamic/*=A*/>>>;
+    _interpret(io).run(input, emptyMap());

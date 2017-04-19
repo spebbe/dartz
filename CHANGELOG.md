@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.6
+
+- 'Gather' IO primitive for parallelizing IO operations
+- Refined types for map2 to map6 on Free and IO monads
+- Improvements to type safety/inference for Free and IO
+
 ## 0.5.5
 
 - Slightly less efficient, but more correct/safe traverse for IList

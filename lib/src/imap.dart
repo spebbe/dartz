@@ -6,7 +6,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   IMap(this._order, this._tree);
 
-  IMap.empty(): _order = comparableOrder(), _tree = emptyIMapAVLNode();
+  factory IMap.empty() => emptyMap();
 
   IMap.emptyWithOrder(this._order): _tree = emptyIMapAVLNode();
 
@@ -50,7 +50,11 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   /*=B*/ foldLeftKV/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => _tree.foldLeft(z, f);
 
+  /*=B*/ foldLeftKVBetween/*<B>*/(K minK, K maxK, /*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => _tree.foldLeftBetween(_order, minK, maxK, z, f);
+
   /*=B*/ foldRightKV/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => _tree.foldRight(z, f);
+
+  /*=B*/ foldRightKVBetween/*<B>*/(K minK, K maxK, /*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => _tree.foldRightBetween(_order, minK, maxK, z, f);
 
   /*=B*/ foldMapKV/*<B>*/(Monoid/*<B>*/ mi, /*=B*/ f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
@@ -72,6 +76,18 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   @override IMap<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => new IMap/*<K, V2>*/(_order, _tree.map(f));
 
   Map<K, V> toMap() => foldLeftKV(new Map(), (Map<K, V> p, K k, V v) => p..[k] = v);
+
+  Option<K> minKey() => _tree.min().map((node) => node._k);
+
+  Option<Tuple2<K, V>> min() => _tree.min().map((node) => tuple2(node._k, node._v));
+
+  Option<K> maxKey() => _tree.max().map((node) => node._k);
+
+  Option<Tuple2<K, V>> max() => _tree.max().map((node) => tuple2(node._k, node._v));
+
+  Option<Tuple2<K, V>> minGreaterThan(K k) => _tree.minGreaterThan(_order, k).map((node) => tuple2(node._k, node._v));
+
+  Option<Tuple2<K, V>> maxLessThan(K k) => _tree.maxLessThan(_order, k).map((node) => tuple2(node._k, node._v));
 
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && pairs() == other.pairs());
 
@@ -100,7 +116,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
 IMap/*<K, V>*/ imap/*<K, V>*/(Map/*<K, V>*/ m) => new IMap.from(m);
 IMap/*<K, V>*/ imapWithOrder/*<K, K2 extends K, V>*/(Order/*<K>*/ o, Map/*<K2, V>*/ m) => new IMap/*<K, V>*/.fromWithOrder(o, m);
-IMap/*<K, V>*/ emptyMap/*<K, V>*/() => new IMap.empty();
+IMap _emptyIMap = new IMap(comparableOrder(), emptyIMapAVLNode());
+IMap/*<K, V>*/ emptyMap/*<K, V>*/() => _emptyIMap as dynamic/*=IMap<K, V>*/;
 IMap/*<K, V>*/ singletonMap/*<K, V>*/(/*=K*/ k, /*=V*/ v) => new IMap/*<K, V>*/.empty().put(k, v);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
@@ -129,7 +146,9 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   _IMapAVLNode<K, V> insert(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> remove(Order<K> order, K k);
   /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v));
+  /*=B*/ foldLeftBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v));
   /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous));
+  /*=B*/ foldRightBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous));
   Option<V> get(Order<K> order, K k);
   int get height;
   int get balance;
@@ -137,6 +156,10 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt);
   _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v));
+  Option<_NonEmptyIMapAVLNode<K, V>> min();
+  Option<_NonEmptyIMapAVLNode<K, V>> max();
+  Option<_NonEmptyIMapAVLNode<K, V>> minGreaterThan(Order<K> order, K k);
+  Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k);
   bool get empty;
 }
 
@@ -215,10 +238,34 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     return _right.foldLeft(midResult, f);
   }
 
+  /*=B*/ foldLeftBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) {
+    if (order.lt(_k, minK)) {
+      return _right.foldLeftBetween(order, minK, maxK, z, f);
+    } else if (order.gt(_k, maxK)) {
+      return _left.foldLeftBetween(order, minK, maxK, z, f);
+    } else {
+      final leftResult = _left.foldLeftBetween(order, minK, maxK, z, f);
+      final midResult = f(leftResult, _k, _v);
+      return _right.foldLeftBetween(order, minK, maxK, midResult, f);
+    }
+  }
+
   /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) {
     final rightResult =_right.foldRight(z, f);
     final midResult = f(_k, _v, rightResult);
     return _left.foldRight(midResult, f);
+  }
+
+  /*=B*/ foldRightBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) {
+    if (order.lt(_k, minK)) {
+      return _right.foldRightBetween(order, minK, maxK, z, f);
+    } else if (order.gt(_k, maxK)) {
+      return _left.foldRightBetween(order, minK, maxK, z, f);
+    } else {
+      final rightResult =_right.foldRightBetween(order, minK, maxK, z, f);
+      final midResult = f(_k, _v, rightResult);
+      return _left.foldRightBetween(order, minK, maxK, midResult, f);
+    }
   }
 
   Option<V> get(Order<K> order, K k) {
@@ -269,6 +316,18 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     }
   }
 
+  @override Option<_NonEmptyIMapAVLNode<K, V>> min() => _left.empty ? some(this) : _left.min();
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> max() => _right.empty ? some(this) : _right.max();
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> minGreaterThan(Order<K> order, K k) => order.gt(_k, k)
+      ? _left.minGreaterThan(order, k).orElse(() => some(this))
+      : _right.minGreaterThan(order, k);
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k) => order.lt(_k, k)
+      ? _right.maxLessThan(order, k).orElse(() => some(this))
+      : _left.maxLessThan(order, k);
+
   bool get empty => false;
 }
 
@@ -277,7 +336,11 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override /*=B*/ foldLeft/*<B>*/(/*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => z;
 
+  /*=B*/ foldLeftBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(/*=B*/ previous, K k, V v)) => z;
+
   @override /*=B*/ foldRight/*<B>*/(/*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => z;
+
+  /*=B*/ foldRightBetween/*<B>*/(Order<K> order, K minK, K maxK, /*=B*/ z, /*=B*/ f(K k, V v, /*=B*/ previous)) => z;
 
   @override Option<V> get(Order<K> order, K k) => none();
 
@@ -300,6 +363,14 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   @override operator ==(other) => identical(_emptyIMapAVLNode, other);
 
   @override int get hashCode => 0;
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> min() => none();
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> max() => none();
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> minGreaterThan(Order<K> order, K k) => none();
+
+  @override Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k) => none();
 
   bool get empty => true;
 }

@@ -47,6 +47,44 @@ void main() {
 
   test("create from iterables", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m == new IMap.fromIterables(m.keyIterable(), m.valueIterable()))));
 
+  test("min", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    return m.min() == m.keys().minimum(IntOrder).flatMap((k) => m[k].map((v) => tuple2(k, v)));
+  })));
+
+  test("max", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    return m.max() == m.keys().maximum(IntOrder).flatMap((k) => m[k].map((v) => tuple2(k, v)));
+  })));
+
+  test("minGreaterThan", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    final supremumEqualsMinimum = m.minKey().flatMap((minK) => m.minGreaterThan(minK-1)) == m.min();
+    final correctSuccessorOfMinimum = m.minKey().flatMap((minK) => m.minGreaterThan(minK)) == m.pairs().tailOption.flatMap((l) => l.headOption);
+    final noneGreaterThanMaximum = m.maxKey().flatMap((maxK) => m.minGreaterThan(maxK)) == none();
+    return supremumEqualsMinimum && correctSuccessorOfMinimum && noneGreaterThanMaximum;
+  })));
+
+  test("maxLessThan", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    final infimumEqualsMaximum = m.maxKey().flatMap((maxK) => m.maxLessThan(maxK+1)) == m.max();
+    final correctPredecessorOfMaximum = m.maxKey().flatMap((maxK) => m.maxLessThan(maxK)) == m.pairs().reverse().tailOption.flatMap((l) => l.headOption);
+    final noneLessThanMinimum = m.minKey().flatMap((minK) => m.maxLessThan(minK)) == none();
+    return infimumEqualsMaximum && correctPredecessorOfMaximum && noneLessThanMinimum;
+  })));
+
+  test("foldLeftKVBetween", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    final min = m.minKey()|0;
+    final max = m.maxKey()|0;
+    final canScanAll = m.foldLeftKVBetween(min, max, nil(), (acc, _, i) => acc.appendElement(i)) == m.values();
+    final canScanSome = m.foldLeftKVBetween(min+1, max-1, nil(), (acc, _, i) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2);
+    return canScanAll && canScanSome;
+  })));
+
+  test("foldRightKVBetween", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    final min = m.minKey()|0;
+    final max = m.maxKey()|0;
+    final canScanAll = m.foldRightKVBetween(min, max, nil(), (_, i, acc) => acc.appendElement(i)) == m.values().reverse();
+    final canScanSome = m.foldRightKVBetween(min+1, max-1, nil(), (_, i, acc) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2).reverse();
+    return canScanAll && canScanSome;
+  })));
+
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
   group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoid(IListMi), c.ints.map((i) => imap({i: ilist([i])}))));

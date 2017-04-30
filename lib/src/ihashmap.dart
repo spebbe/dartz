@@ -58,6 +58,7 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
   @override String toString() => "ihashmap{${_map.foldMap(IListMi, (kvs) => kvs.map((kv) => "${kv.value1}: ${kv.value2}")).intercalate(StringMi, ", ")}}";
   @override bool operator ==(other) => identical(this, other) || (other is IHashMap && _map == other._map);
+  @override int get hashCode => _map.hashCode;
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
 

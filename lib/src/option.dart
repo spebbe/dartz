@@ -34,11 +34,13 @@ class Some<A> extends Option<A> {
   Some(this._a);
   @override /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => ifSome(_a);
   @override bool operator ==(other) => other is Some && other._a == _a;
+  @override int get hashCode => _a.hashCode;
 }
 
 class None<A> extends Option<A> {
   @override /*=B*/ fold/*<B, C extends B>*/(/*=B*/ ifNone(), /*=C*/ ifSome(A a)) => ifNone();
   @override bool operator ==(other) => other is None;
+  @override int get hashCode => 0;
 }
 
 final Option _none = new None();

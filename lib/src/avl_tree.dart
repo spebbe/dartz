@@ -32,6 +32,8 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   @override bool operator ==(other) => identical(this, other) || (other is AVLTree && _order == other._order && toIList() == other.toIList());
 
+  @override int get hashCode => _order.hashCode ^ toIList().hashCode;
+
   @override String toString() => 'avltree<${toIList()}>';
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
@@ -152,9 +154,9 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     return none();
   }
 
-  Option<A> min() => _left == emptyAVLNode ? some(_a) : _left.min();
+  Option<A> min() => _left == _emptyAVLNode ? some(_a) : _left.min();
 
-  Option<A> max() => _right == emptyAVLNode ? some(_a) : _right.max();
+  Option<A> max() => _right == _emptyAVLNode ? some(_a) : _right.max();
 
   bool get empty => false;
 }
@@ -182,12 +184,15 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   @override Option<Tuple2<_AVLNode<A>, A>> _removeMax() => none();
 
-  @override operator ==(other) => identical(emptyAVLNode, other);
+  @override operator ==(other) => identical(_emptyAVLNode, other);
+
+  @override int get hashCode => 0;
 
   bool get empty => true;
 }
 
-_AVLNode/*<A>*/ emptyAVLNode/*<A>*/() => const _EmptyAVLNode();
+_AVLNode _emptyAVLNode = const _EmptyAVLNode();
+_AVLNode/*<A>*/ emptyAVLNode/*<A>*/() => _emptyAVLNode as dynamic/*=_AVLNode<A>*/;
 
 
 class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {

@@ -71,6 +71,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override bool operator ==(other) => identical(this, other) || (other is IVector && _elementsByIndex.values() == other._elementsByIndex.values());
 
+  @override int get hashCode => _elementsByIndex.values().hashCode;
+
   @override String toString() => "ivector[${map((A a) => a.toString()).intercalate(StringMi, ', ')}]";
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!

@@ -75,6 +75,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && pairs() == other.pairs());
 
+  @override int get hashCode => _order.hashCode ^ pairs().hashCode;
+
   @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", nil/*<String>*/())).intercalate(StringMi, ", ")}}";
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations -- proceed with caution!
@@ -296,6 +298,8 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   @override _IMapAVLNode<K, dynamic/*=V2*/> map/*<V2>*/(/*=V2*/ f(V v)) => this as dynamic/*=_IMapAVLNode<K, V2>*/;
 
   @override operator ==(other) => identical(_emptyIMapAVLNode, other);
+
+  @override int get hashCode => 0;
 
   bool get empty => true;
 }

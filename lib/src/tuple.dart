@@ -9,6 +9,7 @@ class Tuple2<T1, T2> {
   Tuple2/*<T1, NT2>*/ map2/*<NT2>*/(Function1/*<T2, NT2>*/ f) => new Tuple2/*<T1, NT2>*/(value1, f(value2));
   @override String toString() => '($value1, $value2)';
   @override bool operator ==(other) => other is Tuple2 && other.value1 == value1 && other.value2 == value2;
+  @override int get hashCode => value1.hashCode ^ value2.hashCode;
 }
 
 Tuple2/*<T1, T2>*/ tuple2/*<T1, T2>*/(/*=T1*/ v1, /*=T2*/ v2) => new Tuple2(v1, v2);
@@ -47,6 +48,7 @@ class Tuple3<T1, T2, T3> {
   /*=R*/ apply/*<R>*/(Function3/*<T1, T2, T3, R>*/ f) => f(value1, value2, value3);
   @override String toString() => '($value1, $value2, $value3)';
   @override bool operator ==(other) => other is Tuple3 && other.value1 == value1 && other.value2 == value2 && other.value3 == value3;
+  @override int get hashCode => value1.hashCode ^ value2.hashCode ^ value3.hashCode;
 }
 
 Tuple3/*<T1, T2, T3>*/ tuple3/*<T1, T2, T3>*/(/*=T1*/ v1, /*=T2*/ v2, /*=T3*/ v3) => new Tuple3(v1, v2, v3);
@@ -89,6 +91,7 @@ class Tuple4<T1, T2, T3, T4> {
   /*=R*/ apply/*<R>*/(Function4/*<T1, T2, T3, T4, R>*/ f) => f(value1, value2, value3, value4);
   @override String toString() => '($value1, $value2, $value3, $value4)';
   @override bool operator ==(other) => other is Tuple4 && other.value1 == value1 && other.value2 == value2 && other.value3 == value3 && other.value4 == value4;
+  @override int get hashCode => value1.hashCode ^ value2.hashCode ^ value3.hashCode ^ value4.hashCode;
 }
 
 Tuple4/*<T1, T2, T3, T4>*/ tuple4/*<T1, T2, T3, T4>*/(/*=T1*/ v1, /*=T2*/ v2, /*=T3*/ v3, /*=T4*/ v4) => new Tuple4(v1, v2, v3, v4);

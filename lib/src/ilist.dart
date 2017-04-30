@@ -192,6 +192,8 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     }
   }
 
+  @override int get hashCode => foldLeft(0, (hash, a) => hash ^ a.hashCode);
+
   Tuple2<IList<A>, IList<A>> partition(bool f(A a)) => super.partition(f) as dynamic/*=Tuple2<IList<A>, IList<A>>*/;
 
   @override IList<A> prependElement(A a) => new Cons(a, this);

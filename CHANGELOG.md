@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.5.7
+
+- Added efficient operations related to lower/upper bounds to IMap:
+  - min
+  - max
+  - minKey
+  - maxKey
+  - minGreaterThan
+  - maxLessThan
+  - foldLeftKVBetween
+  - foldRightKVBetween
+- hashCode consistent with '==' where overridden
+
 ## 0.5.6
 
 - 'Gather' IO primitive for parallelizing IO operations

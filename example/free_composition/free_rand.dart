@@ -16,7 +16,7 @@ class RandOps<F> extends FreeOps<F, RandOp> {
   Free<F, int> nextInt() => liftOp(new NextInt());
 
   Free<F, int> nextIntBetween(int min, int max) =>
-      (min < 0 || min > max) ? freeM<F, int>().pure(0) : nextInt().map((i) => (i%(max-min+1))+min);
+      (min < 0 || min > max) ? freeM<F>().pure(0) : nextInt().map((i) => (i%(max-min+1))+min);
 }
 
 // Technique: Express RandOp using side effecting random number generator

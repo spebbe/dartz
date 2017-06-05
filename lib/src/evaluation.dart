@@ -31,7 +31,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
             final w1 = t.value1;
             final s2 = t.value2;
             final a = t.value3;
-            return f(a).run(r, s2).then((Either<E, Tuple3<W, S, dynamic>> leftOrRight2) {
+            return f(a).run(r, s2).then((Either<E, Tuple3<W, S, B>> leftOrRight2) {
               return leftOrRight2.map((t2) {
                 final w2 = t2.value1;
                 final s3 = t2.value2;

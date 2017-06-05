@@ -66,7 +66,7 @@ class Gather<A> extends IOOp<IList<A>> {
   Gather(this.ops);
 }
 
-class IOMonad extends FreeMonad<IOOp> with MonadCatch<Free<IOOp, dynamic>> {
+class IOMonad extends FreeMonad<IOOp> with MonadCatch<Free<IOOp, dynamic>> { // ignore: inconsistent_method_inheritance
   @override Free<IOOp, A> pure<A>(A a) => new Pure(a);
   @override Free<IOOp, Either<Object, A>> attempt<A>(Free<IOOp, A> fa) => liftF(new Attempt(fa));
   @override Free<IOOp, A> fail<A>(Object err) => liftF(new Fail(err));

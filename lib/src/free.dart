@@ -53,21 +53,21 @@ class Bind<F, A, B> extends Free<F, A> {
 class FreeMonad<F> extends MonadOpsMonad<Free<F, dynamic>> {
   FreeMonad(): super((a) => new Pure(a));
 
-  @override Free<F, dynamic/*=A*/> pure/*<A>*/(/*=A*/ a) => new Pure(a);
+  @override Free<F, A> pure<A>(A a) => new Pure(a);
 
-  @override Free<F, dynamic/*=C*/> map2/*<A, A2 extends A, B, B2 extends B, C>*/(Free<F, dynamic/*=A2*/> fa, Free<F, dynamic/*=B2*/> fb, /*=C*/ fun(/*=A*/ a, /*=B*/ b)) =>
+  @override Free<F, C> map2<A, A2 extends A, B, B2 extends B, C>(Free<F, A2> fa, Free<F, B2> fb, C fun(A a, B b)) =>
       fa.flatMap((a) => fb.map((b) => fun(a, b)));
 
-  @override Free<F, dynamic/*=D*/> map3/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>*/(Free<F, dynamic/*=A2*/> fa, Free<F, dynamic/*=B2*/> fb, Free<F, dynamic/*=C2*/> fc, /*=D*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c)) =>
+  @override Free<F, D> map3<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(Free<F, A2> fa, Free<F, B2> fb, Free<F, C2> fc, D fun(A a, B b, C c)) =>
       fa.flatMap((a) => fb.flatMap((b) => fc.map((c) => fun(a, b, c))));
 
-  @override Free<F, dynamic/*=E*/> map4/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>*/(Free<F, dynamic/*=A2*/> fa, Free<F, dynamic/*=B2*/> fb, Free<F, dynamic/*=C2*/> fc, Free<F, dynamic/*=D2*/> fd, /*=E*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d)) =>
+  @override Free<F, E> map4<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(Free<F, A2> fa, Free<F, B2> fb, Free<F, C2> fc, Free<F, D2> fd, E fun(A a, B b, C c, D d)) =>
       fa.flatMap((a) => fb.flatMap((b) => fc.flatMap((c) => fd.map((d) => fun(a, b, c, d)))));
 
-  @override Free<F, dynamic/*=FF*/> map5/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, FF>*/(Free<F, dynamic/*=A2*/> fa, Free<F, dynamic/*=B2*/> fb, Free<F, dynamic/*=C2*/> fc, Free<F, dynamic/*=D2*/> fd, Free<F, dynamic/*=E2*/> fe, /*=FF*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e)) =>
+  @override Free<F, FF> map5<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, FF>(Free<F, A2> fa, Free<F, B2> fb, Free<F, C2> fc, Free<F, D2> fd, Free<F, E2> fe, FF fun(A a, B b, C c, D d, E e)) =>
       fa.flatMap((a) => fb.flatMap((b) => fc.flatMap((c) => fd.flatMap((d) => fe.map((e) => fun(a, b, c, d, e))))));
 
-  @override Free<F, dynamic/*=G*/> map6/*<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, FF, F2 extends FF, G>*/(Free<F, dynamic/*=A2*/> fa, Free<F, dynamic/*=B2*/> fb, Free<F, dynamic/*=C2*/> fc, Free<F, dynamic/*=D2*/> fd, Free<F, dynamic/*=E2*/> fe, Free<F, dynamic/*=F2*/> ff, /*=G*/ fun(/*=A*/ a, /*=B*/ b, /*=C*/ c, /*=D*/ d, /*=E*/ e, /*=FF*/ f)) =>
+  @override Free<F, G> map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, FF, F2 extends FF, G>(Free<F, A2> fa, Free<F, B2> fb, Free<F, C2> fc, Free<F, D2> fd, Free<F, E2> fe, Free<F, F2> ff, G fun(A a, B b, C c, D d, E e, FF f)) =>
       fa.flatMap((a) => fb.flatMap((b) => fc.flatMap((c) => fd.flatMap((d) => fe.flatMap((e) => ff.map((f) => fun(a, b, c, d, e, f)))))));
 
 }

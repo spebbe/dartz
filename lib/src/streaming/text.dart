@@ -14,7 +14,7 @@ class Text {
         final buffered = (spill|"") + s;
         final lines = ilist(buffered.split("\n"));
         return lines.reverse().uncons(Pipe.halt, (newSpill, completeLines) =>
-            completeLines.foldLeft<Conveyor<From<String>, String>>(_lines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
+            completeLines.foldLeft(_lines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
         );
       }, () => spill.fold(Pipe.halt, Pipe.produce));
 
@@ -37,7 +37,7 @@ class Text {
       }
     }
 
-    Conveyor<From<List<int>>, String> loop(List<int> oldSpill) => Pipe.consume((List<int> rawBytes) {
+    Conveyor<From<List<int>>, String> loop(List<int> oldSpill) => Pipe.consume((rawBytes) {
       final trimmedBytesAndSpill = _findSpill([oldSpill, rawBytes].expand(id).toList());
       return Pipe.produce(UTF8.decode(trimmedBytesAndSpill.value1), loop(trimmedBytesAndSpill.value2));
     });

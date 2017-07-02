@@ -8,9 +8,9 @@ abstract class Applicative<F> implements Functor<F> {
 
   @override F map<A, B>(covariant F fa, B f(A a)) => ap(fa, pure(f));
 
-  F traverseA(Traversable g, ga, F f(_)) => g.traverse<F>(this, ga, f);
+  F traverseA(Traversable g, ga, F f(_)) => g.traverse(this, ga, f);
 
-  F traverseA_(Traversable g, ga, F f(_)) => g.traverse_<F>(this, ga, f);
+  F traverseA_(Traversable g, ga, F f(_)) => g.traverse_(this, ga, f);
 
   F sequenceA(Traversable g, ga) => g.sequence(this, ga);
 

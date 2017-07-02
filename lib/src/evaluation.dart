@@ -2,41 +2,36 @@ part of dartz;
 
 // Prestacked Future<Either<E, Reader<R> + Writer<W> + State<S>>> monad.
 // Binds are stack safe but relatively expensive, because of Future chaining.
-// Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
+
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dynamic>*/, A> with ApplicativeOps<Evaluation/*<E, R, W, S, dynamic>*/, A>, MonadOps<Evaluation/*<E, R, W, S, dynamic>*/, A> {
   final Monoid<W> _W;
   final Function2<R, S, Future<Either<E, Tuple3<W, S, A>>>> _run;
 
   Evaluation(this._W, this._run);
 
-  Evaluation<E, R, W, S, B> pure<B>(B b) {
-    return new Evaluation<E, R, W, S, B>(_W, (r, s) {
-      return new Future.value(new Right(new Tuple3(_W.zero(), s, b)));
-    });
-  }
+  Evaluation<E, R, W, S, B> pure<B>(B b) =>
+      new Evaluation(_W, (r, s) => new Future.value(new Right(new Tuple3(_W.zero(), s, b))));
 
-  Evaluation<E, R, W, S, B> map<B>(B f(A a)) {
-    return new Evaluation<E, R, W, S, B>(_W, (r, s) {
-      return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
-        return leftOrRight.map((t) => new Tuple3(t.value1, t.value2, f(t.value3)));
-      });
-    });
-  }
+  Evaluation<E, R, W, S, B> map<B>(B f(A a)) =>
+      new Evaluation(_W, (r, s) =>
+          run(r, s).then((leftOrRight) =>
+              leftOrRight.map((t) => new Tuple3(t.value1, t.value2, f(t.value3)))));
 
   Evaluation<E, R, W, S, B> bind<B>(Evaluation<E, R, W, S, B> f(A a)) {
-    return new Evaluation<E, R, W, S, B>(_W, (r, s) {
+    return new Evaluation(_W, (r, s) {
       return new Future.microtask(() {
-        return run(r, s).then((Either<E, Tuple3<W, S, A>> leftOrRight) {
+        return run(r, s).then((leftOrRight) {
           return leftOrRight.fold((e) => new Future.value(new Left(e)), (t) {
             final w1 = t.value1;
             final s2 = t.value2;
             final a = t.value3;
-            return f(a).run(r, s2).then((Either<E, Tuple3<W, S, B>> leftOrRight2) {
+            return f(a).run(r, s2).then((leftOrRight2) {
               return leftOrRight2.map((t2) {
                 final w2 = t2.value1;
                 final s3 = t2.value2;
-                final a2 = t2.value3;
-                return new Tuple3(_W.append(w1, w2), s3, a2);
+                final b = t2.value3;
+                return new Tuple3(_W.append(w1, w2), s3, b);
               });
             });
           });

@@ -20,7 +20,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
 
-  factory AVLTree.fromIList(Order<A> order, IList<A> l) => l.foldLeft(new AVLTree<A>(order, emptyAVLNode()), (AVLTree<A> tree, A a) => tree.insert(a));
+  factory AVLTree.fromIList(Order<A> order, IList<A> l) => l.foldLeft(new AVLTree(order, emptyAVLNode()), (tree, A a) => tree.insert(a));
 
   IList<A> toIList() => foldRight(nil(), (A a, IList<A> p) => new Cons(a, p));
 
@@ -38,7 +38,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
 
-  Iterable<A> toIterable() => new _AVLTreeIterable<A>(this);
+  Iterable<A> toIterable() => new _AVLTreeIterable(this);
 
   Iterator<A> iterator() => toIterable().iterator;
 }
@@ -75,10 +75,10 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   _AVLNode<A> insert(Order<A> order, A a) {
     final Ordering o = order.order(a, _a);
     if (o == Ordering.LT) {
-      final _AVLNode<A> newLeft = _left.insert(order, a);
+      final newLeft = _left.insert(order, a);
       return new _NonEmptyAVLNode(_a, newLeft, _right)._rebalance();
     } else if (o == Ordering.GT) {
-      final _AVLNode<A> newRight = _right.insert(order, a);
+      final newRight = _right.insert(order, a);
       return new _NonEmptyAVLNode(_a, _left, newRight)._rebalance();
     } else {
       return new _NonEmptyAVLNode(a, _left, _right);
@@ -170,7 +170,7 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   @override Option<A> get(Order<A> order, A a) => none();
 
-  @override _AVLNode<A> insert(Order<A> order, A a) => new _NonEmptyAVLNode<A>(a, emptyAVLNode(), emptyAVLNode());
+  @override _AVLNode<A> insert(Order<A> order, A a) => new _NonEmptyAVLNode(a, emptyAVLNode(), emptyAVLNode());
 
   @override Option<A> max() => none();
 
@@ -201,7 +201,7 @@ class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
 
   @override AVLTree<A> zero() => new AVLTree<A>(_tOrder, emptyAVLNode());
 
-  @override AVLTree<A> append(AVLTree<A> a1, AVLTree<A> t2) => t2.foldLeft(a1, (AVLTree<A> p, A a) => p.insert(a));
+  @override AVLTree<A> append(AVLTree<A> a1, AVLTree<A> t2) => t2.foldLeft(a1, (p, a) => p.insert(a));
 }
 
 final Foldable<AVLTree> AVLTreeFo = new FoldableOpsFoldable<AVLTree>();
@@ -209,7 +209,7 @@ final Foldable<AVLTree> AVLTreeFo = new FoldableOpsFoldable<AVLTree>();
 class _AVLTreeIterable<A> extends Iterable<A> {
   final AVLTree<A> _tree;
   _AVLTreeIterable(this._tree);
-  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator<A>(cast(_tree._root));
+  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator(cast(_tree._root));
 }
 
 class _AVLTreeIterator<A> extends Iterator<A> {

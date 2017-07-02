@@ -49,5 +49,4 @@ Future unsafeIOInterpreter(IOOp io) {
 
 Future<A> unsafePerformIO<A>(Free<IOOp, A> io) => io.foldMap(FutureM, unsafeIOInterpreter);
 
-Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) =>
-    unsafePerformIO<Either<Object, IList<A>>>(IOM.attempt(conveyor.runLog(IOM)));
+Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) => unsafePerformIO(IOM.attempt(conveyor.runLog(IOM)));

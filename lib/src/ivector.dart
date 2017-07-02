@@ -7,9 +7,9 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   IVector._internal(this._elementsByIndex, this._offset, this._length);
 
-  factory IVector.emptyVector() => new IVector._internal(new IMap<int, A>.emptyWithOrder(IntOrder), 0, 0);
+  factory IVector.emptyVector() => new IVector._internal(new IMap.emptyWithOrder(IntOrder), 0, 0);
 
-  factory IVector.from(Iterable<A> iterable) => iterable.fold(emptyVector(), (IVector<A> p, A a) => p.appendElement(a));
+  factory IVector.from(Iterable<A> iterable) => iterable.fold(emptyVector(), (p, a) => p.appendElement(a));
 
   IVector<A> prependElement(A a) => new IVector._internal(_elementsByIndex.put(_offset-1, a), _offset-1, _length+1);
 
@@ -35,7 +35,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override IVector<B> map<B>(B f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
 
-  @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (IVector<B> p, A a) => p.plus(f(a)));
+  @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (p, a) => p.plus(f(a)));
 
   @override IVector<A> empty() => emptyVector();
 
@@ -48,9 +48,9 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
       if (fa2l == 0) {
         return this;
       } else if (l < fa2l) {
-        return foldRight(fa2, (A a, IVector<A> p) => p.prependElement(a));
+        return foldRight(fa2, (a, p) => p.prependElement(a));
       } else {
-        return fa2.foldLeft(this, (IVector<A> p, A a) => p.appendElement(a));
+        return fa2.foldLeft(this, (p, a) => p.appendElement(a));
       }
     }
   }

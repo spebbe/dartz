@@ -232,9 +232,9 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
   List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
 
-  Iterable<A> toIterable() => new _IListIterable<A>(this);
+  Iterable<A> toIterable() => new _IListIterable(this);
 
-  Iterator<A> iterator() => new _IListIterator<A>(this);
+  Iterator<A> iterator() => new _IListIterator(this);
 }
 
 class Cons<A> extends IList<A> {
@@ -294,7 +294,7 @@ class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
 Monad ilistTMonad(Monad mmonad) => new IListTMonad(mmonad);
 
 IList<int> iota(int n) {
-  Trampoline<IList<int>> go(int i, IList<int> result) => i > 0 ? tcall<IList<int>>(() => go(i-1, new Cons(i-1, result))) : treturn(result);
+  Trampoline<IList<int>> go(int i, IList<int> result) => i > 0 ? tcall(() => go(i-1, new Cons(i-1, result))) : treturn(result);
   return go(n, nil()).run();
 }
 

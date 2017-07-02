@@ -50,7 +50,7 @@ abstract class FoldableOps<F, A> {
 
   B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) => foldLeft<Tuple2<B, int>>(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1;
 
-  Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) => foldMap<Option<B>>(new OptionMonoid(si), composeF(some, f));
+  Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) => foldMap(new OptionMonoid(si), composeF(some, f));
 
   A concatenate(Monoid<A> mi) => foldMap(mi, id);
 
@@ -62,9 +62,9 @@ abstract class FoldableOps<F, A> {
 
   bool all(bool f(A a)) => foldMap(BoolAndMi, f);
 
-  Option<A> minimum(Order<A> oa) => concatenateO(new MinSemigroup<A>(oa));
+  Option<A> minimum(Order<A> oa) => concatenateO(new MinSemigroup(oa));
 
-  Option<A> maximum(Order<A> oa) => concatenateO(new MaxSemigroup<A>(oa));
+  Option<A> maximum(Order<A> oa) => concatenateO(new MaxSemigroup(oa));
 
   A intercalate(Monoid<A> mi, A a) => foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 

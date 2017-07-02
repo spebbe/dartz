@@ -8,7 +8,7 @@ part of dartz_streaming;
 typedef Conveyor<F, Unit> SinkF<F, O>(O o);
 typedef Conveyor<F, O> ChannelF<F, I, O>(I i);
 
-// Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> with ApplicativeOps<Conveyor/*<F, dynamic>*/, O>, ApplicativePlusOps<Conveyor/*<F, dynamic>*/, O>, MonadOps<Conveyor/*<F, dynamic>*/, O>, MonadPlusOps<Conveyor/*<F, dynamic>*/, O> {
 
   A interpret<A>(A ifProduce(O head, Conveyor<F, O> tail), A ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A ifHalt(Object err));
@@ -23,8 +23,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, B> pure<B>(B b) => produce(b);
 
   Conveyor<F, O2> map<O2>(O2 f(O o)) =>
-      interpret((h, t) => tryOrDie(() => produce(f(h), t.map<O2>(f))),
-          (req, recv) => consume(req, (ea) => recv(ea).map<O2>(f)),
+      interpret((h, t) => tryOrDie(() => produce(f(h), t.map(f))),
+          (req, recv) => consume(req, (ea) => recv(ea).map(f)),
           halt);
 
   Conveyor<F, O> lazyPlus(Conveyor<F, O> p()) =>
@@ -54,8 +54,8 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
       onHalt((err) => err == End ? f() : halt(err));
 
   Conveyor<F, O2> flatMap<O2>(Conveyor<F, O2> f(O o)) =>
-      interpret((h, t) => tryOrDie(() => (f(h).onHalt((err) => err == End ? halt(End) : kill<O2>().plus(halt(err)))).lazyPlus(() => t.flatMap<O2>(f))),
-          (req, recv) => consume(req, (ea) => recv(ea).flatMap<O2>(f)),
+      interpret((h, t) => tryOrDie(() => (f(h).onHalt((err) => err == End ? halt(End) : kill<O2>().plus(halt(err)))).lazyPlus(() => t.flatMap(f))),
+          (req, recv) => consume(req, (ea) => recv(ea).flatMap(f)),
           halt);
 
   Conveyor<F, O2> bind<O2>(Conveyor<F, O2> f(O o)) => flatMap(f);
@@ -84,7 +84,7 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O2> drain<O2>() =>
       interpret((h, t) => t.drain<O2>(),
-          (req, recv) => consume(req, (ea) => recv(ea).drain<O2>()),
+          (req, recv) => consume(req, (ea) => recv(ea).drain()),
           halt);
 
   Conveyor<F, O2> kill<O2>() =>
@@ -94,11 +94,11 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
 
   Conveyor<F, O2> pipe<O2>(Conveyor<From<O>, O2> c2) =>
-      c2.interpret((h, t) => produce(h, pipe<O2>(t)),
+      c2.interpret((h, t) => produce(h, pipe(t)),
           (req, recv) =>
-              this.interpret((h, t) => t.pipe<O2>(Try(() => recv(right(h)))),
-                  (req0, recv0) => consume<F, O, O2>(req0, (ea) => recv0(ea).pipe<O2>(c2)),
-                  (err) => halt<F, O>(err).pipe<O2>(recv(left(err)))),
+              this.interpret((h, t) => t.pipe(Try(() => recv(right(h)))),
+                  (req0, recv0) => consume(req0, (ea) => recv0(ea).pipe(c2)),
+                  (err) => halt<F, O>(err).pipe(recv(left(err)))),
           (err) => kill<O2>().onHalt((err2) => halt<F, O2>(err).plus(halt(err2))));
 
   Conveyor<F, dynamic> operator |(Conveyor<From<O>, dynamic> c2) => pipe(c2);
@@ -153,15 +153,15 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, IVector<O>> windowAll(int n) => pipe(Pipe.windowAll(n));
 
   Conveyor<F, O3> tee<O2, O3>(Conveyor<F, O2> c2, Conveyor<Both<O, O2>, O3> t) => t.interpret<Conveyor<F, O3>>(
-      (h, t) => produce<F, O3>(h, tee<O2, O3>(c2, t))
+      (h, t) => produce(h, tee(c2, t))
       ,(side, recv) => side == Tee._getL
-          ? interpret<Conveyor<F, O3>>(
-          (o, ot) => ot.tee<O2, O3>(c2, Try(() => recv(right(o))))
-          ,(reqL, recvL) => consume(reqL, (ea) => recvL(ea).tee<O2, O3>(c2, t))
+          ? interpret(
+          (o, ot) => ot.tee(c2, Try(() => recv(right(o))))
+          ,(reqL, recvL) => consume(reqL, (ea) => recvL(ea).tee(c2, t))
           ,(e) => c2.kill<O3>().onComplete(() => halt(e)))
-          : c2.interpret<Conveyor<F, O3>>(
-          (o2, ot) => tee<O2, O3>(ot, Try(() => recv(right(o2))))
-          ,(reqR, recvR) => consume(reqR, (ea) => tee<O2, O3>(recvR(ea), t))
+          : c2.interpret(
+          (o2, ot) => tee(ot, Try(() => recv(right(o2))))
+          ,(reqR, recvR) => consume(reqR, (ea) => tee(recvR(ea), t))
           ,(e) => kill<O3>().onComplete(() => halt(e)))
       ,(e) => kill<O3>().onComplete(() => c2.kill<O3>().onComplete(() => halt(e))));
 

@@ -4,7 +4,7 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
   //def traverseImpl[G[_]:Applicative,A,B](fa: F[A])(f: A => G[B]): G[F[B]]
   G traverse<G>(Applicative<G> gApplicative, F fa, G f(a));
 
-  G traverse_<G>(Applicative<G> gApplicative, F fa, G f(a)) => gApplicative.map(traverse<G>(gApplicative, fa, f), constF(unit));
+  G traverse_<G>(Applicative<G> gApplicative, F fa, G f(a)) => gApplicative.map(traverse(gApplicative, fa, f), constF(unit));
 
   G sequence<G>(Applicative<G> gApplicative, F fa) => traverse(gApplicative, fa, cast(id));
 

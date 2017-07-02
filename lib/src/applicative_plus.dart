@@ -6,6 +6,6 @@ abstract class ApplicativePlus<F> implements Applicative<F>, PlusEmpty<F> {
 }
 
 abstract class ApplicativePlusOps<F, A> implements ApplicativeOps<F, A>, PlusEmptyOps<F, A> {
-  F prependElement(A a) => (cast<ApplicativePlusOps<F, A>>(pure(a))).plus(cast(this));
+  F prependElement(A a) => cast<ApplicativePlusOps<F, A>>(pure(a)).plus(cast(this));
   F appendElement(A a) => plus(pure(a));
 }

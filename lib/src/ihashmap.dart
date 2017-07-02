@@ -36,7 +36,7 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
   @override IHashMap<K, V2> map<V2>(V2 f(V v)) => new IHashMap.internal(_map.map((kvs) => kvs.map((kv) => kv.map2(f))));
 
-  Map<K, V> toMap() => foldLeftKV(new Map(), (Map<K, V> p, K k, V v) => p..[k] = v);
+  Map<K, V> toMap() => foldLeftKV(new Map(), (p, K k, V v) => p..[k] = v);
 
   B foldLeftKV<B>(B z, B f(B previous, K k, V v)) =>
       _map.foldLeft(z, (prev, kvs) => kvs.foldLeft(prev, (pprev, kv) => f(pprev, kv.value1, kv.value2)));

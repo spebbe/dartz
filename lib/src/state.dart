@@ -1,7 +1,8 @@
 part of dartz;
 
 // Bind on plain State is *not* stack safe. Composition of StateT with stack safe monad, such as Trampoline, is.
-// Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
+
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeOps<State/*<S, dynamic>*/, A>, MonadOps<State/*<S, dynamic>*/, A> {
   final Function1<S, Tuple2<A, S>> _run;
   Tuple2<A, S> run(S s) => _run(s);
@@ -37,7 +38,7 @@ class StateMonad<S> extends MonadOpsMonad<State<S, dynamic>> {
 final StateMonad StateM = new StateMonad();
 StateMonad<S> stateM<S>() => cast(StateM);
 
-// Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with ApplicativeOps<StateT/*<F, S, dynamic>*/, A>, MonadOps<StateT/*<F, S, dynamic>*/, A> {
   final Monad<F> _FM;
   final Function1<S, F> _run;
@@ -48,8 +49,8 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   F value(S s) => _FM.map(_run(s), (t) => t.value1);
   F state(S s) => _FM.map(_run(s), (t) => t.value2);
 
-  @override StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2<B, S>(b, s)));
-  @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, S> t) => t.map1(f)));
+  @override StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
+  @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2 t) => t.map1(f)));
   @override StateT<F, S, B> bind<B>(StateT<F, S, B> f(A a)) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));

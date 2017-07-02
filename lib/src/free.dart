@@ -1,5 +1,6 @@
 part of dartz;
 
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with ApplicativeOps<Free/*<F, dynamic>*/, A>, MonadOps<Free/*<F, dynamic>*/, A> {
 
   @override Free<F, B> pure<B>(B b) => new Pure(b);

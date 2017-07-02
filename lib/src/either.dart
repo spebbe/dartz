@@ -1,6 +1,6 @@
 part of dartz;
 
-// Workaround: Non-commented syntax triggers "illegal recursive type", while commented syntax yields correct types and behaviour...
+// Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> with FunctorOps<Either/*<L, dynamic>*/, R>, ApplicativeOps<Either/*<L, dynamic>*/, R>, MonadOps<Either/*<L, dynamic>*/, R>, TraversableMonadOps<Either/*<L, dynamic>*/, R> {
   B fold<B>(B ifLeft(L l), B ifRight(R r));
 

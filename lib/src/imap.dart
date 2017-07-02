@@ -12,12 +12,12 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   factory IMap.from(Map<K, V> m) => m.keys.fold(new IMap.empty(), (IMap<K, V> p, K k) => p.put(k, m[k]));
 
-  factory IMap.fromWithOrder(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.emptyWithOrder(kOrder), (IMap<K, V> p, K k) => p.put(k, m[k]));
+  factory IMap.fromWithOrder(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.emptyWithOrder(kOrder), (p, K k) => p.put(k, m[k]));
 
   factory IMap.fromIterables(Iterable<K> keys, Iterable<V> values, [Order<K> kOrder]) {
     IMap<K, V> result = new IMap.emptyWithOrder(kOrder ?? comparableOrder());
-    final Iterator<K> keyIterator = keys.iterator;
-    final Iterator<V> valueIterator = values.iterator;
+    final keyIterator = keys.iterator;
+    final valueIterator = values.iterator;
     while(keyIterator.moveNext() && valueIterator.moveNext()) {
       result = result.put(keyIterator.current, valueIterator.current);
     }
@@ -58,7 +58,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   B foldMapKV<B>(Monoid<B> mi, B f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
-  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (IMap<K, V2> p, k, v) => p.put(k, f(k, v)));
+  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
@@ -75,7 +75,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override IMap<K, V2> map<V2>(V2 f(V v)) => new IMap(_order, _tree.map(f));
 
-  Map<K, V> toMap() => foldLeftKV(new Map(), (Map<K, V> p, K k, V v) => p..[k] = v);
+  Map<K, V> toMap() => foldLeftKV(new Map(), (p, K k, V v) => p..[k] = v);
 
   Option<K> minKey() => _tree.min().map((node) => node._k);
 
@@ -97,15 +97,15 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   // PURISTS BEWARE: mutable Iterable/Iterator integrations -- proceed with caution!
 
-  Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable<K, V>(this);
+  Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable(this);
 
   Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
 
-  Iterable<K> keyIterable() => new _IMapKeyIterable<K, V>(this);
+  Iterable<K> keyIterable() => new _IMapKeyIterable(this);
 
   Iterator<K> keyIterator() => keyIterable().iterator;
 
-  Iterable<V> valueIterable() => new _IMapValueIterable<K, V>(this);
+  Iterable<V> valueIterable() => new _IMapValueIterable(this);
 
   Iterator<V> valueIterator() => valueIterable().iterator;
 
@@ -128,7 +128,7 @@ class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
 
   @override IMap<K, V> zero() => new IMap.empty();
   @override IMap<K, V> append(IMap<K, V> m1, IMap<K, V> m2) =>
-      m2.pairs().foldLeft(m1, (IMap<K, V> p, Tuple2<K, V> kv) =>
+      m2.pairs().foldLeft(m1, (p, kv) =>
           m1.get(kv.value1).fold(() =>
               p.put(kv.value1, kv.value2),
               (m1v) => p.put(kv.value1, _vSemigroup.append(m1v, kv.value2))));
@@ -182,10 +182,10 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final Ordering o = order.order(k, _k);
     if (o == Ordering.LT) {
       final newLeft = _left.insert(order, k, v);
-      return new _NonEmptyIMapAVLNode<K, V>(_k, _v, newLeft, _right)._rebalance();
+      return new _NonEmptyIMapAVLNode(_k, _v, newLeft, _right)._rebalance();
     } else if (o == Ordering.GT) {
       final newRight = _right.insert(order, k, v);
-      return new _NonEmptyIMapAVLNode<K, V>(_k, _v, _left, newRight)._rebalance();
+      return new _NonEmptyIMapAVLNode(_k, _v, _left, newRight)._rebalance();
     } else {
       return new _NonEmptyIMapAVLNode(k, v, _left, _right);
     }
@@ -194,17 +194,17 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   _IMapAVLNode<K, V> remove(Order<K> order, K k) {
     final Ordering o = order.order(k, _k);
     if (o == Ordering.LT) {
-      return new _NonEmptyIMapAVLNode<K, V>(_k, _v, _left.remove(order, k), _right)._rebalance();
+      return new _NonEmptyIMapAVLNode(_k, _v, _left.remove(order, k), _right)._rebalance();
     } else if (o == Ordering.GT) {
-      return new _NonEmptyIMapAVLNode<K, V>(_k, _v, _left, _right.remove(order, k))._rebalance();
+      return new _NonEmptyIMapAVLNode(_k, _v, _left, _right.remove(order, k))._rebalance();
     } else {
-      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyIMapAVLNode<K, V>(lr.value2, lr.value3, lr.value1, _right)._rebalance());
+      return _left._removeMax().fold(() => _right, (lr) => new _NonEmptyIMapAVLNode(lr.value2, lr.value3, lr.value1, _right)._rebalance());
     }
   }
 
   Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax() =>
       _right._removeMax().fold(() => some(tuple3(_left, _k, _v)),
-          (rightResult) => some(tuple3(new _NonEmptyIMapAVLNode<K, V>(_k, _v, _left, rightResult.value1)._rebalance(), rightResult.value2, rightResult.value3)));
+          (rightResult) => some(tuple3(new _NonEmptyIMapAVLNode(_k, _v, _left, rightResult.value1)._rebalance(), rightResult.value2, rightResult.value3)));
 
   _IMapAVLNode<K, V> _rebalance() {
     final b = balance;
@@ -285,9 +285,9 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   }
 
   @override _IMapAVLNode<K, V2> map<V2>(V2 f(V v)) {
-    final _IMapAVLNode<K, V2> newLeft = _left.map(f);
+    final newLeft = _left.map(f);
     final newV = f(_v);
-    final _IMapAVLNode<K, V2> newRight = _right.map(f);
+    final newRight = _right.map(f);
     return new _NonEmptyIMapAVLNode(_k, newV, newLeft, newRight);
   }
 
@@ -386,7 +386,7 @@ abstract class _IMapIterable<K, V, A> extends Iterable<A> {
 
 class _IMapPairIterable<K, V> extends _IMapIterable<K, V, Tuple2<K, V>> {
   _IMapPairIterable(IMap<K, V> m) : super(m);
-  @override Iterator<Tuple2<K, V>> get iterator => _m._tree.empty ? new _IMapPairIterator(null) : new _IMapPairIterator(cast<_NonEmptyIMapAVLNode<K, V>>(_m._tree));
+  @override Iterator<Tuple2<K, V>> get iterator => _m._tree.empty ? new _IMapPairIterator(null) : new _IMapPairIterator(cast(_m._tree));
 }
 
 class _IMapKeyIterable<K, V> extends _IMapIterable<K, V, K> {

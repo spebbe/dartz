@@ -2,8 +2,10 @@
 
 ## 0.6.0
 
-- Migrated to non-commented generic method syntax
-  - Requires sdk >= 1.21.0
+- Updated sdk requirement to >= 1.24.0
+  - Now uses real (non-commented) generic method syntax
+  - Takes advantage of improvements in strong mode type inference
+  - Various workarounds for remaining strong mode quirks
 
 ## 0.5.7
 

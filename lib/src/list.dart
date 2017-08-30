@@ -11,11 +11,11 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
   @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);
 
   @override G traverse<G>(Applicative<G> gApplicative, List fas, G f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
-    return gApplicative.lift2((List a, b) {
+    return gApplicative.map2(previous, f(e), (List a, b) {
       final r = new List.from(a);
       r.add(b);
       return r;
-    })(previous, f(e));
+    });
   });
 }
 

@@ -2,7 +2,7 @@ part of dartz_streaming;
 
 class Text {
 
-  static final Conveyor<From<IList<int>>, String> decodeUtf8 = Pipe.lift((IList<int> l) => l.toList()).pipe(_decodeUtf8());
+  static final Conveyor<From<UnmodifiableListView<int>>, String> decodeUtf8 = Pipe.lift((UnmodifiableListView<int> l) => l).pipe(_decodeUtf8());
 
   static final Conveyor<From<String>, IList<int>> encodeUtf8 = Pipe.lift(composeF(ilist, UTF8.encode));
 
@@ -19,7 +19,7 @@ class Text {
       }, () => spill.fold(Pipe.halt, Pipe.produce));
 
   // TODO: missing some corner case here, right?
-  static Conveyor<From<List<int>>, String> _decodeUtf8() {
+  static Conveyor<From<UnmodifiableListView<int>>, String> _decodeUtf8() {
     Tuple2<List<int>, List<int>> _findSpill(List<int> bytes) {
       final int byteCount = bytes.length;
       if (byteCount == 0) {
@@ -37,11 +37,11 @@ class Text {
       }
     }
 
-    Conveyor<From<List<int>>, String> loop(List<int> oldSpill) => Pipe.consume((rawBytes) {
-      final trimmedBytesAndSpill = _findSpill([oldSpill, rawBytes].expand(id).toList());
+    Conveyor<From<UnmodifiableListView<int>>, String> loop(List<int> oldSpill) => Pipe.consume((rawBytes) {
+      final trimmedBytesAndSpill = _findSpill([oldSpill, rawBytes].expand(id).toList(growable: false));
       return Pipe.produce(UTF8.decode(trimmedBytesAndSpill.value1), loop(trimmedBytesAndSpill.value2));
     });
-    return loop([]);
+    return loop(new UnmodifiableListView([]));
   }
 
 }

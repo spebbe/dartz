@@ -16,7 +16,7 @@ class OpenFile extends IOOp<FileRef> {
   OpenFile(this.path, this.openForRead);
 }
 
-class ReadBytes extends IOOp<IList<int>> {
+class ReadBytes extends IOOp<UnmodifiableListView<int>> {
   final FileRef file;
   final int byteCount;
   ReadBytes(this.file, this.byteCount);
@@ -85,7 +85,7 @@ class IOOps<F> extends FreeOps<F, IOOp> {
 
   Free<F, FileRef> openFile(String path, bool openForRead) => liftOp(new OpenFile(path, openForRead));
 
-  Free<F, IList<int>> readBytes(FileRef file, int byteCount) => liftOp(new ReadBytes(file, byteCount));
+  Free<F, UnmodifiableListView<int>> readBytes(FileRef file, int byteCount) => liftOp(new ReadBytes(file, byteCount));
 
   Free<F, Unit> writeBytes(FileRef file, IList<int> bytes) => liftOp(new WriteBytes(file, bytes));
 

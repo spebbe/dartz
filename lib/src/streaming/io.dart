@@ -8,12 +8,12 @@ class IO {
 
   static Conveyor<Free<IOOp, dynamic>, ChannelF<Free<IOOp, dynamic>, A, A>> stdoutPeeker<A>() => Source.constant(IOM, (A a) => Source.eval(io.println(a.toString()) >> IOM.pure(a)));
 
-  static Conveyor<Free<IOOp, dynamic>, IList<int>> fileReader(String path, [int chunkBytes = 4096]) => Source.resource(
+  static Conveyor<Free<IOOp, dynamic>, UnmodifiableListView<int>> fileReader(String path, [int chunkBytes = 4096]) => Source.resource(
       io.openFile(path, true),
-      (FileRef file) => Source.eval<Free<IOOp, dynamic>, IList<int>>(io.readBytes(file, chunkBytes)).repeat().takeWhile((bytes) => bytes != nil()),
+      (FileRef file) => Source.eval<Free<IOOp, dynamic>, UnmodifiableListView<int>>(io.readBytes(file, chunkBytes)).repeat().takeWhile((bytes) => bytes.isNotEmpty),
       (FileRef file) => Source.eval_(io.closeFile(file)));
 
-  static Conveyor<Free<IOOp, dynamic>, String> fileLineReader(String path, [Conveyor<From<IList<int>>, String> _decoder, int chunkBytes = 4096]) =>
+  static Conveyor<Free<IOOp, dynamic>, String> fileLineReader(String path, [Conveyor<From<UnmodifiableListView<int>>, String> _decoder, int chunkBytes = 4096]) =>
       fileReader(path, chunkBytes).pipe(_decoder ?? Text.decodeUtf8).pipe(Text.lines);
 
   static Conveyor<Free<IOOp, dynamic>, SinkF<Free<IOOp, dynamic>, IList<int>>> fileWriter(String path) => Source.resource(

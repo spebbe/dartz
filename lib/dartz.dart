@@ -1,6 +1,7 @@
 library dartz;
 
 import 'dart:async';
+import 'dart:collection';
 
 part 'src/applicative.dart';
 part 'src/either.dart';

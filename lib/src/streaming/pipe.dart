@@ -25,7 +25,7 @@ class Pipe {
 
   static Conveyor<From<I>, I> drop<I>(int n) => consume((i) => n > 0 ? drop<I>(n-1) : produce(i, identity()));
 
-  static Conveyor<From<I>, I> dropWhile<I>(bool f(I i)) => consume((i) => f(i) ? dropWhile(f) : identity());
+  static Conveyor<From<I>, I> dropWhile<I>(bool f(I i)) => consume((i) => f(i) ? dropWhile(f) : produce(i, identity()));
 
   static Conveyor<From<I>, I> filter<I>(bool f(I i)) => consume<I, I>((i) => f(i) ? produce(i) : halt()).repeatUntilExhausted();
 

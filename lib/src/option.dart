@@ -11,7 +11,8 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   A operator |(A dflt) => getOrElse(() => dflt);
 
   @override Option<B> pure<B>(B b) => some(b);
-  Option<B> map<B>(B f(A a)) => fold(none, (A a) => some(f(a)));
+  @override Option<B> map<B>(B f(A a)) => fold(none, (A a) => some(f(a)));
+  @override Option<B> ap<B>(Option<Function1<A, B>> ff) => fold(none, (A a) => ff.fold(none, (Function1<A, B> f) => some(f(a))));
   @override Option<B> bind<B>(Option<B> f(A a)) => fold(none, f);
   @override Option<B> flatMap<B>(Option<B> f(A a)) => fold(none, f);
   @override Option<B> andThen<B>(Option<B> next) => fold(none, (_) => next);
@@ -51,6 +52,10 @@ Option<A> option<A>(bool test, A value) => test ? some(value) : none();
 class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
   OptionMonadPlus() : super(some, none);
 
+  @override Option<B> map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
+  @override Option<B> ap<A, B>(Option<A> fa, Option<Function1<A, B>> ff) => fa.ap(ff);
+  @override Option<B> bind<A, B>(Option<A> fa, Option<B> f(A a)) => fa.bind(f);
+
   @override Option<C> map2<A, A2 extends A, B, B2 extends B, C>(Option<A2> fa, Option<B2> fb, C fun(A a, B b)) =>
       fa.fold(none, (a) => fb.fold(none, (b) => some(fun(a, b))));
 
@@ -67,6 +72,13 @@ class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
       fa.fold(none, (a) => fb.fold(none, (b) => fc.fold(none, (c) => fd.fold(none, (d) => fe.fold(none, (e) => ff.fold(none, (f) => some(fun(a, b, c, d, e, f))))))));
 
   Option<C> mapM2<A, A2 extends A, B, B2 extends B, C>(Option<A2> fa, Option<B2> fb, Option<C> f(A a, B b)) => fa.bind((a) => fb.bind((b) => f(a, b)));
+
+  @override Function1<Option<A>, Option<B>> lift<A, B>(B f(A a)) => ((Option<A> oa) => oa.map(f));
+  @override Function2<Option<A>, Option<B>, Option<C>> lift2<A, B, C>(C f(A a, B b)) => (Option<A> fa, Option<B> fb) => map2(fa, fb, f);
+  @override Function3<Option<A>, Option<B>, Option<C>, Option<D>> lift3<A, B, C, D>(D f(A a, B b, C c)) => (Option<A> fa, Option<B> fb, Option<C> fc) => map3(fa, fb, fc, f);
+  @override Function4<Option<A>, Option<B>, Option<C>, Option<D>, Option<E>> lift4<A, B, C, D, E>(E f(A a, B b, C c, D d)) => (Option<A> fa, Option<B> fb, Option<C> fc, Option<D> fd) => map4(fa, fb, fc, fd, f);
+  @override Function5<Option<A>, Option<B>, Option<C>, Option<D>, Option<E>, Option<F>> lift5<A, B, C, D, E, F>(F f(A a, B b, C c, D d, E e)) => (Option<A> fa, Option<B> fb, Option<C> fc, Option<D> fd, Option<E> fe) => map5(fa, fb, fc, fd, fe, f);
+  @override Function6<Option<A>, Option<B>, Option<C>, Option<D>, Option<E>, Option<F>, Option<G>> lift6<A, B, C, D, E, F, G>(G f(A a, B b, C c, D d, E e, F f)) => (Option<A> fa, Option<B> fb, Option<C> fc, Option<D> fd, Option<E> fe, Option<F> ff) => map6(fa, fb, fc, fd, fe, ff, f);
 
 }
 

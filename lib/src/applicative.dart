@@ -36,20 +36,20 @@ abstract class Applicative<F> implements Functor<F> {
 
   F replicate_(int n, F fa) => sequenceL_(new IList.from(new List.filled(n, fa)));
 
-  // Workaround: Seriously messed up tricks in liftX and mapX to confuse the 1.22 VM enough not to crash but still type in a somewhat useful way...
+  // Workaround: Dumbing down types in generic liftX to give subclasses a chance to do proper typing...
 
-  Function1<F2, F2> lift<F2 extends F>(f(a)) => (F2 fa) => cast(map(fa, f));
-  Function2<F2, F2, F2> lift2<F2 extends F>(f(a, b)) => cast((F2 fa, F2 fb) => ap(fb, map(fa, curry2(f))));
-  Function3<F2, F2, F2, F2> lift3<F2 extends F>(f(a, b, c)) => cast((F2 fa, F2 fb, F2 fc) => ap(fc, ap(fb, map(fa, curry3(f)))));
-  Function4<F2, F2, F2, F2, F2> lift4<F2 extends F>(f(a, b, c, d)) => (F2 fa, F2 fb, F2 fc, F2 fd) => cast(ap(fd, ap(fc, ap(fb, map(fa, curry4(f))))));
-  Function5<F2, F2, F2, F2, F2, F2> lift5<F2 extends F>(f(a, b, c, d, e)) => (F2 fa, F2 fb, F2 fc, F2 fd, F2 fe) => cast(ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry5(f)))))));
-  Function6<F2, F2, F2, F2, F2, F2, F2> lift6<F2 extends F>(f(a, b, c, d, e, f)) => (F2 fa, F2 fb, F2 fc, F2 fd, F2 fe, F2 ff) => cast(ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry6(f))))))));
+  Function1 lift<A, B>(B f(A a)) => (F fa) => map(fa, f);
+  Function2 lift2<A, B, C>(C f(A a, B b)) => (F fa, F fb) => ap(fb, map(fa, curry2(f)));
+  Function3 lift3<A, B, C, D>(D f(A a, B b, C c)) => (F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, curry3(f))));
+  Function4 lift4<A, B, C, D, E>(E f(A a, B b, C c, D d)) => (F fa, F fb, F fc, F fd) => ap(fd, ap(fc, ap(fb, map(fa, curry4(f)))));
+  Function5 lift5<A, B, C, D, E, F2>(F2 f(A a, B b, C c, D d, E e)) => (F fa, F fb, F fc, F fd, F fe) => ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry5(f))))));
+  Function6 lift6<A, B, C, D, E, F2, G>(G f(A a, B b, C c, D d, E e, F2 f)) => (F fa, F fb, F fc, F fd, F fe, F ff) => ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry6(f)))))));
 
-  F map2<A, A2 extends A, B, B2 extends B, C>(covariant F fa, covariant F fb, C f(A a, B b)) => lift2(f)(fa, fb);
-  F map3<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(covariant F fa, covariant F fb, covariant F fc, D f(A a, B b, C c)) => lift3(f)(fa, fb, fc);
-  F map4<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, E f(A a, B b, C c, D d)) => lift4(f)(fa, fb, fc, fd);
-  F map5<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, EFF f(A a, B b, C c, D d, E e)) => lift5(f)(fa, fb, fc, fd, fe);
-  F map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF, EFF2 extends EFF, G>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, covariant F ff, G f(A a, B b, C c, D d, E e, EFF fff)) => lift6(f)(fa, fb, fc, fd, fe, ff);
+  F map2<A, A2 extends A, B, B2 extends B, C>(covariant F fa, covariant F fb, C f(A a, B b)) => cast(lift2(f)(fa, fb));
+  F map3<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(covariant F fa, covariant F fb, covariant F fc, D f(A a, B b, C c)) => cast(lift3(f)(fa, fb, fc));
+  F map4<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, E f(A a, B b, C c, D d)) => cast(lift4(f)(fa, fb, fc, fd));
+  F map5<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, EFF f(A a, B b, C c, D d, E e)) => cast(lift5(f)(fa, fb, fc, fd, fe));
+  F map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF, EFF2 extends EFF, G>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, covariant F ff, G f(A a, B b, C c, D d, E e, EFF fff)) => cast(lift6(f)(fa, fb, fc, fd, fe, ff));
 
   Applicative<F> /** Applicative<F<G<_>>> **/ composeA(Applicative G) => new ComposedApplicative(this, G);
 }
@@ -70,7 +70,7 @@ class ComposedApplicative<F, G> extends Functor<F> with Applicative<F> {
 
 abstract class ApplicativeOps<F, A> implements FunctorOps<F, A> {
   F pure<B>(B b);
-  F ap<B>(F ff);
+  F ap<B>(covariant F ff);
 
   @override F map<B>(B f(A a)) => ap(pure(f));
 }

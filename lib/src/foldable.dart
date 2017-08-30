@@ -36,7 +36,7 @@ abstract class Foldable<F> {
 
   G foldRightM<A, B, G>(Monad<G> m, F fa, B z, G f(A a, B previous)) => foldLeft<A, Function1<B, G>>(fa, m.pure, (b, a) => (w) => m.bind(f(a, w), b))(z);
 
-  G foldMapM<A, B, G>(Monad<G> m, Monoid<B> bMonoid, F fa, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), m.lift2(bMonoid.append)), fa, f);
+  G foldMapM<A, B, G>(Monad<G> m, Monoid<B> bMonoid, F fa, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), cast(m.lift2(bMonoid.append))), fa, f);
 }
 
 abstract class FoldableOps<F, A> {
@@ -74,7 +74,7 @@ abstract class FoldableOps<F, A> {
 
   G foldRightM<G, B>(Monad<G> m, B z, G f(A a, B previous)) => foldLeft<Function1<B, G>>(m.pure, (b, A a) => (w) => m.bind(f(a, w), b))(z);
 
-  G foldMapM<G, B>(Monad<G> m, Monoid<B> bMonoid, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), m.lift2(bMonoid.append)), f);
+  G foldMapM<G, B>(Monad<G> m, Monoid<B> bMonoid, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), cast(m.lift2(bMonoid.append))), f);
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {

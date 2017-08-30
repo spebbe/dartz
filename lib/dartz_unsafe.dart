@@ -7,3 +7,4 @@ import 'dart:io';
 import 'package:dartz/dartz_streaming.dart';
 
 part 'src/unsafe/io.dart';
+part 'src/unsafe/each.dart';

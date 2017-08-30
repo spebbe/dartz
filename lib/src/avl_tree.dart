@@ -36,11 +36,13 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   @override String toString() => 'avltree<${toIList()}>';
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<A> toIterable() => new _AVLTreeIterable(this);
 
   Iterator<A> iterator() => toIterable().iterator;
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 abstract class _AVLNode<A> {

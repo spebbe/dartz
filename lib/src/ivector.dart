@@ -17,11 +17,11 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   Option<Tuple2<A, IVector<A>>> removeFirst() => get(0).map((first) => tuple2(first, new IVector._internal(_elementsByIndex.remove(_offset), _offset+1, _length-1)));
 
-  IVector<A> dropFirst() => new IVector._internal(_elementsByIndex.remove(_offset), _offset+1, _length-1);
+  IVector<A> dropFirst() => _length == 0 ? this : new IVector._internal(_elementsByIndex.remove(_offset), _offset+1, _length-1);
 
   Option<Tuple2<A, IVector<A>>> removeLast() => get(_length-1).map((last) => tuple2(last, new IVector._internal(_elementsByIndex.remove(_offset+(_length-1)), _offset, _length-1)));
 
-  IVector<A> dropLast() => new IVector._internal(_elementsByIndex.remove(_offset+(_length-1)), _offset, _length-1);
+  IVector<A> dropLast() => _length == 0 ? this : new IVector._internal(_elementsByIndex.remove(_offset+(_length-1)), _offset, _length-1);
 
   Option<A> get(int index) => _elementsByIndex.get(_offset+index);
 
@@ -75,11 +75,13 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override String toString() => "ivector[${map((A a) => a.toString()).intercalate(StringMi, ', ')}]";
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<A> toIterable() => _elementsByIndex.valueIterable();
 
   Iterator<A> iterator() => _elementsByIndex.valueIterator();
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);

@@ -24,10 +24,12 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 
   @override String toString() => fold(() => 'None', (a) => 'Some($a)');
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<A> toIterable() => fold(() => cast(_emptyIterable), (a) => new _SingletonIterable(a));
   Iterator<A> iterator() => toIterable().iterator;
+
+  void forEach(void sideEffect(A a)) => fold(() => null, sideEffect);
 }
 
 class Some<A> extends Option<A> {

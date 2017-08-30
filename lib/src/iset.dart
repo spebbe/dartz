@@ -39,11 +39,13 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
   @override String toString() => "iset<${_tree.toIList().map((a) => a.toString()).intercalate(StringMi, ", ")}>";
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<A> toIterable() => _tree.toIterable();
 
   Iterator<A> iterator() => _tree.iterator();
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();

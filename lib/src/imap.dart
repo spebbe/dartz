@@ -95,7 +95,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", nil())).intercalate(StringMi, ", ")}}";
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable(this);
 
@@ -112,6 +112,10 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   Iterable<Tuple2<K, V>> toIterable() => pairIterable();
 
   Iterator<Tuple2<K, V>> iterator() => pairIterator();
+
+  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
+
+  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
 }
 
 

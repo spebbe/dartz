@@ -60,7 +60,7 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
   @override bool operator ==(other) => identical(this, other) || (other is IHashMap && _map == other._map);
   @override int get hashCode => _map.hashCode;
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<Tuple2<K, V>> pairIterable() => _map.valueIterable().expand((tuples) => tuples.toIterable());
 
@@ -77,6 +77,10 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
   Iterable<Tuple2<K, V>> toIterable() => pairIterable();
 
   Iterator<Tuple2<K, V>> iterator() => pairIterator();
+
+  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
+
+  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
 }
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();

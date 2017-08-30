@@ -20,10 +20,12 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 
-  // PURISTS BEWARE: mutable Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   Iterable<R> toIterable() => fold((_) => cast(_emptyIterable), (r) => new _SingletonIterable(r));
   Iterator<R> iterator() => toIterable().iterator;
+
+  void forEach(void sideEffect(R r)) => fold((_) => null, sideEffect);
 }
 
 class Left<L, R> extends Either<L, R> {

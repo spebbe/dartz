@@ -228,13 +228,21 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     }
   }
 
-  // PURISTS BEWARE: mutable List/Iterable/Iterator integrations below -- proceed with caution!
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
 
   Iterable<A> toIterable() => new _IListIterable(this);
 
   Iterator<A> iterator() => new _IListIterator(this);
+
+  void forEach(void sideEffect(A a)) {
+    var current = this;
+    while (current._isCons()) {
+      sideEffect(current._unsafeHead());
+      current = current._unsafeTail();
+    }
+  }
 }
 
 class Cons<A> extends IList<A> {

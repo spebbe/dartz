@@ -3,6 +3,7 @@ library free_io_mock_io;
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'dart:async';
+import 'package:dartz/dartz_streaming.dart';
 
 // Technique: Instantiate EvaluationMonad using types for either, reader, writer and state, as well as a monoid for the writer type
 final EvaluationMonad<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>> MockM = new EvaluationMonad(ivectorMi());
@@ -63,3 +64,6 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 // Technique: Interpret Free monad and run resulting Evaluation using reader (mocked inputs) and initial state (index in input vector)
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockPerformIO<A>(Free<IOOp, A> io, IMap<String, IVector<String>> input) =>
     _interpret(io).run(input, emptyMap());
+
+Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> cio, IMap<String, IVector<String>> input) =>
+    _interpret(cio.runLog<Free<IOOp, A>>(iomc())).run(input, emptyMap());

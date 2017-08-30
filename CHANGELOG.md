@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.1
+
+- Way more efficient file reads using Free IO and Conveyor
+- Improved typing for Applicative liftX and mapX, with specialized overrides on Option and Either
+- Added optionOf utility, for safely wrapping a possibly null value in Option
+- Added forEach operation to dartz_unsafe, for performing side effects on Foldables
+- Added forEach operations to Option, Either, IList, IVector, ISet, IMap, IHashMap and AVLTree
+- Various small tweaks, additions and bug fixes
+
 ## 0.6.0
 
 - Updated sdk requirement to >= 1.24.0

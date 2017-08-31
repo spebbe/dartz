@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+- I goofed up... the "efficient file reads" from 0.6.1 now actually work!
+
 ## 0.6.1
 
 - Way more efficient file reads using Free IO and Conveyor

@@ -1,5 +1,6 @@
 library dartz_unsafe;
 
+import 'dart:collection';
 import 'package:dartz/dartz.dart';
 
 import 'dart:async';

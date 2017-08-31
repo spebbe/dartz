@@ -28,7 +28,7 @@ Future unsafeIOInterpreter(IOOp io) {
     return unwrapFileRef(io.file).then((f) => f.close().then((_) => unit));
 
   } else if (io is ReadBytes) {
-    return unwrapFileRef(io.file).then((f) => f.read(io.byteCount).then(ilist));
+    return unwrapFileRef(io.file).then((f) => f.read(io.byteCount).then((bytes) => new UnmodifiableListView(bytes)));
 
   } else if (io is WriteBytes) {
     return unwrapFileRef(io.file).then((f) => f.writeFrom(io.bytes.toList()).then((_) => unit));

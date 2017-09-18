@@ -13,7 +13,11 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _tree.foldMap(bMonoid, f);
   @override B foldLeft<B>(B z, B f(B previous, A a)) => _tree.foldLeft(z, f);
+  B foldLeftBetween<B>(A minA, A maxA, B z, B f(B previous, A a)) => _tree.foldLeftBetween(minA, maxA, z, f);
   @override B foldRight<B>(B z, B f(A a, B previous)) => _tree.foldRight(z, f);
+  B foldRightBetween<B>(A minA, A maxA, B z, B f(A a, B previous)) => _tree.foldRightBetween(minA, maxA, z, f);
+
+  ISet<A> subSetBetween(A minA, A maxA) => foldLeftBetween(minA, maxA, new ISet.emptyWithOrder(_tree._order), (acc, a) => acc.insert(a));
 
   ISet<A> insert(A a) => new ISet(_tree.insert(a));
 

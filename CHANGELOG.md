@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.3
+
+- Added:
+  - foldLeftBetween and foldRightBetween operations to AVLTree
+  - foldLeftBetween, foldRightBetween and subSetBetween operations to ISet
+  - regexp pipe to Text utilities
+  - IList.generate factory constructor
+  - ifM combinator and some type refinements to Free
+  - Eq instances for Iterators
+- More memory efficient and faster equality checks for IMap, IHashMap, AVLTree, ISet and IVector
+- New, slightly more advanced example for streaming IO
+
 ## 0.6.2
 
 - I goofed up... the "efficient file reads" from 0.6.1 now actually work!

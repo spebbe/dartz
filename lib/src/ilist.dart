@@ -34,6 +34,21 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return resultHead;
   }
 
+  factory IList.generate(int n, A f(int i)) {
+    final IList<A> aNil = cast(Nil);
+    if (n <= 0) {
+      return aNil;
+    }
+    Cons<A> result = new Cons(f(0), aNil);
+    final IList<A> resultHead = result;
+    for(int i = 1;i < n;i++) {
+      final next = new Cons(f(i), aNil);
+      result._unsafeSetTail(next);
+      result = next;
+    }
+    return resultHead;
+  }
+
   @override IList<B> pure<B>(B b) => new Cons(b, nil());
 
   @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) {

@@ -16,7 +16,11 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   @override B foldLeft<B>(B z, B f(B previous, A a)) => _root.foldLeft(z, f);
 
+  B foldLeftBetween<B>(A minA, A maxA, B z, B f(B previous, A a)) => _root.foldLeftBetween(_order, minA, maxA, z, f);
+
   @override B foldRight<B>(B z, B f(A a, B previous)) => _root.foldRight(z, f);
+
+  B foldRightBetween<B>(A minA, A maxA, B z, B f(A a, B previous)) => _root.foldRightBetween(_order, minA, maxA, z, f);
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (p, a) => bMonoid.append(p, f(a)));
 
@@ -51,7 +55,9 @@ abstract class _AVLNode<A> {
   _AVLNode<A> insert(Order<A> order, A a);
   _AVLNode<A> remove(Order<A> order, A a);
   B foldLeft<B>(B z, B f(B previous, A a));
+  B foldLeftBetween<B>(Order<A> order, A minA, A maxA, B z, B f(B previous, A a));
   B foldRight<B>(B z, B f(A a, B previous));
+  B foldRightBetween<B>(Order<A> order, A minA, A maxA, B z, B f(A a, B previous));
   Option<A> get(Order<A> order, A a);
   Option<A> min();
   Option<A> max();
@@ -135,11 +141,36 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     return _right.foldLeft(midResult, f);
   }
 
+  B foldLeftBetween<B>(Order<A> order, A minA, A maxA, B z, B f(B previous, A a)) {
+    if (order.lt(_a, minA)) {
+      return _right.foldLeftBetween(order, minA, maxA, z, f);
+    } else if (order.gt(_a, maxA)) {
+      return _left.foldLeftBetween(order, minA, maxA, z, f);
+    } else {
+      final leftResult = _left.foldLeftBetween(order, minA, maxA, z, f);
+      final midResult = f(leftResult, _a);
+      return _right.foldLeftBetween(order, minA, maxA, midResult, f);
+    }
+  }
+
   B foldRight<B>(B z, B f(A a, B previous)) {
     final rightResult =_right.foldRight(z, f);
     final midResult = f(_a, rightResult);
     return _left.foldRight(midResult, f);
   }
+
+  B foldRightBetween<B>(Order<A> order, A minA, A maxA, B z, B f(A a, B previous)) {
+    if (order.lt(_a, minA)) {
+      return _right.foldRightBetween(order, minA, maxA, z, f);
+    } else if (order.gt(_a, maxA)) {
+      return _left.foldRightBetween(order, minA, maxA, z, f);
+    } else {
+      final rightResult = _right.foldRightBetween(order, minA, maxA, z, f);
+      final midResult = f(_a, rightResult);
+      return _left.foldRightBetween(order, minA, maxA, midResult, f);
+    }
+  }
+
 
   Option<A> get(Order<A> order, A a) {
     var current = this;
@@ -168,7 +199,11 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   @override B foldLeft<B>(B z, B f(B previous, A a)) => z;
 
+  @override B foldLeftBetween<B>(Order<A> order, A minA, A maxA, B z, B f(B previous, A a)) => z;
+
   @override B foldRight<B>(B z, B f(A a, B previous)) => z;
+
+  @override B foldRightBetween<B>(Order<A> order, A minA, A maxA, B z, B f(A a, B previous)) => z;
 
   @override Option<A> get(Order<A> order, A a) => none();
 

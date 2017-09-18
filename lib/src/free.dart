@@ -9,6 +9,8 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 
   @override Free<F, B> bind<B>(Free<F, B> f(A a)) => new Bind(this, f);
 
+  @override Free<F, B> replace<B>(B replacement) => map((_) => replacement);
+
   R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f));
 /*
   Free<F, A> step() {
@@ -56,6 +58,8 @@ class FreeMonad<F> extends MonadOpsMonad<Free<F, dynamic>> {
 
   @override Free<F, A> pure<A>(A a) => new Pure(a);
 
+  @override Free<F, B> bind<A, B>(Free<F, A> fa, Free<F, B> f(A a)) => fa.bind(f);
+
   @override Free<F, C> map2<A, A2 extends A, B, B2 extends B, C>(Free<F, A2> fa, Free<F, B2> fb, C fun(A a, B b)) =>
       fa.flatMap((a) => fb.map((b) => fun(a, b)));
 
@@ -70,6 +74,8 @@ class FreeMonad<F> extends MonadOpsMonad<Free<F, dynamic>> {
 
   @override Free<F, G> map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, FF, F2 extends FF, G>(Free<F, A2> fa, Free<F, B2> fb, Free<F, C2> fc, Free<F, D2> fd, Free<F, E2> fe, Free<F, F2> ff, G fun(A a, B b, C c, D d, E e, FF f)) =>
       fa.flatMap((a) => fb.flatMap((b) => fc.flatMap((c) => fd.flatMap((d) => fe.flatMap((e) => ff.map((f) => fun(a, b, c, d, e, f)))))));
+
+  Free<F, Unit> ifM(Free<F, bool> fbool, Free<F, Unit> ifTrue) => bind(fbool, (bool b) => b ? ifTrue : pure(unit));
 
 }
 

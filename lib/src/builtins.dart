@@ -70,3 +70,28 @@ final Order<double> DoubleOrder = new ComparableOrder<double>();
 final Order<String> StringOrder = new ComparableOrder<String>();
 
 A cast<A>(dynamic a) => a as A;
+
+class IteratorEq<A> extends Eq<Iterator<A>> {
+  final Eq<A> _aEq;
+
+  IteratorEq(this._aEq);
+
+  @override bool eq(Iterator<A> i1, Iterator<A> i2) {
+    while(true) {
+      final i1Next = i1.moveNext();
+      final i2Next = i2.moveNext();
+      if (i1Next != i2Next) {
+        return false;
+      } else if (i1Next) {
+        if (_aEq.neq(i1.current, i2.current)) {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    }
+  }
+}
+
+final Eq<Iterator<Object>> ObjectIteratorEq = new IteratorEq(ObjectEq);
+Eq<Iterator<A>> iteratorEq<A>(Eq<A> aEq) => new IteratorEq(aEq);

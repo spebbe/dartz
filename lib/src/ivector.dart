@@ -69,7 +69,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override int length() => _length;
 
-  @override bool operator ==(other) => identical(this, other) || (other is IVector && _elementsByIndex.values() == other._elementsByIndex.values());
+  @override bool operator ==(other) => identical(this, other) || (other is IVector && ObjectIteratorEq.eq(_elementsByIndex.valueIterator(), other._elementsByIndex.valueIterator()));
 
   @override int get hashCode => _elementsByIndex.values().hashCode;
 

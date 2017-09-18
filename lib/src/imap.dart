@@ -89,7 +89,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   Option<Tuple2<K, V>> maxLessThan(K k) => _tree.maxLessThan(_order, k).map((node) => tuple2(node._k, node._v));
 
-  @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && pairs() == other.pairs());
+  @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && ObjectIteratorEq.eq(iterator(), other.iterator()));
 
   @override int get hashCode => _order.hashCode ^ pairs().hashCode;
 

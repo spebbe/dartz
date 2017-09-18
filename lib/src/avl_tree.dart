@@ -34,7 +34,7 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
 
   Option<A> max() => _root.max();
 
-  @override bool operator ==(other) => identical(this, other) || (other is AVLTree && _order == other._order && toIList() == other.toIList());
+  @override bool operator ==(other) => identical(this, other) || (other is AVLTree && _order == other._order && ObjectIteratorEq.eq(iterator(), other.iterator()));
 
   @override int get hashCode => _order.hashCode ^ toIList().hashCode;
 

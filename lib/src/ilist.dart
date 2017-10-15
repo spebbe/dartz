@@ -311,7 +311,7 @@ class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
 
   M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.plus(l2)));
 
-  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map(f).foldLeft(_stackedM.pure(Nil), _concat));
+  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map<M>(cast(f)).foldLeft(_stackedM.pure(Nil), _concat));
 }
 
 Monad ilistTMonad(Monad mmonad) => new IListTMonad(mmonad);

@@ -78,7 +78,7 @@ abstract class FoldableOps<F, A> {
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {
-  @override B foldMap<A, B>(Monoid<B> bMonoid, F fa, B f(A a)) => fa.foldMap(bMonoid, f);
-  @override B foldRight<A, B>(F fa, B z, B f(A a, B previous)) => fa.foldRight(z, f);
-  @override B foldLeft<A, B>(F fa, B z, B f(B previous, A a)) => fa.foldLeft(z, f);
+  @override B foldMap<A, B>(Monoid<B> bMonoid, F fa, B f(A a)) => fa.foldMap(bMonoid, cast(f));
+  @override B foldRight<A, B>(F fa, B z, B f(A a, B previous)) => fa.foldRight(z, cast(f));
+  @override B foldLeft<A, B>(F fa, B z, B f(B previous, A a)) => fa.foldLeft(z, cast(f));
 }

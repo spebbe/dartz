@@ -38,12 +38,12 @@ abstract class Applicative<F> implements Functor<F> {
 
   // Workaround: Dumbing down types in generic liftX to give subclasses a chance to do proper typing...
 
-  Function1 lift<A, B>(B f(A a)) => (F fa) => map(fa, f);
-  Function2 lift2<A, B, C>(C f(A a, B b)) => (F fa, F fb) => ap(fb, map(fa, curry2(f)));
-  Function3 lift3<A, B, C, D>(D f(A a, B b, C c)) => (F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, curry3(f))));
-  Function4 lift4<A, B, C, D, E>(E f(A a, B b, C c, D d)) => (F fa, F fb, F fc, F fd) => ap(fd, ap(fc, ap(fb, map(fa, curry4(f)))));
-  Function5 lift5<A, B, C, D, E, F2>(F2 f(A a, B b, C c, D d, E e)) => (F fa, F fb, F fc, F fd, F fe) => ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry5(f))))));
-  Function6 lift6<A, B, C, D, E, F2, G>(G f(A a, B b, C c, D d, E e, F2 f)) => (F fa, F fb, F fc, F fd, F fe, F ff) => ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry6(f)))))));
+  Function1 lift<A, B>(B f(A a)) => cast((F fa) => map(fa, f));
+  Function2 lift2<A, B, C>(C f(A a, B b)) => cast((F fa, F fb) => ap(fb, map(fa, curry2(f))));
+  Function3 lift3<A, B, C, D>(D f(A a, B b, C c)) => cast((F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, curry3(f)))));
+  Function4 lift4<A, B, C, D, E>(E f(A a, B b, C c, D d)) => cast((F fa, F fb, F fc, F fd) => ap(fd, ap(fc, ap(fb, map(fa, curry4(f))))));
+  Function5 lift5<A, B, C, D, E, F2>(F2 f(A a, B b, C c, D d, E e)) => cast((F fa, F fb, F fc, F fd, F fe) => ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry5(f)))))));
+  Function6 lift6<A, B, C, D, E, F2, G>(G f(A a, B b, C c, D d, E e, F2 f)) => cast((F fa, F fb, F fc, F fd, F fe, F ff) => ap(ff, ap(fe, ap(fd, ap(fc, ap(fb, map(fa, curry6(f))))))));
 
   F map2<A, A2 extends A, B, B2 extends B, C>(covariant F fa, covariant F fb, C f(A a, B b)) => cast(lift2(f)(fa, fb));
   F map3<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(covariant F fa, covariant F fb, covariant F fc, D f(A a, B b, C c)) => cast(lift3(f)(fa, fb, fc));

@@ -50,7 +50,7 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   F state(S s) => _FM.map(_run(s), (t) => t.value2);
 
   @override StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
-  @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2 t) => t.map1(f)));
+  @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, B> t) => t.map1(f)));
   @override StateT<F, S, B> bind<B>(StateT<F, S, B> f(A a)) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));

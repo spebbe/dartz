@@ -18,9 +18,9 @@ class MonadPlusOpsMonadPlus<F extends MonadPlusOps> extends Functor<F> with Appl
 
   MonadPlusOpsMonadPlus(this._pure, this._empty);
   @override F pure<A>(A a) => _pure(a);
-  @override F bind<A, B>(F fa, F f(A a)) => cast<MonadPlusOps<F, dynamic>>(fa).bind(f);
+  @override F bind<A, B>(F fa, F f(A a)) => cast<MonadPlusOps<F, dynamic>>(fa).bind(cast(f));
   @override F ap<A, B>(F fa, F ff) => cast<MonadPlusOps<F, dynamic>>(fa).ap(ff);
-  @override F map<A, B>(F fa, B f(A a)) => cast<MonadPlusOps<F, dynamic>>(fa).map(f);
-  @override F empty() => _empty();
-  @override F plus(F f1, F f2) => cast<MonadPlusOps<F, dynamic>>(f1).plus(f2);
+  @override F map<A, B>(F fa, B f(A a)) => cast<MonadPlusOps<F, dynamic>>(fa).map(cast(f));
+  @override F empty<A>() => _empty();
+  @override F plus<A>(F f1, F f2) => cast<MonadPlusOps<F, dynamic>>(f1).plus(f2);
 }

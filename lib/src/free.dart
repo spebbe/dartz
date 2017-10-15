@@ -50,7 +50,7 @@ class Bind<F, A, B> extends Free<F, A> {
   final Free<F, B> ffb;
   final Function1<B, Free<F, A>> f;
   Bind(this.ffb, this.f);
-  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifBind(ffb, f);
+  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifBind(ffb, cast(f));
 }
 
 class FreeMonad<F> extends MonadOpsMonad<Free<F, dynamic>> {

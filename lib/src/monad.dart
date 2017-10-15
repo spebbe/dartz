@@ -46,5 +46,5 @@ class MonadOpsMonad<F extends MonadOps> extends Functor<F> with Applicative<F>, 
   @override F pure<A>(a) => _pure(a);
   @override F bind<A, B>(F fa, F f(_)) => cast(fa.bind(f));
   @override F ap<A, B>(F fa, F ff) => cast(fa.ap(ff));
-  @override F map<A, B>(F fa, B f(A a)) => cast(fa.map(f));
+  @override F map<A, B>(F fa, B f(A a)) => cast(fa.map(cast(f)));
 }

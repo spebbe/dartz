@@ -95,7 +95,7 @@ class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad underlying() => EitherM;
 
   @override M pure<A>(A a) => cast(_stackedM.pure(right(a)));
-  @override M bind<A, B>(M mea, M f(A a)) => cast(_stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), f)));
+  @override M bind<A, B>(M mea, M f(A a)) => cast(_stackedM.bind(mea, (Either e) => e.fold((l) => _stackedM.pure(left(l)), cast(f))));
 }
 
 Monad eitherTMonad(Monad mmonad) => new EitherTMonad(mmonad);

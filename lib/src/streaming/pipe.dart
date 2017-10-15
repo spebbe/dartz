@@ -9,7 +9,7 @@ class Pipe {
       Conveyor.produce(h, t);
 
   static Conveyor<From<I>, O> consume<I, O>(Function1<I, Conveyor<From<I>, O>> recv, [Function0<Conveyor<From<I>, O>> fallback]) =>
-      Conveyor.consume(cast(_get), (ea) => ea.fold(
+      Conveyor.consume(cast(_get), (Either<Object, I> ea) => ea.fold(
           (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
           ,(I i) => Conveyor.Try(() => recv(i))));
 

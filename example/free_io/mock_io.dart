@@ -14,10 +14,10 @@ class _MockFileRef implements FileRef {
   _MockFileRef(this.name);
 }
 
-Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockReadFile(String fileName) =>
-    MockM.gets((counters) => counters[fileName]|0) >= (int i) =>
-    MockM.asks((inputs) => inputs[fileName]|emptyVector<String>()) >= (IVector<String> vs) =>
-    MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1));
+Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, String> mockReadFile(String fileName) =>
+    MockM.gets((counters) => counters[fileName]|0).bind((i) =>
+        MockM.asks((inputs) => inputs[fileName]|emptyVector<String>()).bind((vs) =>
+        MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1))));
 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, A> _interpret<A>(Free<IOOp, A> op) =>
   op.foldMap(MockM, mockIOInterpreter);
@@ -43,7 +43,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.pure(unit);
 
   } else if (io is ReadBytes) {
-    return mockReadFile((io.file as _MockFileRef).name).map((String s) => s == null ? new UnmodifiableListView([]) : new UnmodifiableListView(UTF8.encode(s)));
+    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? new UnmodifiableListView([]) : new UnmodifiableListView(UTF8.encode(s)));
 
   } else if (io is WriteBytes) {
     return MockM.write(ivector(["${(io.file as _MockFileRef).name}: ${UTF8.decode(io.bytes.toList())}"]));

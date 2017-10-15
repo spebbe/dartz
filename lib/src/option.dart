@@ -96,7 +96,7 @@ class OptionTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad underlying() => OptionMP;
 
   @override M pure<A>(A a) => cast(_stackedM.pure(some(a)));
-  @override M bind<A, B>(M moa, M f(A a)) => cast(_stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), f)));
+  @override M bind<A, B>(M moa, M f(A a)) => cast(_stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), cast(f))));
 }
 
 Monad optionTMonad(Monad mmonad) => new OptionTMonad(mmonad);

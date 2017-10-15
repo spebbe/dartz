@@ -4,9 +4,9 @@ part of dartz;
 // might seem pointless to separate from semigroup in dart, but clarifies intent
 
 abstract class Plus<F> {
-  F plus(F f1, F f2);
+  F plus<A>(covariant F f1, covariant F f2);
 }
 
 abstract class PlusOps<F, A> {
-  F plus(F fa2); // F[A] => F[A]
+  F plus(covariant F fa2); // F[A] => F[A]
 }

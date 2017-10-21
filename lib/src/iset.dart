@@ -4,12 +4,10 @@ class ISet<A> extends FoldableOps<ISet, A> {
   final AVLTree<A> _tree;
 
   ISet(this._tree);
-  factory ISet.emptyWithOrder(Order<A> order) => new ISet(new AVLTree<A>(order, emptyAVLNode()));
-  factory ISet.empty() => new ISet<A>.emptyWithOrder(comparableOrder());
-  factory ISet.fromFoldableWithOrder(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.emptyWithOrder(order), (p, a) => p.insert(cast(a)));
-  factory ISet.fromFoldable(Foldable foldable, fa) => new ISet<A>.fromFoldableWithOrder(comparableOrder(), foldable, fa);
-  factory ISet.fromIListWithOrder(Order<A> order, IList<A> l) => new ISet.fromFoldableWithOrder(order, IListTr, l);
-  factory ISet.fromIList(IList<A> l) => new ISet<A>.fromIListWithOrder(comparableOrder(), l);
+  factory ISet.empty(Order<A> order) => new ISet(new AVLTree<A>(order, emptyAVLNode()));
+  factory ISet.fromFoldable(Order<A> order, Foldable foldable, fa) => foldable.foldLeft(fa, new ISet.empty(order), (p, a) => p.insert(cast(a)));
+  factory ISet.fromIList(Order<A> order, IList<A> l) => new ISet.fromFoldable(order, IListTr, l);
+  factory ISet.fromIterable(Order<A> order, Iterable<A> i) => i.fold(new ISet.empty(order), (acc, a) => acc.insert(a));
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _tree.foldMap(bMonoid, f);
   @override B foldLeft<B>(B z, B f(B previous, A a)) => _tree.foldLeft(z, f);
@@ -17,7 +15,7 @@ class ISet<A> extends FoldableOps<ISet, A> {
   @override B foldRight<B>(B z, B f(A a, B previous)) => _tree.foldRight(z, f);
   B foldRightBetween<B>(A minA, A maxA, B z, B f(A a, B previous)) => _tree.foldRightBetween(minA, maxA, z, f);
 
-  ISet<A> subSetBetween(A minA, A maxA) => foldLeftBetween(minA, maxA, new ISet.emptyWithOrder(_tree._order), (acc, a) => acc.insert(a));
+  ISet<A> subSetBetween(A minA, A maxA) => foldLeftBetween(minA, maxA, new ISet.empty(_tree._order), (acc, a) => acc.insert(a));
 
   ISet<A> insert(A a) => new ISet(_tree.insert(a));
 
@@ -29,7 +27,7 @@ class ISet<A> extends FoldableOps<ISet, A> {
   ISet<A> operator |(ISet<A> other) => union(other);
   ISet<A> operator +(ISet<A> other) => union(other);
 
-  ISet<A> intersection(ISet<A> other) => other._tree.foldLeft(new ISet.emptyWithOrder(_tree._order), (p, A a) => contains(a) ? p.insert(a) : p);
+  ISet<A> intersection(ISet<A> other) => other._tree.foldLeft(new ISet.empty(_tree._order), (p, A a) => contains(a) ? p.insert(a) : p);
   ISet<A> operator &(ISet<A> other) => intersection(other);
 
   ISet<A> difference(ISet<A> other) => other._tree.foldLeft(this, (p, A a) => p.remove(a));
@@ -54,14 +52,19 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();
 
-ISet<A> iset<A>(Iterable<A> l) => new ISet.fromIList(ilist(l));
+final ISet _emptyISet = new ISet.empty(comparableOrder());
+ISet<A> emptySet<A extends Comparable>() => cast(_emptyISet);
+ISet<A> emptySetWithOrder<A>(Order<A> order) => new ISet.empty(order);
+
+ISet<A> iset<A extends Comparable>(Iterable<A> i) => new ISet.fromIterable(comparableOrder(), i);
+ISet<A> isetWithOrder<A, A2 extends A>(Order<A> order, Iterable<A2> i) => new ISet.fromIterable(order, i);
 
 class ISetMonoid<A> extends Monoid<ISet<A>> {
   final Order<A> _aOrder;
 
   ISetMonoid(this._aOrder);
 
-  @override ISet<A> zero() => new ISet.emptyWithOrder(_aOrder);
+  @override ISet<A> zero() => new ISet.empty(_aOrder);
   @override ISet<A> append(ISet<A> a1, ISet<A> a2) => a1.union(a2);
 }
 

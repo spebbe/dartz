@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'minilanguage.dart';
 
 main() async {
-  final env = new IMap<String, Value>.empty();
+  final env = emptyMap<String, Value>();
 
   final fib = lambda("fib", lambda("n",
       conditional(plus(variable("n"), literal(-1)),

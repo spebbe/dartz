@@ -6,16 +6,12 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   IMap(this._order, this._tree);
 
-  factory IMap.empty() => emptyMap();
+  IMap.empty(this._order): _tree = emptyIMapAVLNode();
 
-  IMap.emptyWithOrder(this._order): _tree = emptyIMapAVLNode();
+  factory IMap.from(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.empty(kOrder), (p, K k) => p.put(k, m[k]));
 
-  factory IMap.from(Map<K, V> m) => m.keys.fold(new IMap.empty(), (IMap<K, V> p, K k) => p.put(k, m[k]));
-
-  factory IMap.fromWithOrder(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.emptyWithOrder(kOrder), (p, K k) => p.put(k, m[k]));
-
-  factory IMap.fromIterables(Iterable<K> keys, Iterable<V> values, [Order<K> kOrder]) {
-    IMap<K, V> result = new IMap.emptyWithOrder(kOrder ?? comparableOrder());
+  factory IMap.fromIterables(Iterable<K> keys, Iterable<V> values, Order<K> kOrder) {
+    IMap<K, V> result = new IMap.empty(kOrder);
     final keyIterator = keys.iterator;
     final valueIterator = values.iterator;
     while(keyIterator.moveNext() && valueIterator.moveNext()) {
@@ -27,6 +23,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   IMap<K, V> put(K k, V v) => new IMap(_order, _tree.insert(_order, k, v));
 
   Option<V> get(K k) => _tree.get(_order, k);
+
+  Option<K> getKey(K k) => _tree.getKey(_order, k);
 
   Option<V> operator[](K k) => get(k);
 
@@ -59,13 +57,21 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   B foldMapKV<B>(Monoid<B> mi, B f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
   IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
+  IMap<K, V2> mapKV<V2>(V2 f(K k, V v)) => mapWithKey(f);
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
-  @override G traverse<G>(Applicative<G> gApplicative, G f(V v)) =>
+  G traverseKV<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(
           new IMap(_order, _emptyIMapAVLNode)),
-          (prev, k, v) => gApplicative.map2(prev, f(v), (IMap p, v2) => p.put(k, v2)));
+              (prev, k, v) => gApplicative.map2(prev, f(k, v), (IMap p, v2) => p.put(k, v2)));
+
+  G traverseKV_<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
+      _tree.foldLeft(gApplicative.pure(unit), (prev, k, v) => gApplicative.map2(prev, f(k, v), (_1, _2) => unit));
+
+  @override G traverse<G>(Applicative<G> gApplicative, G f(V v)) => traverseKV(gApplicative, (_, v) => f(v));
+
+  @override G traverse_<G>(Applicative<G> gApplicative, G f(V v)) => traverseKV_(gApplicative, (_, v) => f(v));
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
 
@@ -119,18 +125,19 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 }
 
 
-IMap<K, V> imap<K, V>(Map<K, V> m) => new IMap.from(m);
-IMap<K, V> imapWithOrder<K, K2 extends K, V>(Order<K> o, Map<K2, V> m) => new IMap.fromWithOrder(o, m);
+IMap<K, V> imap<K extends Comparable, V>(Map<K, V> m) => new IMap.from(comparableOrder(), m);
+IMap<K, V> imapWithOrder<K, K2 extends K, V>(Order<K> o, Map<K2, V> m) => new IMap.from(o, m);
 IMap _emptyIMap = new IMap(comparableOrder(), emptyIMapAVLNode());
-IMap<K, V> emptyMap<K, V>() => cast(_emptyIMap);
-IMap<K, V> singletonMap<K, V>(K k, V v) => emptyMap<K, V>().put(k, v);
+IMap<K, V> emptyMap<K extends Comparable, V>() => cast(_emptyIMap);
+IMap<K, V> singletonMap<K extends Comparable, V>(K k, V v) => emptyMap<K, V>().put(k, v);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
   final Semigroup<V> _vSemigroup;
+  final Order<K> _kOrder;
 
-  IMapMonoid(this._vSemigroup);
+  IMapMonoid(this._vSemigroup, this._kOrder);
 
-  @override IMap<K, V> zero() => new IMap.empty();
+  @override IMap<K, V> zero() => new IMap.empty(_kOrder);
   @override IMap<K, V> append(IMap<K, V> m1, IMap<K, V> m2) =>
       m2.pairs().foldLeft(m1, (p, kv) =>
           m1.get(kv.value1).fold(() =>
@@ -138,10 +145,11 @@ class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
               (m1v) => p.put(kv.value1, _vSemigroup.append(m1v, kv.value2))));
 }
 
-Monoid<IMap<K, V>> imapMonoid<K, V>(Semigroup<V> si) => new IMapMonoid(si);
+Monoid<IMap<K, V>> imapMonoid<K extends Comparable, V>(Semigroup<V> si) => new IMapMonoid(si, comparableOrder());
+Monoid<IMap<K, V>> imapMonoidWithOrder<K, V>(Semigroup<V> si, Order<K> order) => new IMapMonoid(si, order);
 
 final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
-Monoid<IMap<K, V>> imapMi<K, V>() => cast(IMapMi);
+Monoid<IMap<K, V>> imapMi<K extends Comparable, V>() => cast(IMapMi);
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
 
@@ -155,6 +163,7 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   B foldRight<B>(B z, B f(K k, V v, B previous));
   B foldRightBetween<B>(Order<K> order, K minK, K maxK, B z, B f(K k, V v, B previous));
   Option<V> get(Order<K> order, K k);
+  Option<K> getKey(Order<K> order, K k);
   int get height;
   int get balance;
   Option<Tuple3<_IMapAVLNode<K, V>, K, V>> _removeMax();
@@ -288,6 +297,21 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     return none();
   }
 
+  Option<K> getKey(Order<K> order, K k) {
+    var current = this;
+    while(!current.empty) {
+      final Ordering o = order.order(k, current._k);
+      if (o == Ordering.EQ) {
+        return some(current._k);
+      } else if (o == Ordering.LT) {
+        current = cast(current._left);
+      } else {
+        current = cast(current._right);
+      }
+    }
+    return none();
+  }
+
   @override _IMapAVLNode<K, V2> map<V2>(V2 f(V v)) {
     final newLeft = _left.map(f);
     final newV = f(_v);
@@ -348,6 +372,8 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   B foldRightBetween<B>(Order<K> order, K minK, K maxK, B z, B f(K k, V v, B previous)) => z;
 
   @override Option<V> get(Order<K> order, K k) => none();
+
+  @override Option<K> getKey(Order<K> order, K k) => none();
 
   @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode(k, v, emptyIMapAVLNode(), emptyIMapAVLNode());
 

@@ -8,7 +8,7 @@ import 'laws.dart';
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
-  final intSets = intLists.map((il) => new ISet<int>.fromIListWithOrder(IntOrder, ilist(il as List<int>))) as Enumeration<ISet<int>>;
+  final intSets = intLists.map((il) => new ISet<int>.fromIList(IntOrder, ilist(il as List<int>))) as Enumeration<ISet<int>>;
 
   test("insertion", () {
     qc.check(forall(intLists,

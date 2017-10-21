@@ -55,7 +55,7 @@ class ComparableOrder<A extends Comparable> extends Order<A> {
 }
 
 final Order _comparableOrder = new ComparableOrder();
-Order<A> comparableOrder<A>() => cast(_comparableOrder);
+Order<A> comparableOrder<A extends Comparable>() => cast(_comparableOrder);
 
 class ToStringOrder<A extends Object> extends Order<A> {
   Ordering order(A a1, A a2) => _comparableOrder.order(a1.toString(), a2.toString());

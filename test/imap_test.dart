@@ -39,13 +39,21 @@ void main() {
     }));
   });
 
+  test("key lookup", () {
+    final o = orderBy(IntOrder, (Tuple2<int, int> t) => t.value1);
+    final complexIMaps = intIMaps.map((m) => m.foldLeftKV<IMap<Tuple2<int, int>, int>>(new IMap.empty(o), (acc, k, v) => acc.put(tuple2(k, -k), v)));
+    qc.check(forall(complexIMaps, (IMap<Tuple2<int, int>, int> m) {
+      return m.keys().all((t) => m.getKey(tuple2(t.value1, 0)) == some(t));
+    }));
+  });
+
   test("pair iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.pairs() == ilist(m.pairIterable()))));
 
   test("key iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.keys() == ilist(m.keyIterable()))));
 
   test("value iterable", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m.values() == ilist(m.valueIterable()))));
 
-  test("create from iterables", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m == new IMap.fromIterables(m.keyIterable(), m.valueIterable()))));
+  test("create from iterables", () => qc.check(forall(intIMaps, (IMap<int, int> m) => m == new IMap.fromIterables(m.keyIterable(), m.valueIterable(), comparableOrder()))));
 
   test("min", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
     return m.min() == m.keys().minimum(IntOrder).flatMap((k) => m[k].map((v) => tuple2(k, v)));

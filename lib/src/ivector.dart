@@ -7,7 +7,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   IVector._internal(this._elementsByIndex, this._offset, this._length);
 
-  factory IVector.emptyVector() => new IVector._internal(new IMap.emptyWithOrder(IntOrder), 0, 0);
+  factory IVector.emptyVector() => new IVector._internal(new IMap.empty(IntOrder), 0, 0);
 
   factory IVector.from(Iterable<A> iterable) => iterable.fold(emptyVector(), (p, a) => p.appendElement(a));
 

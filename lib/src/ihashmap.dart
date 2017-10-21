@@ -9,7 +9,7 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
   IHashMap.internal(this._map);
 
-  factory IHashMap.empty() => new IHashMap.internal(new IMap.emptyWithOrder(IntOrder));
+  factory IHashMap.empty() => new IHashMap.internal(new IMap.empty(IntOrder));
 
   factory IHashMap.from(Map<K, V> m) => m.keys.fold(new IHashMap.empty(), (IHashMap<K, V> p, K k) => p.put(k, m[k]));
 

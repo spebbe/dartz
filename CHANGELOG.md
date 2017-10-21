@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.0
+
+- Preparations for Dart 2.0
+- Improved type safety for IMap and ISet
+  - Reworked and/or removed functions/constructors that implicitly assumed that keys/members implemented Comparable
+  - Added replacement helpers for constructors that couldn't be saved
+  - All dependencies on Comparable are now explicit and enforced by the type system
+- IMap additions:
+  - getKey
+  - mapKV
+  - traverseKV
+  - traverseKV_  
+
 ## 0.6.3
 
 - Added:

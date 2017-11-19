@@ -3,7 +3,7 @@ dartz
 
 Functional programming in Dart
 
-* Type class hierarchy in the spirit of [scalaz](https://github.com/scalaz/scalaz) and [the standard Haskell libraries](https://wiki.haskell.org/Typeclassopedia)
+* Type class hierarchy in the spirit of [cats](https://typelevel.org/cats/), [scalaz](https://github.com/scalaz/scalaz) and [the standard Haskell libraries](https://wiki.haskell.org/Typeclassopedia)
 * Immutable, persistent collections, including IVector, IList, IMap, IHashMap, ISet and AVLTree
 * Option, Either, State, Tuple, Free, Lens and other tools for programming in a functional style
 * Evaluation, a Reader+Writer+State+Either+Future swiss army knife monad

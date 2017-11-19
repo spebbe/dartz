@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+- Added foldLeftWithIndexBetween and foldRightWithIndexBetween to IVector
+- Added cata and order to IMap
+- Exposed step operation on Free, enabling manual bind reassociation for now
+
 ## 0.7.0
 
 - Preparations for Dart 2.0

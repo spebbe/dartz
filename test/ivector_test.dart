@@ -97,6 +97,20 @@ void main() {
     }));
   });
 
+  test("IVector foldLeftWithIndexBetween", () {
+    qc.check(forall(intIVectors, (IVector<int> v) {
+      final partialSum = v.foldLeftWithIndexBetween<int>(1, v.length()-2, 0, (sum, _, i) => sum+i);
+      return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
+    }));
+  });
+
+  test("IVector foldRightWithIndexBetween", () {
+    qc.check(forall(intIVectors, (IVector<int> v) {
+      final partialSum = v.foldRightWithIndexBetween<int>(1, v.length()-2, 0, (_, i, sum) => sum+i);
+      return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
+    }));
+  });
+
   group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
 
   test("iterable", () => qc.check(forall(intIVectors, (IVector<int> v) => v == ivector(v.toIterable()))));

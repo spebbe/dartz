@@ -12,11 +12,11 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
   @override Free<F, B> replace<B>(B replacement) => map((_) => replacement);
 
   R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f));
-/*
+
   Free<F, A> step() {
     Free<F, A> current = this;
     while(current is Bind) {
-      final currentBind = cast/*<Bind<F, A, dynamic>>*/(current);
+      final currentBind = cast<Bind<F, A, dynamic>>(current);
       current = currentBind.ffb.fold((a) => currentBind.f(a), (fa) => currentBind, (ffb, f) => ffb.bind((a) => f(a).bind((a2) => currentBind.f(a2))));
       if (identical(current, currentBind)) {
         return current;
@@ -24,7 +24,7 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
     }
     return current;
   }
-*/
+
 
   MA foldMap<M, MA extends M>(Monad<M> m, M f(F fa)) =>
       cast(/*step().*/fold((a) => m.pure(a), (fa) => f(fa), (ffb, f2) => m.bind(ffb.foldMap(m, f), (c) => f2(c).foldMap(m, f))));

@@ -95,6 +95,10 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   Option<Tuple2<K, V>> maxLessThan(K k) => _tree.maxLessThan(_order, k).map((node) => tuple2(node._k, node._v));
 
+  B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) => _tree.cata(z, ifEmpty, ifNonEmpty);
+
+  Order<K> get order => _order;
+
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && ObjectIteratorEq.eq(iterator(), other.iterator()));
 
   @override int get hashCode => _order.hashCode ^ pairs().hashCode;
@@ -175,6 +179,7 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   Option<_NonEmptyIMapAVLNode<K, V>> minGreaterThan(Order<K> order, K k);
   Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k);
   bool get empty;
+  B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b)));
 }
 
 class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -358,6 +363,10 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       : _left.maxLessThan(order, k);
 
   bool get empty => false;
+
+  B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) =>
+      ifNonEmpty(z, _k, _v, (b) => _left.cata(b, ifEmpty, ifNonEmpty), (b) => _right.cata(b, ifEmpty, ifNonEmpty));
+
 }
 
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -404,6 +413,8 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   @override Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k) => none();
 
   bool get empty => true;
+
+  B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) => ifEmpty(z);
 }
 
 final _IMapAVLNode _emptyIMapAVLNode = new _EmptyIMapAVLNode();

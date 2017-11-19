@@ -93,6 +93,11 @@ void main() {
     return canScanAll && canScanSome;
   })));
 
+  test("cata", () => qc.check(forall(intIMaps, (IMap<int, int> m) {
+    final cataed = m.cata<IMap<int, int>>(emptyMap(), id, (acc, k, v, cataLeft, cataRight) => cataRight(cataLeft(acc.put(k, v))));
+    return m == cataed;
+  })));
+
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
   group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoid(IListMi), c.ints.map((i) => imap({i: ilist([i])}))));

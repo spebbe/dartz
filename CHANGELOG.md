@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.2
+
+- Added curried versions of several Lens members (setC, modifyC and so on)
+- Improved typing for generic methods on Evaluation
+- More type information retained for filter operations on MonadPlus instances
+- Added custom filter operation on Either
+- Introduced 'where' as an alias to filter where applicable
+
+
 ## 0.7.1
 
 - Added foldLeftWithIndexBetween and foldRightWithIndexBetween to IVector

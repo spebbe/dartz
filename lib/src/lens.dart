@@ -8,7 +8,9 @@ class Lens<AIn, AOut, BIn, BOut> {
   Lens(this._getter, this._setter);
   BOut get(AIn a) => _getter(a);
   AOut set(AIn a, BIn b) => _setter(a, b);
+  Function1<AIn, AOut> setC(BIn b) => (a) => set(a, b);
   AOut modify(AIn a, Function1<BOut, BIn> f) => set(a, f(get(a)));
+  Function1<AIn, AOut> modifyC(Function1<BOut, BIn> f) => (a) => modify(a, f);
   Lens<AIn, AOut, CIn, COut> andThen<CIn, COut>(Lens<BOut, BIn, CIn, COut> otherLens) => new Lens((a) => otherLens.get(get(a)), (a, c) => set(a, otherLens.set(get(a), c)));
 }
 
@@ -28,6 +30,7 @@ class OptionLens<A, B> extends Lens<A, Option<A>, B, Option<B>> {
   OptionLens<A, C> oAndThen<C>(Lens<B, B, C, C> otherLens) => new OptionLens((a) => get(a).map(otherLens.get), (a, c) => get(a).bind((b) => set(a, otherLens.set(b, c))));
   OptionLens<A, C> oAndThenO<C>(OptionLens<B, C> otherLens) => new OptionLens((a) => get(a).bind(otherLens.get), (a, c) => get(a).bind((b1) => otherLens.set(b1, c)).bind((b) => set(a, b)));
   Option<A> modifyO(A a, Function1<B, B> f) => get(a).bind((b) => set(a, f(b)));
+  Function1<A, Option<A>> modifyOC(Function1<B, B> f) => (a) => modifyO(a, f);
 }
 
 OptionLens<A, B> lensO<A, B>(Function1<A, Option<B>> getter, Function2<A, B, Option<A>> setter) => new OptionLens(getter, setter);
@@ -40,6 +43,7 @@ class EitherLens<A, B, E> extends Lens<A, Either<E, A>, B, Either<E, B>> {
   EitherLens<A, C, E> eAndThen<C>(Lens<B, B, C, C> otherLens) => new EitherLens((a) => get(a).map(otherLens.get), (a, c) => get(a).bind((b) => set(a, otherLens.set(b, c))));
   EitherLens<A, C, E> eAndThenE<C>(EitherLens<B, C, E> otherLens) => new EitherLens((a) => get(a).bind(otherLens.get), (a, c) => get(a).bind((b1) => otherLens.set(b1, c)).bind((b) => set(a, b)));
   Either<E, A> modifyE(A a, Function1<B, B> f) => get(a).bind((b) => set(a, f(b)));
+  Function1<A, Either<E, A>> modifyEC(Function1<B, B> f) => (a) => modifyE(a, f);
 }
 
 EitherLens<A, B, E> lensE<A, B, E>(Function1<A, Either<E, B>> getter, Function2<A, B, Either<E, A>> setter) => new EitherLens(getter, setter);

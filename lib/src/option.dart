@@ -24,6 +24,11 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 
   @override Option<A> filter(bool predicate(A a)) => fold(none, (a) => predicate(a) ? this : none());
   @override Option<A> where(bool predicate(A a)) => filter(predicate);
+
+  bool isSome() => fold(() => false, (_) => true);
+
+  bool isNone() => !isSome();
+
   @override String toString() => fold(() => 'None', (a) => 'Some($a)');
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!

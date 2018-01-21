@@ -18,6 +18,9 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
 
   @override G traverse<G>(Applicative<G> gApplicative, G f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
+  Either<L, R> filter(bool predicate(R r), L fallback()) => fold((_) => this, (r) => predicate(r) ? this : left(fallback()));
+  Either<L, R> where(bool predicate(R r), L fallback()) => filter(predicate, fallback);
+
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!

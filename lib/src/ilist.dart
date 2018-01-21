@@ -169,6 +169,8 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return rresult.reverse();
   }
 
+  @override IList<A> where(bool predicate(A a)) => filter(predicate);
+
   Option<A> find(bool predicate(A a)) {
     var current = this;
     while(current._isCons()) {

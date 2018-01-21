@@ -73,6 +73,10 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   B foldRightWithIndexBetween<B>(int minIndex, int maxIndex, B z, B f(int index, A a, B previous)) =>
       _elementsByIndex.foldRightKVBetween(_offset+minIndex, _offset+maxIndex, z, (i, a, previous) => f(i-_offset, a, previous));
 
+  @override IVector<A> filter(bool predicate(A a)) => cast(super.filter(predicate));
+
+  @override IVector<A> where(bool predicate(A a)) => filter(predicate);
+
   @override int length() => _length;
 
   @override bool operator ==(other) => identical(this, other) || (other is IVector && ObjectIteratorEq.eq(_elementsByIndex.valueIterator(), other._elementsByIndex.valueIterator()));

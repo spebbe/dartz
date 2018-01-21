@@ -132,7 +132,9 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> dropWhile(bool f(O o)) => pipe(Pipe.dropWhile(f));
 
-  Conveyor<F, O> filter(bool f(O o)) => pipe(Pipe.filter(f));
+  @override Conveyor<F, O> filter(bool f(O o)) => pipe(Pipe.filter(f));
+
+  @override Conveyor<F, O> where(bool f(O o)) => filter(f);
 
   Conveyor<F, O2> fold<O2>(O2 z, Function2<O2, O, O2> f) => pipe(Pipe.scan(z, f)).lastOr(z);
 

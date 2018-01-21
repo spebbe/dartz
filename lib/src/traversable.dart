@@ -10,8 +10,10 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   G sequence_<G>(Applicative<G> gApplicative, F fa) => traverse_(gApplicative, fa, cast(id));
 
-  F mapWithIndex<B>(F fa, B f(int i, a)) =>
-      traverse<StateT<Trampoline<F>, int, dynamic>>(tstateM<F, int>(), fa, (e) => tstateM<F, int>().get().bind((i) => tstateM<F, int>().put(i+1).replace(f(i, e)))).value(0).run();
+  F mapWithIndex<B>(F fa, B f(int i, a)) {
+    final M = tstateM<F, int>();
+    return traverse<StateT<Trampoline<F>, int, dynamic>>(M, fa, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0).run();
+  }
 
   F zipWithIndex(F fa) => mapWithIndex(fa, tuple2);
 
@@ -31,8 +33,10 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   G sequence_<G>(Applicative<G> gApplicative) => traverse_<G>(gApplicative, cast(id));
 
-  F mapWithIndex<B>(B f(int i, a)) =>
-      traverse<StateT<Trampoline<F>, int, dynamic>>(tstateM<F, int>(), (e) => tstateM<F, int>().get().bind((i) => tstateM<F, int>().put(i+1).replace(f(i, e)))).value(0).run();
+  F mapWithIndex<B>(B f(int i, a)) {
+    final M = tstateM<F, int>();
+    return traverse<StateT<Trampoline<F>, int, dynamic>>(M, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0).run();
+  }
 
   F zipWithIndex() => mapWithIndex(tuple2);
 

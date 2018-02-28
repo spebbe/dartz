@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.3
+
+- More useful types for eitherM()
+- Declared argument type F of '>>' on MonadOps as covariant, enabling better specialization in implementations
+- Specialized types for replace on StateT
+- Fixed buggy foldLeftWithIndex/foldRightWithIndex on IVector
+
+
 ## 0.7.2
 
 - Added curried versions of several Lens members (setC, modifyC and so on)

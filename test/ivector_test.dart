@@ -36,6 +36,18 @@ void main() {
     expect(v2.set(6, "ö"), none());
   });
 
+  test("IVector foldLeftWithIndex", () {
+    final v = ivector(["c"]).prependElement("b").prependElement("a").appendElement("d").appendElement("e");
+    final vIndices = v.foldLeftWithIndex(nil<String>(), (IList<String> acc, i, v) => cons("$i$v", acc)).reverse();
+    expect(vIndices, ilist(["0a", "1b", "2c", "3d", "4e"]));
+  });
+
+  test("IVector foldRightWithIndex", () {
+    final v = ivector(["c"]).prependElement("b").prependElement("a").appendElement("d").appendElement("e");
+    final vIndices = v.foldRightWithIndex(nil<String>(), (i, v, IList<String> acc) => cons("$i$v", acc));
+    expect(vIndices, ilist(["0a", "1b", "2c", "3d", "4e"]));
+  });
+
   test("IVector update", () {
     qc.check(forall2(intLists, c.ints, (List<int> l, int i) {
       if (l.length == 0) {

@@ -88,7 +88,7 @@ class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
 }
 
 final EitherMonad EitherM = new EitherMonad();
-Monad<Either<L, R>> eitherM<L, R>() => cast(EitherM);
+EitherMonad<L> eitherM<L>() => cast(EitherM);
 final Traversable<Either> EitherTr = new TraversableOpsTraversable<Either>();
 Traversable<Either<L, R>> eitherTr<L, R>() => cast(EitherTr);
 

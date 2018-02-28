@@ -57,6 +57,7 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   @override StateT<F, S, B> flatMap<B>(StateT<F, S, B> f(A a)) => bind(f);
   @override StateT<F, S, B> andThen<B>(StateT<F, S, B> next) => bind((_) => next);
   @override StateT<F, S, A> operator <<(StateT<F, S, dynamic> next) => bind((a) => next.map((_) => a));
+  @override StateT<F, S, B> replace<B>(B b) => map((_) => b);
 }
 
 class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<StateT<F, S, dynamic>>, Monad<StateT<F, S, dynamic>> {

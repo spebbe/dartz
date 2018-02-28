@@ -32,7 +32,7 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
   @override F ap<B>(F ff) => cast<MonadOps<F, Function1<A, B>>>(ff).bind((f) => map(f));
   F flatMap<B>(covariant F f(A a)) => bind(f);
   F andThen<B>(covariant F next) => bind((_) => next);
-  F operator >>(F next) => andThen(next);
+  F operator >>(covariant F next) => andThen(next);
   F operator >=(F f(A a)) => bind(f);
   F operator <<(F next) => bind((a) => cast(cast<MonadOps>(next).map((_) => a)));
   F replace<B>(B replacement) => map((_) => replacement);

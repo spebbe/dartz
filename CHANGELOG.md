@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+
+- Corrected analyzer errors on recent Dart 2 dev releases
+
 ## 0.7.3
 
 - More useful types for eitherM()

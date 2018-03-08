@@ -49,7 +49,9 @@ void main() {
   });
 
   test("IVector update", () {
-    qc.check(forall2(intLists, c.ints, (List<int> l, int i) {
+    qc.check(forall2(intLists, c.ints, (dynamicL, dynamicI) {
+      final l = dynamicL as List<int>;
+      final i = dynamicI as int;
       if (l.length == 0) {
         return true;
       } else {
@@ -62,7 +64,8 @@ void main() {
   });
 
   test("IVector removeFirst", () {
-    qc.check(forall(intLists, (List<int> l) {
+    qc.check(forall(intLists, (dynamicL) {
+      final l = dynamicL as List<int>;
       final v = new IVector.from(l);
       if (l.length > 0) {
         final removed = l.removeAt(0);
@@ -74,7 +77,8 @@ void main() {
   });
 
   test("IVector dropFirst", () {
-    qc.check(forall(intLists, (List<int> l) {
+    qc.check(forall(intLists, (dynamicL) {
+      final l = dynamicL as List<int>;
       final v = new IVector.from(l);
       if (l.length > 0) {
         l.removeAt(0);
@@ -86,7 +90,8 @@ void main() {
   });
 
   test("IVector removeLast", () {
-    qc.check(forall(intLists, (List<int> l) {
+    qc.check(forall(intLists, (dynamicL) {
+      final l = dynamicL as List<int>;
       final v = new IVector.from(l);
       if (l.length > 0) {
         final removed = l.removeLast();
@@ -98,7 +103,8 @@ void main() {
   });
 
   test("IVector dropLast", () {
-    qc.check(forall(intLists, (List<int> l) {
+    qc.check(forall(intLists, (dynamicL) {
+      final l = dynamicL as List<int>;
       final v = new IVector.from(l);
       if (l.length > 0) {
         l.removeLast();
@@ -110,21 +116,22 @@ void main() {
   });
 
   test("IVector foldLeftWithIndexBetween", () {
-    qc.check(forall(intIVectors, (IVector<int> v) {
+    qc.check(forall(intIVectors, (dynamicV) {
+      final v = dynamicV as IVector<int>;
       final partialSum = v.foldLeftWithIndexBetween<int>(1, v.length()-2, 0, (sum, _, i) => sum+i);
       return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
     }));
   });
 
   test("IVector foldRightWithIndexBetween", () {
-    qc.check(forall(intIVectors, (IVector<int> v) {
-      final partialSum = v.foldRightWithIndexBetween<int>(1, v.length()-2, 0, (_, i, sum) => sum+i);
+    qc.check(forall(intIVectors, (v) {
+      final partialSum = v.foldRightWithIndexBetween<int>(1, (v as IVector<int>).length()-2, 0, (_, i, sum) => sum+i);
       return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
     }));
   });
 
   group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
 
-  test("iterable", () => qc.check(forall(intIVectors, (IVector<int> v) => v == ivector(v.toIterable()))));
+  test("iterable", () => qc.check(forall(intIVectors, (v) => v == ivector((v as IVector<int>).toIterable()))));
 
 }

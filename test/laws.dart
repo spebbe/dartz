@@ -49,13 +49,13 @@ void checkFoldableOpsProperties(Enumeration<FoldableOps> enumeration, {bool equa
 
   group("foldable ops properties", () {
     test("foldLeftWithIndex properties", () {
-      qc.check(forall(enumeration, (FoldableOps fa) =>
-          equality(fa.foldLeftWithIndex<IList<int>>(nil(), (p, i, _) => cons(i, p)).reverse(), iota(fa.length()))));
+      qc.check(forall(enumeration, (fa) =>
+          equality(fa.foldLeftWithIndex<IList<int>>(nil(), (IList<int> p, i, _) => cons(i, p)).reverse(), iota((fa as FoldableOps).length()))));
     });
 
     test("foldRightWithIndex properties", () {
-      qc.check(forall(enumeration, (FoldableOps fa) =>
-          equality(fa.foldRightWithIndex<IList<int>>(nil(), (i, _, p) => cons(i, p)), iota(fa.length()))));
+      qc.check(forall(enumeration, (fa) =>
+          equality(fa.foldRightWithIndex<IList<int>>(nil(), (i, _, IList<int> p) => cons(i, p)), iota((fa as FoldableOps).length()))));
     });
   });
 }
@@ -88,7 +88,7 @@ void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck q
 
   group("monad laws", () {
     test("left identity", () {
-      qc.check(forall(c.ints, (int a) => equality(M.bind(M.pure(a), double), double(a))));
+      qc.check(forall(c.ints, (a) => equality(M.bind(M.pure(a), double), double(a as int))));
     });
 
     test("right identity", () {

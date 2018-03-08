@@ -36,7 +36,7 @@ void main() {
     expect(EitherM.sequenceL(new IList.from([right(1), right(2), right(3)])), right(ilist([1,2,3])));
 
     final l1 = ilist([1,2,3,4]);
-    expect(IListTr.traverse(EitherM, l1, (int i) => i<4 ? right(i) : left("too big")), left("too big"));
+    expect(IListTr.traverse(EitherM, l1, (i) => (i as int)<4 ? right(i as int) : left("too big")), left("too big"));
     expect(IListTr.sequence(EitherM, l1.map((i) => right(i))), right(ilist([1,2,3,4])));
 
     expect(IListTr.foldMap<num, num>(NumSumMi, l1, idF<num>()), 10);
@@ -56,7 +56,7 @@ void main() {
   });
 
   test('length', () {
-    qc.check(forall(intLists, (List<int> l) => l.length == ilist(l).length()));
+    qc.check(forall(intLists, (l) => (l as List<int>).length == ilist(l as List<int>).length()));
   });
 
   test('reverse', () {
@@ -118,18 +118,20 @@ void main() {
   });
 
   test("equality", () {
-    qc.check(forall2(intILists, intILists,
-        (IList<int> l1, IList<int> l2) =>
-        (l1 == l1) &&
+    qc.check(forall2(intILists, intILists, (dynamicL1, dynamicL2) {
+      final l1 = dynamicL1 as IList<int>;
+      final l2 = dynamicL2 as IList<int>;
+          return  (l1 == l1) &&
             (l2 == l2) &&
             (l1 == l1.reverse().reverse()) &&
             (l2 == l2.reverse().reverse()) &&
             (new Cons(1, l1) != l1) &&
-            ((l1 == l2) == (l1.toString() == l2.toString()))));
+            ((l1 == l2) == (l1.toString() == l2.toString()));
+        }));
   });
 
   test("to/from iterable", () {
-    qc.check(forall(intILists, (IList l) => l == new IList.from(l.toIterable())));
+    qc.check(forall(intILists, (l) => l == new IList.from((l as IList).toIterable())));
   });
 
   group("IList FoldableOps", () => checkFoldableOpsProperties(intILists));

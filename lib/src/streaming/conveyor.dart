@@ -60,6 +60,10 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O2> bind<O2>(Conveyor<F, O2> f(O o)) => flatMap(f);
 
+  Conveyor<F, O> prependElement(O o) => pure(o).plus(this);
+
+  Conveyor<F, O> appendElement(O o) => plus(pure(o));
+
   Conveyor<F, O> repeat() => lazyPlus(repeat);
 
   Conveyor<F, O> repeatUntilExhausted() =>

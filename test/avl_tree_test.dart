@@ -11,12 +11,12 @@ void main() {
 
   test("min", () {
     qc.check(forall(intTrees,
-        (AVLTree<num> t) => t.concatenateO(NumMinSi) == t.min()));
+        (t) => t.concatenateO(NumMinSi) == (t as AVLTree<num>).min()));
   });
 
   test("max", () {
     qc.check(forall(intTrees,
-        (AVLTree<num> t) => t.concatenateO(NumMaxSi) == t.max()));
+        (t) => t.concatenateO(NumMaxSi) == (t as AVLTree<num>).max()));
   });
 
   test("demo", () {
@@ -33,7 +33,7 @@ void main() {
   group("equality", () {
     test("equality", () {
       qc.check(forall2(intTrees, intTrees,
-          (AVLTree<int> t1, AVLTree<int> t2) =>
+          (t1, t2) =>
           (t1 == t1) &&
               (t2 == t2) &&
               (t1.insert((t1.max()|0) + 1) != t1) &&
@@ -43,5 +43,5 @@ void main() {
 
   group("AVLTree FoldableOps", () => checkFoldableOpsProperties(intTrees));
 
-  test("iterable", () => qc.check(forall(intTrees, (AVLTree<int> t) => t.toIList() == ilist(t.toIterable()))));
+  test("iterable", () => qc.check(forall(intTrees, (t) => t.toIList() == ilist((t as AVLTree<int>).toIterable()))));
 }

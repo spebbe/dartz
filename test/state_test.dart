@@ -4,8 +4,9 @@ import 'laws.dart';
 
 void main() {
   test("demo", () {
-    final State st = StateM.pure("hej");
-    final State inc = StateM.modify((num n) => n+1);
+    final M = stateM<num>();
+    final State st = M.pure("hej");
+    final State inc = M.modify((n) => n+1);
     expect((inc >> inc >> st).map((v) => "$v!").run(5), tuple2("hej!", 7));
   });
 

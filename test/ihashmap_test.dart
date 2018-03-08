@@ -11,14 +11,17 @@ void main() {
   final intIHashMaps = intMaps.map((m) => new IHashMap.from(m)) as Enumeration<IHashMap<int, int>>;
 
   test("create from Map", () {
-    qc.check(forall(intMaps, (Map<int, int> m) {
+    qc.check(forall(intMaps, (dynamicM) {
+      final m = dynamicM as Map<int, int>;
       final IHashMap<int, int> im = new IHashMap.from(m);
       return m.length == im.length() &&  m.keys.every((i) => some(m[i]) == im[i]);
     }));
   });
 
   test("deletion", () {
-    qc.check(forall2(intMaps, intMaps, (Map<int, int> m1, Map<int, int> m2) {
+    qc.check(forall2(intMaps, intMaps, (dynamicM1, dynamicM2) {
+      final m1 = dynamicM1 as Map<int, int>;
+      final m2 = dynamicM2 as Map<int, int>;
       final Map<int, int> expected = new Map.from(m1);
       m2.keys.forEach((i) => expected.remove(i));
       final actual = m2.keys.fold(new IHashMap.from(m1), (IHashMap<int, int> p, k) => p.remove(k));
@@ -26,11 +29,11 @@ void main() {
     }));
   });
 
-  test("pair iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil(), (k, v, p) => cons(tuple2(k, v), p)) == ilist(m.pairIterable()))));
+  test("pair iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil(), (k, v, IList<Tuple2<int, int>> p) => cons(tuple2(k, v), p)) == ilist((m as IHashMap<int, int>).pairIterable()))));
 
-  test("key iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil(), (k, v, p) => cons(k, p)) == ilist(m.keyIterable()))));
+  test("key iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<int>>(nil(), (k, v, IList<int> p) => cons(k, p)) == ilist((m as IHashMap<int, int>).keyIterable()))));
 
-  test("value iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil(), (k, v, p) => cons(v, p)) == ilist(m.valueIterable()))));
+  test("value iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<int>>(nil(), (k, v, IList<int> p) => cons(v, p)) == ilist((m as IHashMap<int, int>).valueIterable()))));
 
   group("IHashMapTr", () => checkTraversableLaws(IHashMapTr, intIHashMaps));
 

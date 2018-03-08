@@ -22,9 +22,7 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
   @override State<S, A> operator <<(State<S, dynamic> next) => bind((a) => next.map((_) => a));
 }
 
-class StateMonad<S> extends MonadOpsMonad<State<S, dynamic>> {
-  StateMonad() : super((a) => new State((S s) => new Tuple2(a, s)));
-
+class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S, dynamic>>, Monad<State<S, dynamic>> {
   @override State<S, A> pure<A>(A a) => new State((S s) => new Tuple2(a, s));
   @override State<S, B> map<A, B>(State<S, A> fa, B f(A a)) => fa.map(f);
   @override State<S, B> bind<A, B>(State<S, A> fa, State<S, B> f(A a)) => fa.bind(f);

@@ -11,12 +11,16 @@ void main() {
   final intSets = intLists.map((il) => new ISet<int>.fromIList(IntOrder, ilist(il as List<int>))) as Enumeration<ISet<int>>;
 
   test("insertion", () {
-    qc.check(forall(intLists,
-        (List<int> l) => ilist(l.toSet().toList()..sort()) == iset(l).toIList()));
+    qc.check(forall(intLists, (dynamicL) {
+      final l = dynamicL as List<int>;
+      return ilist(l.toSet().toList()..sort()) == iset(l).toIList();
+    }));
   });
 
   test("deletion", () {
-    qc.check(forall2(intLists, intLists, (List<int> l1, List<int> l2) {
+    qc.check(forall2(intLists, intLists, (dynamicL1, dynamicL2) {
+      final l1 = dynamicL1 as List<int>;
+      final l2 = dynamicL2 as List<int>;
       final actual = l2.fold<ISet<int>>(iset(l1), (s, i) => s.remove(i)).toIList();
       final expected = ilist(l1.where((i) => !l2.contains(i)).toSet().toList()..sort());
       return actual == expected;
@@ -37,5 +41,8 @@ void main() {
 
   group("ISet FoldableOps", () => checkFoldableOpsProperties(intSets));
 
-  test("iterable", () => qc.check(forall(intSets, (ISet<int> s) => s.toIList() == ilist(s.toIterable()))));
+  test("iterable", () => qc.check(forall(intSets, (dynamicS) {
+    final s = dynamicS as ISet<int>;
+    return s.toIList() == ilist(s.toIterable());
+  })));
 }

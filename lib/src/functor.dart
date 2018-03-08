@@ -18,7 +18,7 @@ class ComposedFunctor<F, G> extends Functor<F> {
 
   ComposedFunctor(this._F, this._G);
 
-  @override F map<A, B>(F fga, B f(_)) => _F.map(fga, (G ga) => _G.map(ga, f));
+  @override F map<A, B>(F fga, B f(A _)) => _F.map(fga, (G ga) => _G.map(ga, f));
 }
 
 abstract class FunctorOps<F, A> {

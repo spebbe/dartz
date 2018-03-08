@@ -53,8 +53,7 @@ class Bind<F, A, B> extends Free<F, A> {
   R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifBind(ffb, cast(f));
 }
 
-class FreeMonad<F> extends MonadOpsMonad<Free<F, dynamic>> {
-  FreeMonad(): super((a) => new Pure(a));
+class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dynamic>>, Monad<Free<F, dynamic>> {
 
   @override Free<F, A> pure<A>(A a) => new Pure(a);
 

@@ -44,7 +44,7 @@ class MonadOpsMonad<F extends MonadOps> extends Functor<F> with Applicative<F>, 
   final Function1<dynamic, F> _pure;
   MonadOpsMonad(this._pure);
   @override F pure<A>(a) => _pure(a);
-  @override F bind<A, B>(F fa, F f(_)) => cast(fa.bind(f));
+  @override F bind<A, B>(covariant F fa, covariant F f(_)) => cast(fa.bind(f));
   @override F ap<A, B>(F fa, F ff) => cast(fa.ap(ff));
   @override F map<A, B>(F fa, B f(A a)) => cast(fa.map(cast(f)));
 }

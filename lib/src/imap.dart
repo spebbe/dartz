@@ -6,7 +6,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   IMap(this._order, this._tree);
 
-  IMap.empty(this._order): _tree = emptyIMapAVLNode();
+  IMap.empty(this._order): _tree = _emptyIMapAVLNode();
 
   factory IMap.from(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.empty(kOrder), (p, K k) => p.put(k, m[k]));
 
@@ -59,14 +59,14 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   B foldMapKV<B>(Monoid<B> mi, B f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
-  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
+  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, _emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
   IMap<K, V2> mapKV<V2>(V2 f(K k, V v)) => mapWithKey(f);
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
   G traverseKV<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(
-          new IMap(_order, _emptyIMapAVLNode)),
+          new IMap(_order, _emptyIMapAVLNode())),
               (prev, k, v) => gApplicative.map2(prev, f(k, v), (IMap p, v2) => p.put(k, v2)));
 
   G traverseKV_<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
@@ -106,7 +106,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override int get hashCode => _order.hashCode ^ pairs().hashCode;
 
-  @override String toString() => "imap{${foldMapKV(IListMi, (k, v) => new Cons("$k: $v", nil())).intercalate(StringMi, ", ")}}";
+  @override String toString() => "imap{${foldMapKV<IList<String>>(ilistMi(), (k, v) => new Cons("$k: $v", nil())).intercalate(StringMi, ", ")}}";
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
@@ -134,8 +134,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
 IMap<K, V> imap<K extends Comparable, V>(Map<K, V> m) => new IMap.from(comparableOrder(), m);
 IMap<K, V> imapWithOrder<K, K2 extends K, V>(Order<K> o, Map<K2, V> m) => new IMap.from(o, m);
-IMap _emptyIMap = new IMap(comparableOrder(), emptyIMapAVLNode());
-IMap<K, V> emptyMap<K extends Comparable, V>() => cast(_emptyIMap);
+IMap<K, V> emptyMap<K extends Comparable, V>() => new IMap(comparableOrder(), _emptyIMapAVLNode());
 IMap<K, V> singletonMap<K extends Comparable, V>(K k, V v) => emptyMap<K, V>().put(k, v);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
@@ -297,9 +296,19 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._v);
       } else if (o == Ordering.LT) {
-        current = cast(current._left);
+        final l = current._left;
+        if (l is _NonEmptyIMapAVLNode) {
+          current = cast(l);
+        } else {
+          return none();
+        }
       } else {
-        current = cast(current._right);
+        final r = current._right;
+        if (r is _NonEmptyIMapAVLNode) {
+          current = cast(r);
+        } else {
+          return none();
+        }
       }
     }
     return none();
@@ -387,7 +396,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override Option<K> getKey(Order<K> order, K k) => none();
 
-  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode(k, v, emptyIMapAVLNode(), emptyIMapAVLNode());
+  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode(k, v, _emptyIMapAVLNode(), _emptyIMapAVLNode());
 
   @override _IMapAVLNode<K, V> remove(Order<K> order, K k) => this;
 
@@ -399,11 +408,11 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v) => this;
 
-  @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, emptyIMapAVLNode(), emptyIMapAVLNode());
+  @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, _emptyIMapAVLNode(), _emptyIMapAVLNode());
 
-  @override _IMapAVLNode<K, V2> map<V2>(V2 f(V v)) => cast(this);
+  @override _IMapAVLNode<K, V2> map<V2>(V2 f(V v)) => _emptyIMapAVLNode();
 
-  @override operator ==(other) => identical(_emptyIMapAVLNode, other);
+  @override operator ==(other) => other is _EmptyIMapAVLNode;
 
   @override int get hashCode => 0;
 
@@ -420,8 +429,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) => ifEmpty(z);
 }
 
-final _IMapAVLNode _emptyIMapAVLNode = new _EmptyIMapAVLNode();
-_IMapAVLNode<K, V> emptyIMapAVLNode<K, V>() => cast(_emptyIMapAVLNode);
+_IMapAVLNode<K, V> _emptyIMapAVLNode<K, V>() => new _EmptyIMapAVLNode();
 
 abstract class _IMapIterable<K, V, A> extends Iterable<A> {
   final IMap<K, V> _m;

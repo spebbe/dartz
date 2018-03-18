@@ -173,23 +173,33 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
 
   Option<A> get(Order<A> order, A a) {
-    var current = this;
+    _NonEmptyAVLNode<A> current = this;
     while(!current.empty) {
       final Ordering o = order.order(a, current._a);
       if (o == Ordering.EQ) {
         return some(current._a);
       } else if (o == Ordering.LT) {
-        current = cast(current._left);
+        final l = current._left;
+        if (l is _NonEmptyAVLNode<A>) {
+          current = l;
+        } else {
+          return none();
+        }
       } else {
-        current = cast(current._right);
+        final r = current._right;
+        if (r is _NonEmptyAVLNode<A>) {
+          current = r;
+        } else {
+          return none();
+        }
       }
     }
     return none();
   }
 
-  Option<A> min() => _left == _emptyAVLNode ? some(_a) : _left.min();
+  Option<A> min() => _left is _EmptyAVLNode ? some(_a) : _left.min();
 
-  Option<A> max() => _right == _emptyAVLNode ? some(_a) : _right.max();
+  Option<A> max() => _right is _EmptyAVLNode ? some(_a) : _right.max();
 
   bool get empty => false;
 }
@@ -221,15 +231,14 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   @override Option<Tuple2<_AVLNode<A>, A>> _removeMax() => none();
 
-  @override operator ==(other) => identical(_emptyAVLNode, other);
+  @override operator ==(other) => other is _EmptyAVLNode;
 
   @override int get hashCode => 0;
 
   bool get empty => true;
 }
 
-_AVLNode _emptyAVLNode = const _EmptyAVLNode();
-_AVLNode<A> emptyAVLNode<A>() => cast(_emptyAVLNode);
+_AVLNode<A> emptyAVLNode<A>() => const _EmptyAVLNode();
 
 class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
   final Order<A> _tOrder;

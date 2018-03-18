@@ -61,6 +61,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
       _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
           (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _elementsByIndex.foldMap(bMonoid, f);
+
   @override B foldLeft<B>(B z, B f(B previous, A a)) => _elementsByIndex.foldLeft(z, f);
 
   @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) => _elementsByIndex.foldLeftKV(z, (previous, i, a) => f(previous, i-_offset, a));
@@ -104,8 +106,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
 IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);
 
-final IVector _emptyVector = new IVector.emptyVector();
-IVector<A> emptyVector<A>() => cast(_emptyVector);
+IVector<A> emptyVector<A>() => new IVector.emptyVector();
 
 final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonadPlus<IVector>((a) => emptyVector().appendElement(a), emptyVector);
 MonadPlus<IVector<A>> ivectorMP<A>() => cast(IVectorMP);

@@ -19,7 +19,7 @@ void main() {
 
     final Monad<Option<IList>> OptionIListM = new IListTMonad(OptionMP as Monad<Option<IList>>);
     final ol = some(l);
-    final stackedResult = OptionIListM.bind(ol, (i) => i % 2 == 1 ? some(new Cons("$i!", nil<String>())) : some(Nil));
+    final stackedResult = OptionIListM.bind(ol, (i) => i % 2 == 1 ? some(new Cons("$i!", nil<String>())) : some(nil()));
     expect(stackedResult, some(ilist(["1!", "3!"])));
 
     final IList<int> nums = ilist([743, 59, 633, 532, 744, 234, 792, 891, 178, 356]);

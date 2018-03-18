@@ -52,8 +52,7 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();
 
-final ISet _emptyISet = new ISet.empty(comparableOrder());
-ISet<A> emptySet<A extends Comparable>() => cast(_emptyISet);
+ISet<A> emptySet<A extends Comparable>() => new ISet.empty(comparableOrder());
 ISet<A> emptySetWithOrder<A>(Order<A> order) => new ISet.empty(order);
 
 ISet<A> iset<A extends Comparable>(Iterable<A> i) => new ISet.fromIterable(comparableOrder(), i);

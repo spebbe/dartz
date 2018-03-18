@@ -1,5 +1,7 @@
 part of dartz;
 
+typedef Free<F, A> _FreeF<F, A>(dynamic x);
+
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with ApplicativeOps<Free/*<F, dynamic>*/, A>, MonadOps<Free/*<F, dynamic>*/, A> {
 
@@ -7,17 +9,17 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 
   @override Free<F, B> map<B>(B f(A a)) => bind((a) => new Pure(f(a)));
 
-  @override Free<F, B> bind<B>(Free<F, B> f(A a)) => new Bind(this, f);
+  @override Free<F, B> bind<B>(Free<F, B> f(A a)) => new Bind(this, (a) => f(cast(a)));
 
   @override Free<F, B> replace<B>(B replacement) => map((_) => replacement);
 
-  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f));
+  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, _FreeF<F, A> f));
 
   Free<F, A> step() {
     Free<F, A> current = this;
     while(current is Bind) {
       final currentBind = cast<Bind<F, A, dynamic>>(current);
-      current = currentBind.ffb.fold((a) => currentBind.f(a), (fa) => currentBind, (ffb, f) => ffb.bind((a) => f(a).bind((a2) => currentBind.f(a2))));
+      current = currentBind.ffb.fold((a) => cast(currentBind.f(a)), (fa) => currentBind, (ffb, f) => ffb.bind((a) => f(a).bind((a2) => cast(currentBind.f(a2)))));
       if (identical(current, currentBind)) {
         return current;
       }
@@ -29,7 +31,7 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
   MA foldMap<M, MA extends M>(Monad<M> m, M f(F fa)) =>
       cast(/*step().*/fold((a) => m.pure(a), (fa) => f(fa), (ffb, f2) => m.bind(ffb.foldMap(m, f), (c) => f2(c).foldMap(m, f))));
 
-  @override Free<F, B> flatMap<B>(Free<F, B> f(A a)) => new Bind(this, f);
+  @override Free<F, B> flatMap<B>(Free<F, B> f(A a)) => new Bind(this, (a) => f(cast(a)));
   @override Free<F, B> andThen<B>(Free<F, B> next) => bind((_) => next);
   @override Free<F, A> operator <<(Free<F, dynamic> next) => bind((a) => next.map((_) => a));
 }
@@ -37,20 +39,20 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 class Pure<F, A> extends Free<F, A> {
   final A a;
   Pure(this.a);
-  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifPure(a);
+  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, _FreeF<F, A> f)) => ifPure(a);
 }
 
 class Suspend<F, A> extends Free<F, A> {
   final F/**<A>**/ fa;
   Suspend(this.fa);
-  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifSuspend(fa);
+  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, _FreeF<F, A> f)) => ifSuspend(fa);
 }
 
 class Bind<F, A, B> extends Free<F, A> {
   final Free<F, B> ffb;
-  final Function1<B, Free<F, A>> f;
+  final _FreeF<F, A> f;
   Bind(this.ffb, this.f);
-  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, Function1<dynamic, Free<F, A>> f)) => ifBind(ffb, cast(f));
+  R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, _FreeF<F, A> f)) => ifBind(ffb, cast(f));
 }
 
 class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dynamic>>, Monad<Free<F, dynamic>> {
@@ -79,6 +81,6 @@ class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dy
 }
 
 final FreeMonad FreeM = new FreeMonad();
-FreeMonad<F> freeM<F>() => cast(FreeM);
+FreeMonad<F> freeM<F>() => new FreeMonad();
 
 Free<F, A> liftF<F, A>(F fa) => new Suspend(fa);

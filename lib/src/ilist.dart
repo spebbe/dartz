@@ -19,7 +19,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   IList();
 
   factory IList.from(Iterable<A> iterable) {
-    final IList<A> aNil = cast(Nil);
+    final IList<A> aNil = nil();
     final Iterator<A> it = iterable.iterator;
     if (!it.moveNext()) {
       return aNil;
@@ -35,7 +35,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   }
 
   factory IList.generate(int n, A f(int i)) {
-    final IList<A> aNil = cast(Nil);
+    final IList<A> aNil = nil();
     if (n <= 0) {
       return aNil;
     }
@@ -52,7 +52,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   @override IList<B> pure<B>(B b) => new Cons(b, nil());
 
   @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) {
-    var result = gApplicative.pure(Nil);
+    var result = gApplicative.pure(nil());
     var current = this;
     while(current._isCons()) {
       final gb = f(current._unsafeHead());
@@ -74,7 +74,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   }
 
   @override IList<B> bind<B>(IList<B> f(A a)) {
-    final IList<B> bNil = cast(Nil);
+    final IList<B> bNil = nil();
     if (!_isCons()) {
       return bNil;
     }
@@ -116,7 +116,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   @override IList<B> flatMap<B>(IList<B> f(A a)) => bind(f);
 
   @override IList<B> map<B>(B f(A a)) {
-    final IList<B> bNil = cast(Nil);
+    final IList<B> bNil = nil();
     if (!_isCons()) {
       return bNil;
     }
@@ -145,7 +145,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  @override B foldRight<B>(B z, B f(A a, B previous)) => reverse().foldLeft(z, (a, b) => f(b, a));
+  @override B foldRight<B>(B z, B f(A a, B previous)) => reverse().foldLeft<B>(z, (a, b) => f(b, a));
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
 
@@ -226,7 +226,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
       .apply((smaller, larger) => smaller.sort(oa).plus(larger.sort(oa).prependElement(pivot))));
 
   IList<Tuple2<A, B>> zip<B>(IList<B> bs) {
-    final IList<Tuple2<A, B>> abNil = cast(Nil);
+    final IList<Tuple2<A, B>> abNil = nil();
     if (!(_isCons() && bs._isCons())) {
       return abNil;
     } else {
@@ -293,32 +293,31 @@ class _Nil<A> extends IList<A> {
   @override Option<IList<A>> get tailOption => none();
 }
 
-final IList Nil = new _Nil();
-IList<A> nil<A>() => cast(Nil);
+IList<A> nil<A>() => new _Nil();
 IList<A> cons<A>(A head, IList<A> tail) => new Cons(head, tail);
 
-final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, Nil), () => Nil);
+final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, nil()), nil);
 MonadPlus<IList<A>> ilistMP<A>() => cast(IListMP);
 final Traversable<IList> IListTr = new TraversableOpsTraversable<IList>();
 
-class IListMonoid extends Monoid<IList> {
-  @override IList zero() => Nil;
-  @override IList append(IList l1, IList l2) => l1.plus(l2);
+class IListMonoid<A> extends Monoid<IList<A>> {
+  @override IList<A> zero() => nil();
+  @override IList<A> append(IList<A> l1, IList<A> l2) => l1.plus(l2);
 }
 
 final Monoid<IList> IListMi = new IListMonoid();
-Monoid<IList<A>> ilistMi<A>() => cast(IListMi);
+Monoid<IList<A>> ilistMi<A>() => new IListMonoid();
 
 class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad<M> _stackedM;
   IListTMonad(this._stackedM);
   Monad underlying() => IListMP;
 
-  @override M pure<A>(A a) => _stackedM.pure(new Cons(a, Nil));
+  @override M pure<A>(A a) => _stackedM.pure(new Cons(a, nil()));
 
   M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.plus(l2)));
 
-  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map<M>(cast(f)).foldLeft(_stackedM.pure(Nil), _concat));
+  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map<M>(cast(f)).foldLeft(_stackedM.pure(nil()), _concat));
 }
 
 Monad ilistTMonad(Monad mmonad) => new IListTMonad(mmonad);

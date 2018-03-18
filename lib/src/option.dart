@@ -53,8 +53,7 @@ class None<A> extends Option<A> {
   @override int get hashCode => 0;
 }
 
-final Option _none = new None();
-Option<A> none<A>() => cast(_none);
+Option<A> none<A>() => new None();
 Option<A> some<A>(A a) => new Some(a);
 Option<A> option<A>(bool test, A value) => test ? some(value) : none();
 Option<A> optionOf<A>(A value) => value != null ? some(value) : none();

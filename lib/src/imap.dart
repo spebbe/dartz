@@ -20,6 +20,9 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
     return result;
   }
 
+  factory IMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps, Order<K> kOrder) =>
+    foldableOps.foldLeft(new IMap.empty(kOrder), (acc, kv) => kv.apply(acc.put));
+
   IMap<K, V> put(K k, V v) => new IMap(_order, _tree.insert(_order, k, v));
 
   Option<V> get(K k) => _tree.get(_order, k);

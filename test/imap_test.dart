@@ -31,6 +31,13 @@ void main() {
     }));
   });
 
+  test("create from pairs", () => qc.check(forall(intIMaps, (dynamicM) {
+    final m = dynamicM as IMap<int, int>;
+    final mPairs = m.pairs();
+    final mFromPairs = new IMap.fromPairs(mPairs, comparableOrder());
+    return m == mFromPairs;
+  })));
+
   test("deletion", () {
     qc.check(forall2(intMaps, intMaps, (dynamicM1, dynamicM2) {
       final m1 = dynamicM1 as Map<int, int>;

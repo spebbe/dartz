@@ -13,6 +13,9 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
 
   factory IHashMap.from(Map<K, V> m) => m.keys.fold(new IHashMap.empty(), (IHashMap<K, V> p, K k) => p.put(k, m[k]));
 
+  factory IHashMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps, Order<K> kOrder) =>
+    foldableOps.foldLeft(new IHashMap.empty(), (acc, kv) => kv.apply(acc.put));
+
   Option<V> get(K k) => _map.get(k.hashCode).bind((candidates) =>
       candidates.find((candidate) => candidate.value1 == k).map((candidate) => candidate.value2));
 

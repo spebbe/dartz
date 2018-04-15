@@ -134,4 +134,24 @@ void main() {
 
   test("iterable", () => qc.check(forall(intIVectors, (v) => v == ivector((v as IVector<int>).toIterable()))));
 
+  test("flattenOption", () {
+    qc.check(forall(intIVectors, (dynamicV) {
+      final v = dynamicV as IVector<int>;
+      final ov = v.map((i) => i % 2 == 0 ? some(i) : none<int>());
+      final unitedV = IVector.flattenOption(ov);
+      final evenV = v.filter((i) => i % 2 == 0);
+      return unitedV == evenV;
+    }));
+  });
+
+  test("flattenIVector", () {
+    qc.check(forall(intIVectors, (dynamicV) {
+      final v = dynamicV as IVector<int>;
+      final vv = v.map((int i) => i % 2 == 0 ? ivector([i]) : emptyVector<int>());
+      final flattenedV = IVector.flattenIVector(vv);
+      final evenV = v.filter((i) => i % 2 == 0);
+      return flattenedV == evenV;
+    }));
+  });
+
 }

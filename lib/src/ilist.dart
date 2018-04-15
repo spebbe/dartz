@@ -245,6 +245,11 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     }
   }
 
+  // TODO: kill MonadOps flatten and rename in 0.8.0
+  static IList<A> flattenIList<A>(IList<IList<A>> ffa) => ffa.flatMap(id);
+
+  static IList<A> flattenOption<A>(IList<Option<A>> oas) => oas.flatMap((oa) => oa.fold(nil, (a) => cons(a, nil())));
+
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
   List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));

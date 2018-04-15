@@ -136,4 +136,24 @@ void main() {
 
   group("IList FoldableOps", () => checkFoldableOpsProperties(intILists));
 
+  test("flattenOption", () {
+    qc.check(forall(intILists, (dynamicL) {
+      final l = dynamicL as IList<int>;
+      final ol = l.map((i) => i % 2 == 0 ? some(i) : none<int>());
+      final unitedL = IList.flattenOption(ol);
+      final evenL = l.filter((i) => i % 2 == 0);
+      return unitedL == evenL;
+    }));
+  });
+
+  test("flattenIList", () {
+    qc.check(forall(intILists, (dynamicL) {
+      final l = dynamicL as IList<int>;
+      final ll = l.map((i) => i % 2 == 0 ? cons(i, nil<int>()) : nil<int>());
+      final flattenedL = IList.flattenIList(ll);
+      final evenL = l.filter((i) => i % 2 == 0);
+      return flattenedL == evenL;
+    }));
+  });
+
 }

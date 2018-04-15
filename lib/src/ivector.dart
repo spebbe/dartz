@@ -37,6 +37,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (p, a) => p.plus(f(a)));
 
+  @override IVector<B> flatMap<B>(IVector<B> f(A a)) => bind(f);
+
   @override IVector<A> empty() => emptyVector();
 
   @override IVector<A> plus(IVector<A> fa2) {
@@ -78,6 +80,12 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   @override IVector<A> where(bool predicate(A a)) => filter(predicate);
 
   @override int length() => _length;
+
+  // TODO: kill MonadOps flatten and rename in 0.8.0
+  static IVector<A> flattenIVector<A>(IVector<IVector<A>> ffa) => ffa.flatMap(id);
+
+  static IVector<A> flattenOption<A>(IVector<Option<A>> oas) => oas.foldLeft(emptyVector(), (acc, oa) => oa.fold(() => acc, (a) => acc.appendElement(a)));
+
 
   @override bool operator ==(other) => identical(this, other) || (other is IVector && ObjectIteratorEq.eq(_elementsByIndex.valueIterator(), other._elementsByIndex.valueIterator()));
 

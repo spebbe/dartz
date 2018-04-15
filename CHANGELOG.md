@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.5
+
+- IMap.fromPairs and IHashMap.fromPairs, for constructing maps from sequences of Tuple2
+- IList.flattenIList and IVector.flattenIVector for type safe flattening of IList/IVector
+- IList.flattenOption and IVector.flattenOption for type safe flattening/uniting IList/IVector of Option
+
 ## 0.7.4
 
 - Corrected analyzer errors on recent Dart 2 dev releases

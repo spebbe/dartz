@@ -52,6 +52,10 @@ class ComparableOrder<A extends Comparable> extends Order<A> {
     final c = a1.compareTo(a2);
     return c < 0 ? Ordering.LT : (c > 0 ? Ordering.GT : Ordering.EQ);
   }
+
+  @override bool operator ==(Object other) => identical(this, other) || other is ComparableOrder && runtimeType == other.runtimeType;
+
+  @override int get hashCode => 0;
 }
 
 final Order _comparableOrder = new ComparableOrder();

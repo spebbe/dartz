@@ -1,6 +1,6 @@
 part of dartz;
 
-abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Option, A>, ApplicativeOps<Option, A>, ApplicativePlusOps<Option, A>, MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A>, TraversableMonadPlusOps<Option, A> {
+abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Option, A>, ApplicativeOps<Option, A>, ApplicativePlusOps<Option, A>, MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A>, TraversableMonadPlusOps<Option, A>, PlusOps<Option, A> {
   B fold<B>(B ifNone(), B ifSome(A a));
 
   B cata<B, B2 extends B>(B ifNone(), B2 ifSome(A a)) => fold(ifNone, ifSome);

@@ -3,7 +3,7 @@ part of dartz;
 // List is mutable, so use with care.
 // If possible, use IList and its associated instances instead.
 
-class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List> {
+class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List>, Plus<List> {
   @override List<A> pure<A>(A a) => [a];
   @override List<B> bind<A, B>(List<A> fa, List<B> f(A a)) => fa.expand(f).toList();
 

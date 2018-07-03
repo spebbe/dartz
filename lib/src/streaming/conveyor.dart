@@ -9,7 +9,7 @@ typedef Conveyor<F, Unit> SinkF<F, O>(O o);
 typedef Conveyor<F, O> ChannelF<F, I, O>(I i);
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> with ApplicativeOps<Conveyor/*<F, dynamic>*/, O>, ApplicativePlusOps<Conveyor/*<F, dynamic>*/, O>, MonadOps<Conveyor/*<F, dynamic>*/, O>, MonadPlusOps<Conveyor/*<F, dynamic>*/, O> {
+abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> with ApplicativeOps<Conveyor/*<F, dynamic>*/, O>, ApplicativePlusOps<Conveyor/*<F, dynamic>*/, O>, MonadOps<Conveyor/*<F, dynamic>*/, O>, MonadPlusOps<Conveyor/*<F, dynamic>*/, O>, PlusOps<Conveyor/*<F, dynamic>*/, O> {
 
   A interpret<A>(A ifProduce(O head, Conveyor<F, O> tail), A ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A ifHalt(Object err));
 

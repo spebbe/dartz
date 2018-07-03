@@ -3,7 +3,7 @@ part of dartz;
 // Internally implemented using imperative loops and mutations, for stack safety and performance.
 // The external API should be safe and referentially transparent, though.
 
-abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, A>, ApplicativeOps<IList, A>, ApplicativePlusOps<IList, A>, MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A>, TraversableMonadPlusOps<IList, A> {
+abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, A>, ApplicativeOps<IList, A>, ApplicativePlusOps<IList, A>, MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A>, TraversableMonadPlusOps<IList, A>, PlusOps<IList, A> {
   Option<A> get headOption;
 
   Option<IList<A>> get tailOption;
@@ -267,6 +267,17 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
       sideEffect(current._unsafeHead());
       current = current._unsafeTail();
     }
+  }
+
+  Option<IList<B>> traverseOptionM<B>(Option<IList<B>> f(A a)) {
+    var result = some(nil<B>());
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = OptionMP.map2(result, gb, (IList<B> a, IList<B> h) => a.plus(h));
+      current = current._unsafeTail();
+    }
+    return result;
   }
 }
 

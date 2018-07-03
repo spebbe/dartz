@@ -30,7 +30,7 @@ Future unsafeRandInterpreter(RandOp op) {
 }
 
 // Technique: Express RandOp using mocked random number
-mockRandInterpreter(int mockedRandomInt, RandOp op) {
+Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, int> mockRandInterpreter(int mockedRandomInt, RandOp op) {
   if (op is NextInt) {
     return mockIO.MockM.pure(mockedRandomInt);
 

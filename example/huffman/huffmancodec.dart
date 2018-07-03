@@ -75,7 +75,7 @@ class HuffmanCodec {
   }
 
   // Technique: Monadic traversal over IList with Option as applicative effect
-  Option<IList<Bit>> encode(String plainText) => ilist(plainText.split("")).traverseM(optionMP(), _codeBook.get);
+  Option<IList<Bit>> encode(String plainText) => ilist(plainText.split("")).traverseOptionM(_codeBook.get);
 
   // Technique: Deep recursion without fear, using Trampoline primitives tcall and treturn
   // Technique: IList destructuring using uncons

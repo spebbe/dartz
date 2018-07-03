@@ -7,11 +7,11 @@ import 'package:dartz/dartz_unsafe.dart';
 // Technique: Construct referentially transparent program using monadic sequencing.
 //            The resulting program is a pure value and doesn't have any knowledge of
 //            if, how, when and/or where it will be interpreted.
-final Free<IOOp, dynamic> greeter = io.println("Please enter your name (or 'q' to quit):") >>
-    io.readln() >= (name) => (
-    (name == "q")
-        ? io.println("Bye!")
-        : io.println("Hello $name!") >> greeter);
+final Free<IOOp, dynamic> greeter = io.println("Please enter your name (or 'q' to quit):")
+  .andThen(io.readln()
+  .bind((name) => (name == "q")
+  ? io.println("Bye!")
+  : io.println("Hello $name!").andThen(greeter)));
 
 main() async {
 

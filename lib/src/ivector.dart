@@ -1,6 +1,6 @@
 part of dartz;
 
-class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, ApplicativePlusOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A>, TraversableMonadPlusOps<IVector, A> {
+class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, ApplicativePlusOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A>, TraversableMonadPlusOps<IVector, A>, PlusOps<IVector, A> {
   final IMap<int, A> _elementsByIndex;
   final int _offset;
   final int _length;
@@ -118,4 +118,4 @@ class IVectorMonoid<A> extends Monoid<IVector<A>> {
 }
 
 final Monoid<IVector> IVectorMi = new IVectorMonoid();
-Monoid<IVector<A>> ivectorMi<A>() => cast(IVectorMi);
+Monoid<IVector<A>> ivectorMi<A>() => new IVectorMonoid();

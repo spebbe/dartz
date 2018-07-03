@@ -238,7 +238,7 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
   bool get empty => true;
 }
 
-_AVLNode<A> emptyAVLNode<A>() => const _EmptyAVLNode();
+_AVLNode<A> emptyAVLNode<A>() => new _EmptyAVLNode();
 
 class AVLTreeMonoid<A> extends Monoid<AVLTree<A>> {
   final Order<A> _tOrder;

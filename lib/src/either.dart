@@ -18,8 +18,48 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
 
   @override G traverse<G>(Applicative<G> gApplicative, G f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
+  IList<Either<L, R2>> traverseIList<R2>(IList<R2> f(R r)) => fold((l) => cons(left(l), nil()), (R r) => f(r).map(right));
+
+  IVector<Either<L, R2>> traverseIVector<R2>(IVector<R2> f(R r)) => fold((l) => emptyVector<Either<L, R2>>().appendElement(left(l)), (R r) => f(r).map(right));
+
+  Future<Either<L, R2>> traverseFuture<R2>(Future<R2> f(R r)) => fold((l) => new Future.microtask(() => left(l)), (R r) => f(r).then(right));
+
+  State<S, Either<L, R2>> traverseState<S, R2>(State<S, R2> f(R r)) => fold((l) => new State((s) => tuple2(left(l), s)), (r) => f(r).map(right));
+
+  static IList<Either<L, R>> sequenceIList<L, R>(Either<L, IList<R>> elr) => elr.traverseIList(id);
+
+  static IVector<Either<L, R>> sequenceIVector<L, R>(Either<L, IVector<R>> evr) => evr.traverseIVector(id);
+
+  static Future<Either<L, R>> sequenceFuture<L, R>(Either<L, Future<R>> efr) => efr.traverseFuture(id);
+
+  static State<S, Either<L, R>> sequenceState<S, L, R>(Either<L, State<S, R>> esr) => esr.traverseState(id);
+
   Either<L, R> filter(bool predicate(R r), L fallback()) => fold((_) => this, (r) => predicate(r) ? this : left(fallback()));
   Either<L, R> where(bool predicate(R r), L fallback()) => filter(predicate, fallback);
+
+  static Either<L, C> map2<L, A, A2 extends A, B, B2 extends B, C>(Either<L, A2> fa, Either<L, B2> fb, C fun(A a, B b)) =>
+    fa.fold(left, (a) => fb.fold(left, (b) => right(fun(a, b))));
+
+  static Either<L, D> map3<L, A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, D fun(A a, B b, C c)) =>
+    fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => right(fun(a, b, c)))));
+
+  static Either<L, E> map4<L, A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, E fun(A a, B b, C c, D d)) =>
+    fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => right(fun(a, b, c, d))))));
+
+  static Either<L, F> map5<L, A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, Either<L, E2> fe, F fun(A a, B b, C c, D d, E e)) =>
+    fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => right(fun(a, b, c, d, e)))))));
+
+  static Either<L, G> map6<L, A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F, F2 extends F, G>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, Either<L, E2> fe, Either<L, F2> ff, G fun(A a, B b, C c, D d, E e, F f)) =>
+    fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => ff.fold(left, (f) => right(fun(a, b, c, d, e, f))))))));
+
+  static Either<L, C> mapM2<L, A, A2 extends A, B, B2 extends B, C>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C> f(A a, B b)) => fa.bind((a) => fb.bind((b) => f(a, b)));
+
+  static Function1<Either<L, A>, Either<L, B>> lift<L, A, B>(B f(A a)) => ((Either<L, A> oa) => oa.map(f));
+  static Function2<Either<L, A>, Either<L, B>, Either<L, C>> lift2<L, A, B, C>(C f(A a, B b)) => (Either<L, A> fa, Either<L, B> fb) => map2(fa, fb, f);
+  static Function3<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>> lift3<L, A, B, C, D>(D f(A a, B b, C c)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc) => map3(fa, fb, fc, f);
+  static Function4<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>> lift4<L, A, B, C, D, E>(E f(A a, B b, C c, D d)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd) => map4(fa, fb, fc, fd, f);
+  static Function5<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>, Either<L, F>> lift5<L, A, B, C, D, E, F>(F f(A a, B b, C c, D d, E e)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd, Either<L, E> fe) => map5(fa, fb, fc, fd, fe, f);
+  static Function6<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>, Either<L, F>, Either<L, G>> lift6<L, A, B, C, D, E, F, G>(G f(A a, B b, C c, D d, E e, F f)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd, Either<L, E> fe, Either<L, F> ff) => map6(fa, fb, fc, fd, fe, ff, f);
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 
@@ -60,31 +100,6 @@ Either<dynamic, A> catching<A>(Function0<A> thunk) {
 
 class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
   EitherMonad(): super(right);
-
-  @override Either<L, C> map2<A, A2 extends A, B, B2 extends B, C>(Either<L, A2> fa, Either<L, B2> fb, C fun(A a, B b)) =>
-      fa.fold(left, (a) => fb.fold(left, (b) => right(fun(a, b))));
-
-  @override Either<L, D> map3<A, A2 extends A, B, B2 extends B, C, C2 extends C, D>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, D fun(A a, B b, C c)) =>
-      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => right(fun(a, b, c)))));
-
-  @override Either<L, E> map4<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, E fun(A a, B b, C c, D d)) =>
-      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => right(fun(a, b, c, d))))));
-
-  @override Either<L, F> map5<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, Either<L, E2> fe, F fun(A a, B b, C c, D d, E e)) =>
-      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => right(fun(a, b, c, d, e)))))));
-
-  @override Either<L, G> map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, F, F2 extends F, G>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C2> fc, Either<L, D2> fd, Either<L, E2> fe, Either<L, F2> ff, G fun(A a, B b, C c, D d, E e, F f)) =>
-      fa.fold(left, (a) => fb.fold(left, (b) => fc.fold(left, (c) => fd.fold(left, (d) => fe.fold(left, (e) => ff.fold(left, (f) => right(fun(a, b, c, d, e, f))))))));
-
-  Either<L, C> mapM2<A, A2 extends A, B, B2 extends B, C>(Either<L, A2> fa, Either<L, B2> fb, Either<L, C> f(A a, B b)) => fa.bind((a) => fb.bind((b) => f(a, b)));
-
-  @override Function1<Either<L, A>, Either<L, B>> lift<A, B>(B f(A a)) => ((Either<L, A> oa) => oa.map(f));
-  @override Function2<Either<L, A>, Either<L, B>, Either<L, C>> lift2<A, B, C>(C f(A a, B b)) => (Either<L, A> fa, Either<L, B> fb) => map2(fa, fb, f);
-  @override Function3<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>> lift3<A, B, C, D>(D f(A a, B b, C c)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc) => map3(fa, fb, fc, f);
-  @override Function4<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>> lift4<A, B, C, D, E>(E f(A a, B b, C c, D d)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd) => map4(fa, fb, fc, fd, f);
-  @override Function5<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>, Either<L, F>> lift5<A, B, C, D, E, F>(F f(A a, B b, C c, D d, E e)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd, Either<L, E> fe) => map5(fa, fb, fc, fd, fe, f);
-  @override Function6<Either<L, A>, Either<L, B>, Either<L, C>, Either<L, D>, Either<L, E>, Either<L, F>, Either<L, G>> lift6<A, B, C, D, E, F, G>(G f(A a, B b, C c, D d, E e, F f)) => (Either<L, A> fa, Either<L, B> fb, Either<L, C> fc, Either<L, D> fd, Either<L, E> fe, Either<L, F> ff) => map6(fa, fb, fc, fd, fe, ff, f);
-
 }
 
 final EitherMonad EitherM = new EitherMonad();

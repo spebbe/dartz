@@ -61,6 +61,29 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
       _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
           (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
+  Option<IVector<B>> traverseOption<B>(Option<B> f(A a)) =>
+    _elementsByIndex.foldLeft(some(emptyVector()),
+        (prev, a) => prev.fold(none, (p) => f(a).fold(none, (b) => some(p.appendElement(b)))));
+
+  Either<L, IVector<B>> traverseEither<L, B>(Either<L, B> f(A a)) =>
+    _elementsByIndex.foldLeft(right(emptyVector()),
+        (prev, a) => prev.fold(left, (p) => f(a).fold(left, (b) => right(p.appendElement(b)))));
+
+  Future<IVector<B>> traverseFuture<B>(Future<B> f(A a)) =>
+    _elementsByIndex.foldLeft(new Future.microtask(emptyVector),
+        (prev, a) => prev.then((p) => f(a).then((b) => p.appendElement(b))));
+
+  State<S, IVector<B>> traverseState<S, B>(State<S, B> f(A a)) =>
+    _elementsByIndex.foldLeft(new State((s) => tuple2(emptyVector(), s)), (prev, a) => prev.flatMap((p) => f(a).map((b) => p.appendElement(b))));
+
+  static Option<IVector<A>> sequenceOption<A>(IVector<Option<A>> voa) => voa.traverseOption(id);
+
+  static Either<L, IVector<A>> sequenceEither<L, A>(IVector<Either<L, A>> vea) => vea.traverseEither(id);
+
+  static Future<IVector<A>> sequenceFuture<A>(IVector<Future<A>> vfa) => vfa.traverseFuture(id);
+
+  static State<S, IVector<A>> sequenceState<S, A>(IVector<State<S, A>> vsa) => vsa.traverseState(id);
+
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _elementsByIndex.foldMap(bMonoid, f);
 
   @override B foldLeft<B>(B z, B f(B previous, A a)) => _elementsByIndex.foldLeft(z, f);

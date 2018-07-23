@@ -1,4 +1,3 @@
-import 'package:enumerators/enumerators.dart';
 import 'package:test/test.dart';
 import 'package:enumerators/combinators.dart' as c;
 import 'package:propcheck/propcheck.dart';
@@ -7,7 +6,7 @@ import 'laws.dart';
 
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(NumOrder, ilist(l as List<num>))) as Enumeration<AVLTree<int>>;
+  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(IntOrder, ilist(l)));
 
   test("min", () {
     qc.check(forall(intTrees,

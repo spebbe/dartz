@@ -269,16 +269,68 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     }
   }
 
+  Option<IList<B>> traverseOption<B>(Option<B> f(A a)) {
+    Option<IList<B>> result = some(nil());
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.fold(none, (a) => gb.fold(none, (h) => some(new Cons(h, a))));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
+  Either<L, IList<B>> traverseEither<B, L>(Either<L, B> f(A a)) {
+    Either<L, IList<B>> result = right(nil());
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.fold(left, (a) => gb.fold(left, (h) => right(new Cons(h, a))));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
+  Future<IList<B>> traverseFuture<B>(Future<B> f(A a)) {
+    Future<IList<B>> result = new Future.microtask(nil);
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.then((a) => gb.then((h) => new Cons(h, a)));
+      current = current._unsafeTail();
+    }
+    return result.then((l) => l.reverse());
+  }
+
+  State<S, IList<B>> traverseState<B, S>(State<S, B> f(A a)) {
+    State<S, IList<B>> result = new State((s) => tuple2(nil(), s));
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
   Option<IList<B>> traverseOptionM<B>(Option<IList<B>> f(A a)) {
     var result = some(nil<B>());
     var current = this;
     while(current._isCons()) {
       final gb = f(current._unsafeHead());
-      result = OptionMP.map2(result, gb, (IList<B> a, IList<B> h) => a.plus(h));
+      result = Option.map2(result, gb, (IList<B> a, IList<B> h) => a.plus(h));
       current = current._unsafeTail();
     }
     return result;
   }
+
+  static Option<IList<A>> sequenceOption<A>(IList<Option<A>> loa) => loa.traverseOption(id);
+
+  static Either<L, IList<A>> sequenceEither<A, L>(IList<Either<L, A>> loa) => loa.traverseEither(id);
+
+  static Future<IList<A>> sequenceFuture<A>(IList<Future<A>> lfa) => lfa.traverseFuture(id);
+
+  static State<S, IList<A>> sequenceState<A, S>(IList<State<S, A>> lsa) => lsa.traverseState(id);
 }
 
 class Cons<A> extends IList<A> {

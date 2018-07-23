@@ -12,9 +12,9 @@ void main() {
     } else if (a is List && b is List) {
       return ilist(a) == ilist(b);
     } else if (a is Option && b is Option) {
-      return OptionMP.map2(a, b, bonkersEquality) | false;
+      return Option.map2(a, b, bonkersEquality) | false;
     } else if (a is Either && b is Either) {
-      return EitherM.map2(a, b, bonkersEquality) | false;
+      return Either.map2(a, b, bonkersEquality) | false;
     } else {
       return false;
     }

@@ -1,4 +1,3 @@
-import 'package:enumerators/enumerators.dart';
 import 'package:propcheck/propcheck.dart';
 import "package:test/test.dart";
 import 'package:enumerators/combinators.dart' as c;
@@ -9,7 +8,7 @@ import 'laws.dart';
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intLists = c.listsOf(c.ints);
-  final intIVectors = intLists.map(ivector) as Enumeration<IVector<int>>;
+  final intIVectors = intLists.map(ivector);
 
   group("IVectorM", () => checkMonadLaws(IVectorMP));
 

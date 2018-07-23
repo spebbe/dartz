@@ -4,7 +4,7 @@ class Text {
 
   static final Conveyor<From<UnmodifiableListView<int>>, String> decodeUtf8 = Pipe.lift((UnmodifiableListView<int> l) => l).pipe(_decodeUtf8());
 
-  static final Conveyor<From<String>, IList<int>> encodeUtf8 = Pipe.lift(composeF(ilist, UTF8.encode));
+  static final Conveyor<From<String>, IList<int>> encodeUtf8 = Pipe.lift(composeF(ilist, utf8.encode));
 
   // TODO: Naively buffers extremely long lines
   static final Conveyor<From<String>, String> lines = _lines(none());
@@ -39,7 +39,7 @@ class Text {
 
     Conveyor<From<UnmodifiableListView<int>>, String> loop(List<int> oldSpill) => Pipe.consume((rawBytes) {
       final trimmedBytesAndSpill = _findSpill([oldSpill, rawBytes].expand(id).toList(growable: false));
-      return Pipe.produce(UTF8.decode(trimmedBytesAndSpill.value1), loop(trimmedBytesAndSpill.value2));
+      return Pipe.produce(utf8.decode(trimmedBytesAndSpill.value1), loop(trimmedBytesAndSpill.value2));
     });
     return loop(new UnmodifiableListView([]));
   }

@@ -1,12 +1,12 @@
 name: dartz
-version: 0.7.5
+version: 0.8.0
 homepage: https://github.com/spebbe/dartz
 description: Functional Programming in Dart. Purify your Dart code using efficient immutable data structures, monads, lenses and other FP tools.
 author: Björn Sperber <spebbe@gmail.com>
 
 environment:
-  sdk: '>=1.24.0 <2.0.0'
+  sdk: '>=1.24.0 <3.0.0'
 
 dev_dependencies:
-  test: "^0.12.4+5"
-  propcheck: "^0.6.0"
+  test: ">=0.12.4+5"
+#  propcheck: "^0.6.0"

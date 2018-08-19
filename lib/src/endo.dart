@@ -9,7 +9,7 @@ class EndoMonoid<A> extends Monoid<Endo<A>> {
 }
 
 final Monoid<Endo> EndoMi = new EndoMonoid();
-Monoid<Endo<A>> endoMi<A>() => cast(EndoMi);
+Monoid<Endo<A>> endoMi<A>() => new EndoMonoid();
 
 final Monoid<Endo> DualEndoMi = dualMonoid(EndoMi);
-Monoid<Endo<A>> dualEndoMi<A>() => cast(DualEndoMi);
+Monoid<Endo<A>> dualEndoMi<A>() => dualMonoid(endoMi());

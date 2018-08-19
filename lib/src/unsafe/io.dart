@@ -22,7 +22,7 @@ Future unsafeIOInterpreter(IOOp io) {
     return new Future.error(io.failure);
 
   } else if (io is OpenFile) {
-    return new File(io.path).open(mode: io.openForRead ? FileMode.read : FileMode.write).then((f) => new _RandomAccessFileRef(f));
+    return new File(io.path).open(mode: io.openForRead ? FileMode.READ : FileMode.WRITE).then((f) => new _RandomAccessFileRef(f));
 
   } else if (io is CloseFile) {
     return unwrapFileRef(io.file).then((f) => f.close().then((_) => unit));

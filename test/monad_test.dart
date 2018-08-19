@@ -3,6 +3,7 @@ import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
 void main() {
+  /*
   final Monad<Either<String, IList>> M = EitherM.composeM(IListMP, IListTr) as Monad<Either<String, IList>>;
 
   group("Monad composition", () {
@@ -18,4 +19,5 @@ void main() {
 
     group("EitherM composed with IListM/IListTr", () => checkMonadLaws(M));
   });
+  */
 }

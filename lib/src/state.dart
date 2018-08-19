@@ -34,7 +34,7 @@ class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S,
 }
 
 final StateMonad StateM = new StateMonad();
-StateMonad<S> stateM<S>() => cast(StateM);
+StateMonad<S> stateM<S>() => new StateMonad();
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
 class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with ApplicativeOps<StateT/*<F, S, dynamic>*/, A>, MonadOps<StateT/*<F, S, dynamic>*/, A> {

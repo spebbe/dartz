@@ -19,37 +19,37 @@ Free<RPNOp, Unit> push(double value) => liftF(new Push(value));
 class Pop extends RPNOp<double> {}
 final Free<RPNOp, double> pop = liftF(new Pop());
 
-final Free<RPNOp, dynamic> dup = pop >= (double i) => push(i) >> push(i);
+final Free<RPNOp, Unit> dup = pop.bind((i) => push(i).andThen(push(i)));
 
-final Free<RPNOp, dynamic> multiply = pop >= (double a) => pop >= (double b) => push(a*b);
+final Free<RPNOp, Unit> multiply = Free.map2(pop, pop, (double a, double b) => a*b).bind(push);
 
 void main() {
   final M = new EvaluationMonad<String, IMap<String, double>, IList<String>, IList<double>>(ilistMi());
 
   Evaluation<String, IMap<String, double>, IList<String>, IList<double>, dynamic> rpnInterpreter(RPNOp<dynamic> op) {
     if (op is PushSymbol) {
-      return M.asks((IMap<String, double> symbols) => symbols[op.symbol]) >= (Option<double> symbolValue) {
+      return M.asks((IMap<String, double> symbols) => symbols[op.symbol]).bind((Option<double> symbolValue) {
         return symbolValue.fold(() =>
             M.raiseError("Undefined symbol: ${op.symbol}"),
-            (double value) => M.write(ilist(["Pushing value of ${op.symbol}: $value"])) >> M.modify((IList<double> stack) => new Cons(value, stack)));
-      };
+            (double value) => M.write(ilist(["Pushing value of ${op.symbol}: $value"])).andThen(M.modify((IList<double> stack) => new Cons(value, stack))));
+      });
 
     } else if (op is Push) {
       return M.modify((IList<double> stack) => new Cons(op.value, stack));
 
     } else if (op is Pop) {
-      return M.get() >= (IList<double> stack) {
+      return M.get().bind((IList<double> stack) {
         return stack.headOption.fold(() =>
             M.raiseError("Stack underflow"),
-            (double value) => M.put(stack.tailOption | nil<double>()) >> M.pure(value));
-      };
+            (double value) => M.put(stack.tailOption | nil<double>()).andThen(M.pure(value)));
+      });
 
     } else {
       throw new UnimplementedError("Unimplemented RPNOp: $op");
     }
   }
 
-  final Free<RPNOp, dynamic> circleArea = pushSymbol("PI") >> pushSymbol("r") >> dup >> multiply >> multiply >> pop;
+  final circleArea = pushSymbol("PI").andThen(pushSymbol("r")).andThen(dup).andThen(multiply).andThen(multiply).andThen(pop);
 
   group("free RPN interpreter demo", (){
     test("successful evaluation", () async {
@@ -68,5 +68,5 @@ void main() {
     });
   });
 
-  group("FreeM", () => checkMonadLaws(FreeM, equality: (a, b) => a.foldMap(IdM, id) == b.foldMap(IdM, id)));
+  group("FreeM", () => checkMonadLaws(FreeM, equality: (a, b) => a.foldMap(IdM, (x) => x) == b.foldMap(IdM, (x) => x)));
 }

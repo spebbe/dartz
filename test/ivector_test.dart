@@ -1,6 +1,8 @@
-import 'package:propcheck/propcheck.dart';
 import "package:test/test.dart";
-import 'package:enumerators/combinators.dart' as c;
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
@@ -16,7 +18,7 @@ void main() {
 
   group("IVectorM+Foldable", () => checkFoldableMonadLaws(IVectorTr, IVectorMP));
 
-  group("IVectorMi", () => checkMonoidLaws(IVectorMi, intIVectors));
+  group("IVectorMi", () => checkMonoidLaws(ivectorMi<int>(), intIVectors));
 
   test("IVector indexing", () {
     final IVector<String> v = ivector(["a", "b", "c"]);
@@ -123,8 +125,8 @@ void main() {
   });
 
   test("IVector foldRightWithIndexBetween", () {
-    qc.check(forall(intIVectors, (v) {
-      final partialSum = v.foldRightWithIndexBetween<int>(1, (v as IVector<int>).length()-2, 0, (_, i, sum) => sum+i);
+    qc.check(forall(intIVectors, (IVector<int> v) {
+      final partialSum = v.foldRightWithIndexBetween<int>(1, (v).length()-2, 0, (_, i, sum) => sum+i);
       return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
     }));
   });
@@ -134,8 +136,7 @@ void main() {
   test("iterable", () => qc.check(forall(intIVectors, (v) => v == ivector((v as IVector<int>).toIterable()))));
 
   test("flattenOption", () {
-    qc.check(forall(intIVectors, (dynamicV) {
-      final v = dynamicV as IVector<int>;
+    qc.check(forall(intIVectors, (IVector<int> v) {
       final ov = v.map((i) => i % 2 == 0 ? some(i) : none<int>());
       final unitedV = IVector.flattenOption(ov);
       final evenV = v.filter((i) => i % 2 == 0);

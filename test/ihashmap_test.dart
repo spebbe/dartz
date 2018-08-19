@@ -1,8 +1,10 @@
 import "package:test/test.dart";
-import 'package:enumerators/combinators.dart' as c;
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
-import 'package:propcheck/propcheck.dart';
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
 
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
@@ -35,11 +37,11 @@ void main() {
     }));
   });
 
-  test("pair iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil(), (k, v, IList<Tuple2<int, int>> p) => cons(tuple2(k, v), p)) == ilist((m as IHashMap<int, int>).pairIterable()))));
+  test("pair iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil<Tuple2<int, int>>(), (k, v, IList<Tuple2<int, int>> p) => cons(tuple2(k, v), p)) == ilist((m as IHashMap<int, int>).pairIterable()))));
 
-  test("key iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<int>>(nil(), (k, v, IList<int> p) => cons(k, p)) == ilist((m as IHashMap<int, int>).keyIterable()))));
+  test("key iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(k, p)) == ilist((m as IHashMap<int, int>).keyIterable()))));
 
-  test("value iterable", () => qc.check(forall(intIHashMaps, (m) => m.foldRightKV<IList<int>>(nil(), (k, v, IList<int> p) => cons(v, p)) == ilist((m as IHashMap<int, int>).valueIterable()))));
+  test("value iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(v, p)) == ilist((m as IHashMap<int, int>).valueIterable()))));
 
   group("IHashMapTr", () => checkTraversableLaws(IHashMapTr, intIHashMaps));
 

@@ -1,12 +1,14 @@
 import 'package:test/test.dart';
-import 'package:enumerators/combinators.dart' as c;
-import 'package:propcheck/propcheck.dart';
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
 void main() {
   final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(IntOrder, ilist(l)));
+  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(NumOrder, ilist(l)));
 
   test("min", () {
     qc.check(forall(intTrees,
@@ -42,5 +44,5 @@ void main() {
 
   group("AVLTree FoldableOps", () => checkFoldableOpsProperties(intTrees));
 
-  test("iterable", () => qc.check(forall(intTrees, (t) => t.toIList() == ilist((t as AVLTree<int>).toIterable()))));
+  test("iterable", () => qc.check(forall(intTrees, (t) => t.toIList() == ilist((t as AVLTree<num>).toIterable()))));
 }

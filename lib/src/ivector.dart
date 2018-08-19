@@ -35,6 +35,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override IVector<B> map<B>(B f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
 
+  @override IVector<B> mapWithIndex<B>(B f(int i, A a)) => new IVector._internal(_elementsByIndex.mapWithKey((i, a) => f(i-_offset, a)), _offset, _length);
+
   @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (p, a) => p.plus(f(a)));
 
   @override IVector<B> flatMap<B>(IVector<B> f(A a)) => bind(f);
@@ -100,7 +102,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   B foldRightWithIndexBetween<B>(int minIndex, int maxIndex, B z, B f(int index, A a, B previous)) =>
       _elementsByIndex.foldRightKVBetween(_offset+minIndex, _offset+maxIndex, z, (i, a, previous) => f(i-_offset, a, previous));
 
-  @override IVector<A> filter(bool predicate(A a)) => cast(super.filter(predicate));
+  @override IVector<A> filter(bool predicate(A a)) => bind((a) => predicate(a) ? pure(a) : empty());
 
   @override IVector<A> where(bool predicate(A a)) => filter(predicate);
 

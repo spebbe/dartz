@@ -33,8 +33,8 @@ void main() {
   });
 
   test("stack safety", () async {
-    final M = new EvaluationMonad(UnitMi);
-    final deep = M.replicate_(10000, M.modify((i) => i+1));
+    final M = new EvaluationMonad<Unit, Unit, Unit, int>(UnitMi);
+    final deep = M.modify((i) => i+1).replicate_(10000);
     expect(await deep.state(unit, 0), right(10000));
   });
 
@@ -43,7 +43,7 @@ void main() {
 
     Future<String> expensiveComputation(String input) => new Future(() => input.toUpperCase());
 
-    final ev = M.ask() >= composeF(M.liftFuture, expensiveComputation);
+    final ev = M.ask().bind((s) => M.liftFuture(expensiveComputation(s)));
 
     expect(await ev.value("hello", unit), right("HELLO"));
   });
@@ -53,7 +53,7 @@ void main() {
 
     Either<String, int> first(IList<int> l) => l.headOption.toEither(() => "Empty list");
 
-    final ev = M.ask() >= composeF(M.liftEither, first);
+    final ev = M.ask().bind((l) => M.liftEither(first(l)));
 
     expect(await ev.value(nil(), unit), left("Empty list"));
     expect(await ev.value(ilist([1,2,3]), unit), right(1));

@@ -1,6 +1,8 @@
 import "package:test/test.dart";
-import 'package:enumerators/combinators.dart' as c;
-import 'package:propcheck/propcheck.dart';
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
 

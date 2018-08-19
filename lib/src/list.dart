@@ -11,8 +11,8 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
   @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);
 
   @override G traverse<G>(Applicative<G> gApplicative, List fas, G f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
-    return gApplicative.map2(previous, f(e), (List a, b) {
-      final r = new List.from(a);
+    return gApplicative.map2(previous, f(e), (a, b) {
+      final r = new List.from(cast(a));
       r.add(b);
       return r;
     });
@@ -29,7 +29,7 @@ MonadPlus<List<A>> listMP<A>() => cast(ListMP);
 final Traversable<List> ListTr = ListMP;
 
 final Monoid<List> ListMi = new ListMonoid();
-Monoid<List<A>> listMi<A>() => cast(ListMi);
+Monoid<List<A>> listMi<A>() => new ListMonoid();
 
 class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
   Monad<M> _stackedM;

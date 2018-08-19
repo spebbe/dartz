@@ -11,8 +11,8 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
   G sequence_<G>(Applicative<G> gApplicative, F fa) => traverse_(gApplicative, fa, cast(id));
 
   F mapWithIndex<B>(F fa, B f(int i, a)) {
-    final M = tstateM<F, int>();
-    return traverse<StateT<Trampoline<F>, int, dynamic>>(M, fa, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0).run();
+    final M = stateM<int>();
+    return cast(traverse<State<int, dynamic>>(M, fa, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0));
   }
 
   F zipWithIndex(F fa) => mapWithIndex(fa, tuple2);
@@ -21,7 +21,7 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   // def foldMap[A, B](bMonoid: Monoid[B], fa: F[A], f: A => B): B
   @override B foldMap<A, B>(Monoid<B> bMonoid, F fa, B f(A a)) =>
-      cast(traverse(TStateM, fa, (a) => TStateM.modify(cast((B previous) => bMonoid.append(previous, f(cast(a)))))).state(bMonoid.zero()).run());
+      cast(traverse(StateM, fa, (a) => StateM.modify(cast((previous) => bMonoid.append(cast(previous), f(cast(a)))))).state(bMonoid.zero()));
 }
 
 abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F, A> {
@@ -33,9 +33,9 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   G sequence_<G>(Applicative<G> gApplicative) => traverse_<G>(gApplicative, cast(id));
 
-  F mapWithIndex<B>(B f(int i, a)) {
-    final M = tstateM<F, int>();
-    return traverse<StateT<Trampoline<F>, int, dynamic>>(M, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0).run();
+  F mapWithIndex<B>(B f(int i, A a)) {
+    final M = stateM<int>();
+    return cast(traverse<State<int, dynamic>>(M, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0));
   }
 
   F zipWithIndex() => mapWithIndex(tuple2);
@@ -43,7 +43,7 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
   @override F map<B>(B f(A a)) => cast(traverse<Object>(IdM, f));
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) =>
-      cast(traverse(TStateM, (a) => TStateM.modify(cast((B previous) => bMonoid.append(previous, f(a))))).state(bMonoid.zero()).run());
+      cast(traverse(StateM, (a) => StateM.modify(cast((previous) => bMonoid.append(cast(previous), f(a))))).state(bMonoid.zero()));
 }
 
 class TraversableOpsTraversable<F extends TraversableOps> extends Traversable<F> {

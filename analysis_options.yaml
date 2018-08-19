@@ -2,7 +2,3 @@ analyzer:
   strong-mode:
     implicit-casts: false
     implicit-dynamic: true
-  language:
-    - enableGenericMethods: true
-    - enableSuperMixins: true
-

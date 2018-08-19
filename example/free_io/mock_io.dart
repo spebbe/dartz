@@ -22,6 +22,8 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, A> _interpret<A>(Free<IOOp, A> op) =>
   op.foldMap(MockM, mockIOInterpreter);
 
+const _utf8 = const Utf8Codec();
+
 // Technique: Interpret Free monad into Evaluation
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, dynamic> mockIOInterpreter(IOOp io) {
   if (io is Readln) {
@@ -43,10 +45,10 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.pure(unit);
 
   } else if (io is ReadBytes) {
-    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? new UnmodifiableListView([]) : new UnmodifiableListView(utf8.encode(s)));
+    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? new UnmodifiableListView([]) : new UnmodifiableListView(_utf8.encode(s)));
 
   } else if (io is WriteBytes) {
-    return MockM.write(ivector(["${(io.file as _MockFileRef).name}: ${utf8.decode(io.bytes.toList())}"]));
+    return MockM.write(ivector(["${(io.file as _MockFileRef).name}: ${_utf8.decode(io.bytes.toList())}"]));
 
   } else if (io is Execute) {
     return MockM.pure(new ExecutionResult(0, "<<< Mocked result of '${io.command} ${io.arguments.intercalate(StringMi, " ")}' >>>", ""));

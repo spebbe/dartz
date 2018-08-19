@@ -1,7 +1,10 @@
 import 'package:test/test.dart';
-import 'package:propcheck/propcheck.dart';
-import 'package:enumerators/combinators.dart' as c;
-import 'package:enumerators/enumerators.dart';
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
+//import 'package:enumerators/enumerators.dart';
+import 'enumerators_stubs.dart';
 
 import 'package:dartz/dartz.dart';
 
@@ -33,12 +36,12 @@ void checkFoldableLaws(Foldable F, Enumeration enumeration, {bool equality(a, b)
   group("foldable laws", () {
     test("foldLeft and foldMap consistency", () {
       qc.check(forall(enumeration, (fa) =>
-      equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldLeft(fa, ilist([]), (IList p, a) => p.plus(ilist([a]))))));
+        equality(F.foldMap<dynamic, dynamic>(IListMi, fa, (a) => ilist([a])), F.foldLeft<dynamic, dynamic>(fa, ilist([]), (p, a) => p.plus(ilist([a]))))));
     });
 
     test("foldRight and foldMap consistency", () {
       qc.check(forall(enumeration, (fa) =>
-          equality(F.foldMap(IListMi, fa, (a) => ilist([a])), F.foldRight(fa, ilist([]), (a, IList p) => ilist([a]).plus(p)))));
+        equality(F.foldMap<dynamic, dynamic>(IListMi, fa, (a) => ilist([a])), F.foldRight<dynamic, dynamic>(fa, ilist([]), (a, p) => ilist([a]).plus(cast(p))))));
     });
 
   });
@@ -50,12 +53,12 @@ void checkFoldableOpsProperties(Enumeration<FoldableOps> enumeration, {bool equa
   group("foldable ops properties", () {
     test("foldLeftWithIndex properties", () {
       qc.check(forall(enumeration, (fa) =>
-          equality(fa.foldLeftWithIndex<IList<int>>(nil(), (IList<int> p, i, _) => cons(i, p)).reverse(), iota((fa as FoldableOps).length()))));
+          equality(fa.foldLeftWithIndex<IList<int>>(nil<int>(), (IList<int> p, int i, _) => cons(i, p)).reverse(), iota((fa as FoldableOps).length()))));
     });
 
     test("foldRightWithIndex properties", () {
       qc.check(forall(enumeration, (fa) =>
-          equality(fa.foldRightWithIndex<IList<int>>(nil(), (i, _, IList<int> p) => cons(i, p)), iota((fa as FoldableOps).length()))));
+          equality(fa.foldRightWithIndex<IList<int>>(nil<int>(), (int i, _, IList<int> p) => cons(i, p)), iota((fa as FoldableOps).length()))));
     });
   });
 }
@@ -69,7 +72,7 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
     });
 
     test("purity", () {
-      qc.check(forall(enumeration, (fa) => equality(T.traverse(OptionMP, fa, OptionMP.pure), OptionMP.pure(fa))));
+      qc.check(forall(enumeration, (fa) => equality(T.traverse(IdM, fa, id), fa)));
     });
 
     // TODO: check naturality
@@ -81,14 +84,14 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
   checkFoldableLaws(T, enumeration, equality: equality, qc: qc);
 }
 
-void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
+void checkMonadLaws<F>(Monad<F> M, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
   qc = qc != null ? qc : defaultQC;
-  double(int i) => M.pure(i*2);
-  inc(int i) => M.pure(i+1);
+  F double(dynamic i) => M.pure(i*2);
+  F inc(dynamic i) => M.pure(i+1);
 
   group("monad laws", () {
     test("left identity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.pure(a), double), double(a as int))));
+      qc.check(forall(c.ints, (a) => equality(M.bind<dynamic, dynamic>(M.pure(a), double), double(a))));
     });
 
     test("right identity", () {
@@ -96,7 +99,7 @@ void checkMonadLaws(Monad M, {bool equality(a, b): defaultEquality, QuickCheck q
     });
 
     test("associativity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (int x) => M.bind(double(x), inc)))));
+      qc.check(forall(c.ints, (a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (x) => M.bind(double(x), inc)))));
     });
   });
 

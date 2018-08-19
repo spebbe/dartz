@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0
+
+- Bridge release with few breaking changes, full Dart 1 support and rudimentary Dart 2 support
+- (0.9.0 will probably be Dart 2 only and have lots of breaking changes)
+- Basic things work correctly on Dart 2 -- many other things don't...
+- Started work on removing type class hierarchy, with hard coded replacements such as IList#traverseFuture being added
+- Temporarily replaced propcheck with quick'n'dirty minimal replacement, while it is being updated for Dart 2
+- Disabled some broken monad transformer tests, since they probably won't survive the move to Dart 2
+
 ## 0.7.5
 
 - IMap.fromPairs and IHashMap.fromPairs, for constructing maps from sequences of Tuple2

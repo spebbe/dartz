@@ -63,6 +63,8 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
   @override Evaluation<E, R, W, S, A> operator <<(Evaluation<E, R, W, S, dynamic> next) => bind((a) => next.map((_) => a));
 
   @override Evaluation<E, R, W, S, B> replace<B>(B replacement) => map((_) => replacement);
+
+  Evaluation<E, R, W, S, Unit> replicate_(int n) => n > 0 ? flatMap((_) => replicate_(n-1)) : pure(unit);
 }
 
 class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic>> with Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {

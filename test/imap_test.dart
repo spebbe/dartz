@@ -1,6 +1,8 @@
 import "package:test/test.dart";
-import 'package:enumerators/combinators.dart' as c;
-import 'package:propcheck/propcheck.dart';
+//import 'package:enumerators/combinators.dart' as c;
+import 'combinators_stubs.dart' as c;
+//import 'package:propcheck/propcheck.dart';
+import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
 
@@ -12,10 +14,13 @@ void main() {
 
     IMap<String, IList<String>> parseName(String name) => ilist(name.split(" ")).reverse().uncons(emptyMap, singletonMap);
 
-    expect(boyz.foldMap(imapMonoid(IListMi), parseName), boyzByLastName);
+    final accumulatorMonoid = imapMonoid<String, IList<String>>(ilistMi());
+    expect(boyz.foldMap(accumulatorMonoid, parseName), boyzByLastName);
 
     final numberOfBoyzByLastName = imap({"Jonas": 3, "Bieber": 1, "Hanson": 3});
-    expect(boyz.foldMap(imapMonoid(NumSumMi), (name) => parseName(name).map(constF<IList<String>, int>(1))), numberOfBoyzByLastName);
+
+    final counterMonoid = imapMonoid<String, int>(IntSumMi);
+    expect(boyz.foldMap(counterMonoid, (name) => parseName(name).map(constF<IList<String>, int>(1))), numberOfBoyzByLastName);
   });
 
   final qc = new QuickCheck(maxSize: 300, seed: 42);

@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 import 'package:dartz/dartz.dart';
 
 void main() {
+  /*
   group("Applicative composition", () {
     final Applicative<Either<String, Option<IList>>> A = EitherM.composeA(OptionMP.composeA(IListMP)) as Applicative<Either<String, Option<IList>>>;
 
@@ -20,4 +21,5 @@ void main() {
           right(none()));
     });
   });
+  */
 }

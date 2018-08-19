@@ -313,6 +313,17 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result.map((l) => l.reverse());
   }
 
+  Evaluation<E, R, W, S, IList<B>> traverseEvaluation<B, E, R, W, S>(Monoid<W> WMi, Evaluation<E, R, W, S, B> f(A a)) {
+    Evaluation<E, R, W, S, IList<B>> result = new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, nil()))));
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
   Option<IList<B>> traverseOptionM<B>(Option<IList<B>> f(A a)) {
     var result = some(nil<B>());
     var current = this;

@@ -25,7 +25,7 @@ void main() {
 
   final qc = new QuickCheck(maxSize: 300, seed: 42);
   final intMaps = c.mapsOf(c.ints, c.ints);
-  final intIMaps = intMaps.map(imap);
+  final intIMaps = intMaps.map((m) => new IMap.from(IntOrder, m));
 
   test("create from Map", () {
     qc.check(forall(intMaps, (dynamicM) {
@@ -38,7 +38,7 @@ void main() {
   test("create from pairs", () => qc.check(forall(intIMaps, (dynamicM) {
     final m = dynamicM as IMap<int, int>;
     final mPairs = m.pairs();
-    final mFromPairs = new IMap.fromPairs(mPairs, comparableOrder());
+    final mFromPairs = new IMap.fromPairs(mPairs, IntOrder);
     return m == mFromPairs;
   })));
 
@@ -79,7 +79,7 @@ void main() {
 
   test("create from iterables", () => qc.check(forall(intIMaps, (dynamicM) {
     final m = dynamicM as IMap<int, int>;
-    return m == new IMap.fromIterables(m.keyIterable(), m.valueIterable(), comparableOrder());
+    return m == new IMap.fromIterables(m.keyIterable(), m.valueIterable(), IntOrder);
   })));
 
   test("min", () => qc.check(forall(intIMaps, (dynamicM) {
@@ -128,15 +128,15 @@ void main() {
 
   test("cata", () => qc.check(forall(intIMaps, (dynamicM) {
     final m = dynamicM as IMap<int, int>;
-    final cataed = m.cata<IMap<int, int>>(emptyMap(), id, (acc, k, v, cataLeft, cataRight) => cataRight(cataLeft(acc.put(k, v))));
+    final cataed = m.cata<IMap<int, int>>(new IMap.empty(IntOrder), id, (acc, k, v, cataLeft, cataRight) => cataRight(cataLeft(acc.put(k, v))));
     return m == cataed;
   })));
 
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
-  group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoid(IListMi), c.ints.map((i) => imap({i: ilist([i])}))));
+  group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoidWithOrder<int, IList<int>>(ilistMi<int>(), IntOrder), c.ints.map((i) => new IMap.from(IntOrder, {i: ilist([i])}))));
 
-  group("IMapMi", () => checkMonoidLaws(IMapMi, c.ints.map((i) => imap({i: i}))));
+  group("IMapMi", () => checkMonoidLaws(IMapMi, c.ints.map((i) => new IMap.from(comparableOrder(), {i: i}))));
 
   group("IMap FoldableOps", () => checkFoldableOpsProperties(intIMaps));
 }

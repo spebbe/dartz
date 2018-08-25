@@ -11,7 +11,7 @@ class QuickCheck {
   QuickCheck({seed: 0, maxSuccesses: 100, maxSize: 100, quiet: false});
 
   void check(Property property) {
-    expectAsync0(property.check)();
+    expect(property.check(), completion(equals(true)));
   }
 }
 

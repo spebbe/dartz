@@ -155,7 +155,7 @@ Monoid<IMap<K, V>> imapMonoid<K extends Comparable, V>(Semigroup<V> si) => new I
 Monoid<IMap<K, V>> imapMonoidWithOrder<K, V>(Semigroup<V> si, Order<K> order) => new IMapMonoid(si, order);
 
 final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
-Monoid<IMap<K, V>> imapMi<K extends Comparable, V>() => cast(IMapMi);
+Monoid<IMap<K, V>> imapMi<K extends Comparable, V>() => imapMonoid(secondSemigroup());
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
 
@@ -182,6 +182,8 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   Option<_NonEmptyIMapAVLNode<K, V>> maxLessThan(Order<K> order, K k);
   bool get empty;
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b)));
+
+  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty();
 }
 
 class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -230,15 +232,15 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(cast(_left));
+        return llRotate(_left._unsafeGetNonEmpty());
       } else {
-        return doubleLrRotate(cast(_left));
+        return doubleLrRotate(_left._unsafeGetNonEmpty());
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(cast(_right));
+        return rrRotate(_right._unsafeGetNonEmpty());
       } else {
-        return doubleRlRotate(cast(_right));
+        return doubleRlRotate(_right._unsafeGetNonEmpty());
       }
     } else {
       return this;
@@ -247,11 +249,11 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   _NonEmptyIMapAVLNode<K, V> llRotate(_NonEmptyIMapAVLNode<K, V> l) => new _NonEmptyIMapAVLNode(l._k, l._v, l._left, new _NonEmptyIMapAVLNode(_k, _v, l._right, _right));
 
-  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(cast(l._right)));
+  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()));
 
   _NonEmptyIMapAVLNode<K, V> rrRotate(_NonEmptyIMapAVLNode<K, V> r) => new _NonEmptyIMapAVLNode(r._k, r._v, new _NonEmptyIMapAVLNode(_k, _v, _left, r._left), r._right);
 
-  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(cast(r._left)));
+  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()));
 
   B foldLeft<B>(B z, B f(B previous, K k, V v)) {
     final leftResult = _left.foldLeft(z, f);
@@ -296,16 +298,16 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._v);
       } else if (o == Ordering.LT) {
-        final l = current._left;
-        if (l is _NonEmptyIMapAVLNode) {
-          current = cast(l);
+        final l = current._left._unsafeGetNonEmpty();
+        if (l != null) {
+          current = l;
         } else {
           return none();
         }
       } else {
-        final r = current._right;
-        if (r is _NonEmptyIMapAVLNode) {
-          current = cast(r);
+        final r = current._right._unsafeGetNonEmpty();
+        if (r != null) {
+          current = r;
         } else {
           return none();
         }
@@ -321,9 +323,9 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._k);
       } else if (o == Ordering.LT) {
-        current = cast(current._left);
+        current = current._left._unsafeGetNonEmpty();
       } else {
-        current = cast(current._right);
+        current = current._right._unsafeGetNonEmpty();
       }
     }
     return none();
@@ -379,6 +381,7 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) =>
       ifNonEmpty(z, _k, _v, (b) => _left.cata(b, ifEmpty, ifNonEmpty), (b) => _right.cata(b, ifEmpty, ifNonEmpty));
 
+  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty() => this;
 }
 
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -427,6 +430,8 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   bool get empty => true;
 
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) => ifEmpty(z);
+
+  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty() => null;
 }
 
 _IMapAVLNode<K, V> _emptyIMapAVLNode<K, V>() => new _EmptyIMapAVLNode();
@@ -438,17 +443,17 @@ abstract class _IMapIterable<K, V, A> extends Iterable<A> {
 
 class _IMapPairIterable<K, V> extends _IMapIterable<K, V, Tuple2<K, V>> {
   _IMapPairIterable(IMap<K, V> m) : super(m);
-  @override Iterator<Tuple2<K, V>> get iterator => _m._tree.empty ? new _IMapPairIterator(null) : new _IMapPairIterator(cast(_m._tree));
+  @override Iterator<Tuple2<K, V>> get iterator => _m._tree.empty ? new _IMapPairIterator(null) : new _IMapPairIterator(_m._tree._unsafeGetNonEmpty());
 }
 
 class _IMapKeyIterable<K, V> extends _IMapIterable<K, V, K> {
   _IMapKeyIterable(IMap<K, V> m) : super(m);
-  @override Iterator<K> get iterator => _m._tree.empty ? new _IMapKeyIterator(null) : new _IMapKeyIterator(cast(_m._tree));
+  @override Iterator<K> get iterator => _m._tree.empty ? new _IMapKeyIterator(null) : new _IMapKeyIterator(_m._tree._unsafeGetNonEmpty());
 }
 
 class _IMapValueIterable<K, V> extends _IMapIterable<K, V, V> {
   _IMapValueIterable(IMap<K, V> m) : super(m);
-  @override Iterator<V> get iterator => _m._tree.empty ? new _IMapValueIterator(null) : new _IMapValueIterator(cast(_m._tree));
+  @override Iterator<V> get iterator => _m._tree.empty ? new _IMapValueIterator(null) : new _IMapValueIterator(_m._tree._unsafeGetNonEmpty());
 }
 
 abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
@@ -475,8 +480,9 @@ abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
   }
 
   bool _descend() {
-    if (!_currentNode._right.empty) {
-      _currentNode = cast(_currentNode._right);
+    final right = _currentNode._right._unsafeGetNonEmpty();
+    if (right != null) {
+      _currentNode = right;
       _descendLeft();
       return true;
     } else {
@@ -492,13 +498,12 @@ abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
 
   void _descendLeft() {
     var current = _currentNode;
-    var currentLeft = current._left;
+    var currentLeft = current._left._unsafeGetNonEmpty();
     while(true) {
-      if (!currentLeft.empty) {
-        final _NonEmptyIMapAVLNode<K, V> cl = cast(currentLeft);
+      if (currentLeft != null) {
         _path = cons(current, _path);
-        current = cl;
-        currentLeft = cl._left;
+        current = currentLeft;
+        currentLeft = currentLeft._left._unsafeGetNonEmpty();
       } else {
         _currentNode = current;
         return;

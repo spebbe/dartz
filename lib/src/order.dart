@@ -50,12 +50,16 @@ Order<A> order<A>(OrderF<A> f) => new _AnonymousOrder(f);
 Order<A> orderBy<A, B>(Order<B> o, B by(A a)) => new _AnonymousOrder((A a1, A a2) => o.order(by(a1), by(a2)));
 
 class ComparableOrder<A extends Comparable> extends Order<A> {
+  final Type _tpe;
+
+  ComparableOrder(): _tpe = A;
+
   @override Ordering order(A a1, A a2) {
     final c = a1.compareTo(a2);
     return c < 0 ? Ordering.LT : (c > 0 ? Ordering.GT : Ordering.EQ);
   }
 
-  @override bool operator ==(Object other) => identical(this, other) || other is ComparableOrder && runtimeType == other.runtimeType;
+  @override bool operator ==(Object other) => identical(this, other) || other is ComparableOrder && _tpe == other._tpe;
 
   @override int get hashCode => 0;
 }

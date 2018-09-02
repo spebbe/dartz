@@ -5,9 +5,7 @@ part of dartz;
 typedef Free<F, A> _FreeF<F, A>(dynamic x);
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with ApplicativeOps<Free/*<F, dynamic>*/, A>, MonadOps<Free/*<F, dynamic>*/, A> {
-
-  @override Free<F, B> pure<B>(B b) => new Pure(b);
+abstract class Free<F, A> implements MonadOps<Free<F, dynamic>, A> {
 
   @override Free<F, B> map<B>(B f(A a)) => bind((a) => new Pure(f(a)));
 
@@ -35,7 +33,6 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 
   @override Free<F, B> flatMap<B>(Function1<A, Free<F, B>> f) => new Bind(this, (a) => f(cast(a)));
   @override Free<F, B> andThen<B>(Free<F, B> next) => bind((_) => next);
-  @override Free<F, A> operator <<(Free<F, dynamic> next) => bind((a) => next.map((_) => a));
 
   static Free<F, C> map2<F, A, A2 extends A, B, B2 extends B, C>(Free<F, A2> fa, Free<F, B2> fb, C fun(A a, B b)) =>
     fa.flatMap((a) => fb.map((b) => fun(a, b)));
@@ -53,6 +50,12 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
     fa.flatMap((a) => fb.flatMap((b) => fc.flatMap((c) => fd.flatMap((d) => fe.flatMap((e) => ff.map((f) => fun(a, b, c, d, e, f)))))));
 
   static Free<F, Unit> ifM<F>(Free<F, bool> fbool, Free<F, Unit> ifTrue) => fbool.flatMap((bool b) => b ? ifTrue : new Pure(unit));
+
+  @override Free<F, B> ap<B>(Free<F, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override Free<F, Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Free<F, Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 }
 
 class Pure<F, A> extends Free<F, A> {

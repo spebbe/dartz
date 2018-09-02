@@ -17,7 +17,7 @@ class _MockFileRef implements FileRef {
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, String> mockReadFile(String fileName) =>
     MockM.gets((counters) => counters[fileName]|0).bind((i) =>
         MockM.asks((inputs) => inputs[fileName]|emptyVector<String>()).bind((vs) =>
-        MockM.pure(vs[i]|null) << MockM.modify((counters) => counters.put(fileName, i+1))));
+        MockM.pure(vs[i]|null).bind((x) => MockM.modify((counters) => counters.put(fileName, i+1)).replace(x))));
 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, A> _interpret<A>(Free<IOOp, A> op) =>
   op.foldMap(MockM, mockIOInterpreter);
@@ -57,7 +57,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return _interpret(io.a);
 
   } else if (io is Gather) {
-    return io.ops.traverse(MockM, _interpret);
+    return io.ops.traverseEvaluation(ivectorMi(), _interpret);
 
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");

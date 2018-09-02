@@ -5,7 +5,7 @@ part of dartz;
 // Bind on plain State is *not* stack safe. Composition of StateT with stack safe monad, such as Trampoline, is.
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeOps<State/*<S, dynamic>*/, A>, MonadOps<State/*<S, dynamic>*/, A> {
+class State<S, A> implements MonadOps<State<S, dynamic>, A> {
   final Function1<S, Tuple2<A, S>> _run;
   Tuple2<A, S> run(S s) => _run(s);
   A value(S s) => run(s).value1;
@@ -13,7 +13,7 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
 
   State(this._run);
 
-  @override State<S, B> pure<B>(B b) => new State((s) => new Tuple2(b, s));
+  State<S, B> pure<B>(B b) => new State((s) => new Tuple2(b, s));
   @override State<S, B> map<B>(B f(A a)) => new State((S s) => run(s).map1(f));
   @override State<S, B> bind<B>(Function1<A, State<S, B>> f) => new State((S s) {
     final ran = run(s);
@@ -21,7 +21,14 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
   });
   @override State<S, B> flatMap<B>(Function1<A, State<S, B>> f) => bind(f);
   @override State<S, B> andThen<B>(State<S, B> next) => bind((_) => next);
-  @override State<S, A> operator <<(State<S, dynamic> next) => bind((a) => next.map((_) => a));
+
+  @override State<S, Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override State<S, Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  @override State<S, B> ap<B>(State<S, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override State<S, B> replace<B>(B replacement) => map((_) => replacement);
 }
 
 class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S, dynamic>>, Monad<State<S, dynamic>> {
@@ -39,7 +46,7 @@ final StateMonad StateM = new StateMonad();
 StateMonad<S> stateM<S>() => new StateMonad();
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with ApplicativeOps<StateT/*<F, S, dynamic>*/, A>, MonadOps<StateT/*<F, S, dynamic>*/, A> {
+class StateT<F, S, A> implements MonadOps<StateT<F, S, dynamic>, A> {
   final Monad<F> _FM;
   final Function1<S, F> _run;
 
@@ -49,15 +56,19 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
   F value(S s) => _FM.map(_run(s), (t) => t.value1);
   F state(S s) => _FM.map(_run(s), (t) => t.value2);
 
-  @override StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
+  StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
   @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, B> t) => t.map1(f)));
   @override StateT<F, S, B> bind<B>(Function1<A, StateT<F, S, B>> f) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));
   @override StateT<F, S, B> flatMap<B>(Function1<A, StateT<F, S, B>> f) => bind(f);
   @override StateT<F, S, B> andThen<B>(StateT<F, S, B> next) => bind((_) => next);
-  @override StateT<F, S, A> operator <<(StateT<F, S, dynamic> next) => bind((a) => next.map((_) => a));
   @override StateT<F, S, B> replace<B>(B b) => map((_) => b);
+  @override StateT<F, S, B> ap<B>(StateT<F, S, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override StateT<F, S, Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override StateT<F, S, Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 }
 
 class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<StateT<F, S, dynamic>>, Monad<StateT<F, S, dynamic>> {

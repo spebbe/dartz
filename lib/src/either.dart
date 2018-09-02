@@ -3,7 +3,7 @@
 part of dartz;
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> with FunctorOps<Either/*<L, dynamic>*/, R>, ApplicativeOps<Either/*<L, dynamic>*/, R>, MonadOps<Either/*<L, dynamic>*/, R>, TraversableMonadOps<Either/*<L, dynamic>*/, R> {
+abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R> {
   B fold<B>(B ifLeft(L l), B ifRight(R r));
 
   Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);
@@ -15,13 +15,10 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
   bool isRight() => fold((_) => false, (_) => true);
   Either<R, L> swap() => fold(right, left);
 
-  @override Either<L, R2> pure<R2>(R2 r2) => right(r2);
   @override Either<L, R2> map<R2>(R2 f(R r)) => fold(left, (R r) => right(f(r)));
   @override Either<L, R2> bind<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);
   @override Either<L, R2> flatMap<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);
   @override Either<L, R2> andThen<R2>(Either<L, R2> next) => fold(left, (_) => next);
-
-  @override G traverse<G>(Applicative<G> gApplicative, G f(R r)) => fold((_) => gApplicative.pure(this), (R r) => gApplicative.map(f(r), right));
 
   IList<Either<L, R2>> traverseIList<R2>(IList<R2> f(R r)) => fold((l) => cons(left(l), nil()), (R r) => f(r).map(right));
 
@@ -74,6 +71,48 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
   Iterator<R> iterator() => toIterable().iterator;
 
   void forEach(void sideEffect(R r)) => fold((_) => null, sideEffect);
+
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(R r)) => fold((_) => bMonoid.zero(), f);
+
+  @override Either<L, B> mapWithIndex<B>(B f(int i, R r)) => map((r) => f(0, r));
+
+  @override Either<L, Tuple2<int, R>> zipWithIndex() => map((r) => tuple2(0, r));
+
+  @override bool all(bool f(R r)) => map(f)|true;
+
+  @override bool any(bool f(R r)) => map(f)|false;
+
+  @override R concatenate(Monoid<R> mi) => getOrElse(mi.zero);
+
+  @override Option<R> concatenateO(Semigroup<R> si) => toOption();
+
+  @override B foldLeft<B>(B z, B f(B previous, R r)) => fold((_) => z, (a) => f(z, a));
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, R r)) => fold((_) => z, (a) => f(z, 0, a));
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(R r)) => map(f).toOption();
+
+  @override B foldRight<B>(B z, B f(R r, B previous)) => fold((_) => z, (a) => f(a, z));
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, R r, B previous))=> fold((_) => z, (a) => f(0, a, z));
+
+  @override R intercalate(Monoid<R> mi, R r) => fold((_) => mi.zero(), id);
+
+  @override int length() => fold((_) => 0, (_) => 1);
+
+  @override Option<R> maximum(Order<R> or) => toOption();
+
+  @override Option<R> minimum(Order<R> or) => toOption();
+
+  @override Either<L, B> replace<B>(B replacement) => map((_) => replacement);
+
+  Either<L, R> reverse() => this;
+
+  @override Either<L, Tuple2<B, R>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Either<L, Tuple2<R, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  @override Either<L, B> ap<B>(Either<L, Function1<R, B>> ff) => ff.bind((f) => map(f));
 }
 
 class Left<L, R> extends Either<L, R> {

@@ -2,21 +2,29 @@
 
 part of dartz_streaming;
 
-class Both<L, R> {}
+enum BothDirection {
+  LEFT,
+  RIGHT
+}
+
+class Both<L, R> {
+  final BothDirection direction;
+  const Both(this.direction);
+}
 
 class Tee {
-  static final Both _getL = new Both();
-  static final Both _getR = new Both();
+  //static final Both _getL = new Both();
+  //static final Both _getR = new Both();
 
   static Conveyor<Both<L, R>, O> produce<L, R, O>(O h, [Conveyor<Both<L, R>, O> t]) => Conveyor.produce(h, t);
 
   static Conveyor<Both<L, R>, O> consumeL<L, R, O>(Function1<L, Conveyor<Both<L, R>, O>> recv, [Function0<Conveyor<Both<L, R>, O>> fallback]) =>
-      Conveyor.consume(cast(_getL), (Either<Object, L> ea) => ea.fold(
+      Conveyor.consume(new Both(BothDirection.LEFT), (Either<Object, L> ea) => ea.fold(
           (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
       ,(L l) => Conveyor.Try(() => recv(l))));
 
   static Conveyor<Both<L, R>, O> consumeR<L, R, O>(Function1<R, Conveyor<Both<L, R>, O>> recv, [Function0<Conveyor<Both<L, R>, O>> fallback]) =>
-      Conveyor.consume(cast(_getR), (Either<Object, R> ea) => ea.fold(
+      Conveyor.consume(new Both(BothDirection.RIGHT), (Either<Object, R> ea) => ea.fold(
           (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
       ,(R r) => Conveyor.Try(() => recv(r))));
 

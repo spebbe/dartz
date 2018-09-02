@@ -4,10 +4,14 @@ part of dartz;
 
 // TODO: unify with Free?
 
-abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeOps<Trampoline, A>, MonadOps<Trampoline, A> {
-  @override Trampoline<B> pure<B>(B b) => new _TPure(b);
+abstract class Trampoline<A> implements MonadOps<Trampoline, A> {
+  Trampoline<B> pure<B>(B b) => new _TPure(b);
   @override Trampoline<B> map<B>(B f(A a)) => bind((a) => pure(f(a)));
   @override Trampoline<B> bind<B>(Function1<A, Trampoline<B>> f) => new _TBind(this, f);
+
+  @override Trampoline<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Trampoline<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 
   A run() {
     var current = this;
@@ -24,6 +28,14 @@ abstract class Trampoline<A> extends FunctorOps<Trampoline, A> with ApplicativeO
     }
     return cast(cast<_TPure>(current)._a);
   }
+
+  @override Trampoline<B> andThen<B>(Trampoline<B> next) => bind((_) => next);
+
+  @override Trampoline<B> ap<B>(Trampoline<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override Trampoline<B> flatMap<B>(Function1<A, Trampoline<B>> f) => new _TBind(this, f);
+
+  @override Trampoline<B> replace<B>(B replacement) => map((_) => replacement);
 }
 
 class _TPure<A> extends Trampoline<A> {

@@ -6,7 +6,7 @@ part of dartz;
 
 // TODO: naive implementation. does too much work and too many allocations.
 
-class AVLTree<A> extends FoldableOps<AVLTree, A> {
+class AVLTree<A> implements FoldableOps<AVLTree, A> {
   final Order<A> _order;
   final _AVLNode<A> _root;
 
@@ -51,6 +51,32 @@ class AVLTree<A> extends FoldableOps<AVLTree, A> {
   Iterator<A> iterator() => toIterable().iterator;
 
   void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
+
+  @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override A concatenate(Monoid<A> mi) => foldMap(mi, id); // TODO: optimize
+
+  @override Option<A> concatenateO(Semigroup<A> si) => foldMapO(si, id); // TODO: optimize
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) =>
+    foldLeft<Tuple2<B, int>>(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1; // TODO: optimize
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) =>
+    foldMap(new OptionMonoid(si), composeF(some, f)); // TODO: optimize
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, A a, B previous)) =>
+    foldRight<Tuple2<B, int>>(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1; // TODO: optimize
+
+  @override A intercalate(Monoid<A> mi, A a) =>
+    foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero(); // TODO: optimize
+
+  @override int length() => foldLeft(0, (a, b) => a+1); // TODO: optimize
+
+  @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
+
+  @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
 }
 
 abstract class _AVLNode<A> {
@@ -69,6 +95,7 @@ abstract class _AVLNode<A> {
   int get balance;
   Option<Tuple2<_AVLNode<A>, A>> _removeMax();
   bool get empty;
+  _NonEmptyAVLNode<A> _unsafeGetNonEmpty();
 }
 
 class _NonEmptyAVLNode<A> extends _AVLNode<A> {
@@ -116,15 +143,15 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(cast(_left));
+        return llRotate(_left._unsafeGetNonEmpty());
       } else {
-        return doubleLrRotate(cast(_left));
+        return doubleLrRotate(_left._unsafeGetNonEmpty());
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(cast(_right));
+        return rrRotate(_right._unsafeGetNonEmpty());
       } else {
-        return doubleRlRotate(cast(_right));
+        return doubleRlRotate(_right._unsafeGetNonEmpty());
       }
     } else {
       return this;
@@ -133,11 +160,11 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   _NonEmptyAVLNode<A> llRotate(_NonEmptyAVLNode<A> l) => new _NonEmptyAVLNode(l._a, l._left, new _NonEmptyAVLNode(_a, l._right, _right));
 
-  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(cast(l._right)));
+  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()));
 
   _NonEmptyAVLNode<A> rrRotate(_NonEmptyAVLNode<A> r) => new _NonEmptyAVLNode(r._a, new _NonEmptyAVLNode(_a, _left, r._left), r._right);
 
-  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(cast(r._left)));
+  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()));
 
   B foldLeft<B>(B z, B f(B previous, A a)) {
     final leftResult = _left.foldLeft(z, f);
@@ -183,15 +210,15 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
       if (o == Ordering.EQ) {
         return some(current._a);
       } else if (o == Ordering.LT) {
-        final l = current._left;
-        if (l is _NonEmptyAVLNode<A>) {
+        final l = current._left._unsafeGetNonEmpty();
+        if (l != null) {
           current = l;
         } else {
           return none();
         }
       } else {
-        final r = current._right;
-        if (r is _NonEmptyAVLNode<A>) {
+        final r = current._right._unsafeGetNonEmpty();
+        if (r != null) {
           current = r;
         } else {
           return none();
@@ -206,6 +233,8 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
   Option<A> max() => _right is _EmptyAVLNode ? some(_a) : _right.max();
 
   bool get empty => false;
+
+  _NonEmptyAVLNode<A> _unsafeGetNonEmpty() => this;
 }
 
 class _EmptyAVLNode<A> extends _AVLNode<A> {
@@ -240,6 +269,8 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
   @override int get hashCode => 0;
 
   bool get empty => true;
+
+  _NonEmptyAVLNode<A> _unsafeGetNonEmpty() => null;
 }
 
 _AVLNode<A> emptyAVLNode<A>() => new _EmptyAVLNode();
@@ -259,7 +290,7 @@ final Foldable<AVLTree> AVLTreeFo = new FoldableOpsFoldable<AVLTree>();
 class _AVLTreeIterable<A> extends Iterable<A> {
   final AVLTree<A> _tree;
   _AVLTreeIterable(this._tree);
-  @override Iterator<A> get iterator => _tree._root.empty ? new _AVLTreeIterator(null) : new _AVLTreeIterator(cast(_tree._root));
+  @override Iterator<A> get iterator => new _AVLTreeIterator(_tree._root._unsafeGetNonEmpty());
 }
 
 class _AVLTreeIterator<A> extends Iterator<A> {
@@ -289,7 +320,7 @@ class _AVLTreeIterator<A> extends Iterator<A> {
 
   bool _descend() {
     if (!_currentNode._right.empty) {
-      _currentNode = cast(_currentNode._right);
+      _currentNode = _currentNode._right._unsafeGetNonEmpty();
       _descendLeft();
       return true;
     } else {
@@ -308,7 +339,7 @@ class _AVLTreeIterator<A> extends Iterator<A> {
     var currentLeft = current._left;
     while(true) {
       if (!currentLeft.empty) {
-        final _NonEmptyAVLNode<A> cl = cast(currentLeft);
+        final _NonEmptyAVLNode<A> cl = currentLeft._unsafeGetNonEmpty();
         _path = cons(current, _path);
         current = cl;
         currentLeft = cl._left;

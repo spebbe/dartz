@@ -6,7 +6,7 @@ part of dartz;
 //       Unlike IMap, IHashMap doesn't rely on a total ordering of keys, but instead uses hashCode and '==' to insert
 //       and locate key/value pairs in balanced bucket trees,
 
-class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
+class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   final IMap<int, IList<Tuple2<K, V>>> _map;
 
   IHashMap.internal(this._map);
@@ -55,12 +55,6 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
   @override B foldRight<B>(B z, B f(V v, B previous)) =>
       _map.foldRight(z, (kvs, prev) => kvs.foldRight(prev, (kv, pprev) => f(kv.value2, pprev)));
 
-  @override G traverse<G>(Applicative<G> gApplicative, G f(V v)) =>
-      _map.foldLeft(gApplicative.pure(new IHashMap.empty()),
-          (prev, kvs) => kvs.foldLeft(prev,
-              (pprev, kv) => gApplicative.map2(pprev, f(kv.value2),
-                  (p, v2) => p.put(kv.value1, v2))));
-
   @override String toString() => "ihashmap{${_map.foldMap(IListMi, (kvs) => kvs.map((kv) => "${kv.value1}: ${kv.value2}")).intercalate(StringMi, ", ")}}";
   @override bool operator ==(other) => identical(this, other) || (other is IHashMap && _map == other._map);
   @override int get hashCode => _map.hashCode;
@@ -86,6 +80,42 @@ class IHashMap<K, V> extends TraversableOps<IHashMap<K, dynamic>, V> {
   void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
 
   void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
+
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(V a)) => _map.foldMap(bMonoid, (kvs) => kvs.foldMap(bMonoid, (t) => f(t.value2)));
+
+  @override IHashMap<K, B> mapWithIndex<B>(B f(int i, V a)) => throw "not implemented!!!"; // TODO
+
+  @override IHashMap<K, Tuple2<int, V>> zipWithIndex() => mapWithIndex(tuple2);
+
+  @override bool all(bool f(V a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override bool any(bool f(V a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override V concatenate(Monoid<V> mi) => foldMap(mi, id); // TODO: optimize
+
+  @override Option<V> concatenateO(Semigroup<V> si) => foldMapO(si, id); // TODO: optimize
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, V a)) =>
+    foldLeft<Tuple2<B, int>>(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1; // TODO: optimize
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(V a)) =>
+    foldMap(new OptionMonoid(si), composeF(some, f)); // TODO: optimize
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, V a, B previous)) =>
+    foldRight<Tuple2<B, int>>(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1; // TODO: optimize
+
+  @override V intercalate(Monoid<V> mi, V v) =>
+    foldRight(none<V>(), (V cv, Option<V> ov) => some(mi.append(cv, ov.fold(mi.zero, mi.appendC(v))))) | mi.zero(); // TODO: optimize
+
+  @override int length() => foldLeft(0, (a, b) => a+1); // TODO: optimize
+
+  @override Option<V> maximum(Order<V> ov) => concatenateO(ov.maxSi());
+
+  @override Option<V> minimum(Order<V> ov) => concatenateO(ov.minSi());
+
+  @override IHashMap<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
+
+  @override IHashMap<K, Tuple2<V, B>> strengthR<B>(B b) => map((v) => tuple2(v, b));
 }
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();

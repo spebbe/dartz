@@ -9,7 +9,7 @@ abstract class Applicative<F> implements Functor<F> {
   F get nothing => pure(unit);
 
   @override F map<A, B>(covariant F fa, B f(A a)) => ap(fa, pure(f));
-
+/*
   F traverseA(Traversable g, ga, F f(_)) => g.traverse(this, ga, f);
 
   F traverseA_(Traversable g, ga, F f(_)) => g.traverse_(this, ga, f);
@@ -37,7 +37,7 @@ abstract class Applicative<F> implements Functor<F> {
   F replicate<A>(int n, covariant F fa) => sequenceL(new IList.from(new List.filled(n, fa)));
 
   F replicate_(int n, F fa) => sequenceL_(new IList.from(new List.filled(n, fa)));
-
+*/
   // Workaround: Dumbing down types in generic liftX to give subclasses a chance to do proper typing...
   //             OMG, it just got worse... not much left of the types since 2.0.0-dev.32.0 :-(
 
@@ -72,8 +72,8 @@ class ComposedApplicative<F, G> extends Functor<F> with Applicative<F> {
 }
 
 abstract class ApplicativeOps<F, A> implements FunctorOps<F, A> {
-  F pure<B>(B b);
+//  F pure<B>(B b);
   F ap<B>(covariant F ff);
 
-  @override F map<B>(B f(A a)) => ap(pure(f));
+  @override F map<B>(B f(A a));// => ap(pure(f));
 }

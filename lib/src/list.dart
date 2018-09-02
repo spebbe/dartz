@@ -12,6 +12,7 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
   @override List<A> empty<A>() => [];
   @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);
 
+  /*
   @override G traverse<G>(Applicative<G> gApplicative, List fas, G f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
     return gApplicative.map2(previous, f(e), (a, b) {
       final r = new List.from(cast(a));
@@ -19,6 +20,9 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
       return r;
     });
   });
+  */
+
+  @override B foldMap<A, B>(Monoid<B> bMonoid, List<A> fa, B f(A a)) => fa.fold(bMonoid.zero(), (z, a) => bMonoid.append(z, f(a)));
 }
 
 class ListMonoid<A> extends Monoid<List<A>> {

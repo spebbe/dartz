@@ -12,7 +12,9 @@ class IdMonad extends Functor with Applicative, Monad {
 final IdMonad IdM = new IdMonad();
 
 class IdTraversable extends Traversable {
-  @override G traverse<G>(Applicative<G> gApplicative, fa, G f(a)) => f(fa);
+  @override B foldMap<A, B>(Monoid<B> bMonoid, A fa, B f(A a)) => f(fa);
+
+  @override map<A, B>(A fa, B f(A a)) => f(fa);
 }
 
 final IdTraversable IdTr = new IdTraversable();

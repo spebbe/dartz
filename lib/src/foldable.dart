@@ -4,7 +4,7 @@ part of dartz;
 
 abstract class Foldable<F> {
   // def foldMap[A, B: Monoid](fa: Option[A], f: A => B): B
-  B foldMap<A, B>(Monoid<B> bMonoid, F fa, B f(A a));
+  B foldMap<A, B>(Monoid<B> bMonoid, covariant F fa, B f(A a));
 
   B foldRight<A, B>(F fa, B z, B f(A a, B previous)) => foldMap<A, Endo<B>>(endoMi(), fa, curry2(f))(z);
 
@@ -70,13 +70,6 @@ abstract class FoldableOps<F, A> {
 
   A intercalate(Monoid<A> mi, A a) => foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
-  G collapse<G>(ApplicativePlus<G> ap) => foldLeft(ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
-
-  G foldLeftM<G, B>(Monad<G> m, B z, G f(B previous, A a)) => foldRight<Function1<B, G>>(m.pure, (A a, b) => (w) => m.bind(f(w, a), b))(z);
-
-  G foldRightM<G, B>(Monad<G> m, B z, G f(A a, B previous)) => foldLeft<Function1<B, G>>(m.pure, (b, A a) => (w) => m.bind(f(a, w), b))(z);
-
-  G foldMapM<G, B>(Monad<G> m, Monoid<B> bMonoid, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), cast(m.lift2(bMonoid.append))), f);
 }
 
 class FoldableOpsFoldable<F extends FoldableOps> extends Foldable<F> {

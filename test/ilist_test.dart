@@ -67,7 +67,7 @@ void main() {
 
   test('bind', () {
     qc.check(forall(intILists,
-        (l) => l.bind((i) => ilist([i, i])) == l.map((i) => ilist([i, i])).join()));
+        (IList<int> l) => l.bind((i) => ilist([i, i])) == IList.flattenIList(l.map((i) => ilist([i, i])))));
   });
 
   test('traverse', () {

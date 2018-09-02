@@ -1,6 +1,6 @@
 part of dartz;
 
-class ISet<A> extends FoldableOps<ISet, A> {
+class ISet<A> implements FoldableOps<ISet, A> {
   final AVLTree<A> _tree;
 
   ISet(this._tree);
@@ -59,6 +59,33 @@ class ISet<A> extends FoldableOps<ISet, A> {
   Iterator<A> iterator() => _tree.iterator();
 
   void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
+
+
+  @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override A concatenate(Monoid<A> mi) => foldMap(mi, id); // TODO: optimize
+
+  @override Option<A> concatenateO(Semigroup<A> si) => foldMapO(si, id); // TODO: optimize
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) =>
+    foldLeft<Tuple2<B, int>>(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1; // TODO: optimize
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) =>
+    foldMap(new OptionMonoid(si), composeF(some, f)); // TODO: optimize
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, A a, B previous)) =>
+    foldRight<Tuple2<B, int>>(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1; // TODO: optimize
+
+  @override A intercalate(Monoid<A> mi, A a) =>
+    foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero(); // TODO: optimize
+
+  @override int length() => foldLeft(0, (a, b) => a+1); // TODO: optimize
+
+  @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
+
+  @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
 }
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();

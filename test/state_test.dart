@@ -7,7 +7,7 @@ void main() {
     final M = stateM<num>();
     final State st = M.pure("hej");
     final State inc = M.modify((n) => n+1);
-    expect((inc >> inc >> st).map((v) => "$v!").run(5), tuple2("hej!", 7));
+    expect((inc.andThen(inc).andThen(st)).map((v) => "$v!").run(5), tuple2("hej!", 7));
   });
 
   group("StateM", () => checkMonadLaws(StateM, equality: (a, b) => a.run(0) == b.run(0)));

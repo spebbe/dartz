@@ -40,7 +40,7 @@ Future unsafeIOInterpreter(IOOp io) {
     return new Future.delayed(io.duration, () => unsafePerformIO(io.a));
 
   } else if (io is Gather) {
-    return io.ops.traverse(FutureM, unsafePerformIO);
+    return io.ops.traverseFuture(unsafePerformIO);
 
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");
@@ -49,4 +49,4 @@ Future unsafeIOInterpreter(IOOp io) {
 
 Future<A> unsafePerformIO<A>(Free<IOOp, A> io) => io.foldMap(FutureM, unsafeIOInterpreter);
 
-Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) => unsafePerformIO(IOM.attempt(conveyor.runLog(IOM)));
+Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) => unsafePerformIO(IOM.attempt(Conveyor.runLogIO(conveyor)));

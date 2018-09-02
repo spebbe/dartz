@@ -36,19 +36,19 @@ void main() {
     expect(Option.sequenceIList(IList.sequenceOption(l2)), ilist([none()]));
   });
 
-  group("OptionM", () => checkMonadLaws(OptionMP));
+  group("OptionM", () => checkMonadLaws(new OptionMonadPlus()));
 
-  group("OptionTMonad+Id", () => checkMonadLaws(optionTMonad(IdM)));
+  //group("OptionTMonad+Id", () => checkMonadLaws(optionTMonad(IdM)));
 
   //group("OptionTMonad+IList", () => checkMonadLaws(optionTMonad(IListMP)));
 
-  group("OptionM+Foldable", () => checkFoldableMonadLaws(OptionTr, OptionMP));
+  group("OptionM+Foldable", () => checkFoldableMonadLaws(new OptionTraversable(), new OptionMonadPlus()));
 
   group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), c.ints.map(some)));
 
   final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none<int>());
 
-  group("OptionTr", () => checkTraversableLaws(OptionTr, intOptions));
+  group("OptionTr", () => checkTraversableLaws(new OptionTraversable(), intOptions));
 
   group("Option FoldableOps", () => checkFoldableOpsProperties(intOptions));
 

@@ -24,7 +24,7 @@ class ComposedFunctor<F, G> extends Functor<F> {
 abstract class FunctorOps<F, A> {
   F map<B>(B f(A a));
 
-  F strengthL<B>(B b) => map((a) => tuple2(b, a));
+  F strengthL<B>(B b);// => map((a) => tuple2(b, a));
 
-  F strengthR<B>(B b) => map((a) => tuple2(a, b));
+  F strengthR<B>(B b);// => map((a) => tuple2(a, b));
 }

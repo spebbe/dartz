@@ -1,12 +1,12 @@
 part of dartz;
 
-class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
+class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
   final Order<K> _order;
   final _IMapAVLNode<K, V> _tree;
 
-  IMap(this._order, this._tree);
+  const IMap._internal(this._order, this._tree);
 
-  IMap.empty(this._order): _tree = _emptyIMapAVLNode();
+  IMap.empty(this._order): _tree = new _EmptyIMapAVLNode();
 
   factory IMap.from(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.empty(kOrder), (p, K k) => p.put(k, m[k]));
 
@@ -23,7 +23,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   factory IMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps, Order<K> kOrder) =>
     foldableOps.foldLeft(new IMap.empty(kOrder), (acc, kv) => kv.apply(acc.put));
 
-  IMap<K, V> put(K k, V v) => new IMap(_order, _tree.insert(_order, k, v));
+  IMap<K, V> put(K k, V v) => new IMap._internal(_order, _tree.insert(_order, k, v));
 
   Option<V> get(K k) => _tree.get(_order, k);
 
@@ -31,7 +31,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   Option<V> operator[](K k) => get(k);
 
-  IMap<K, V> modify(K k, V f(V v), V dflt) => new IMap(_order, _tree.modify(_order, k, f, dflt));
+  IMap<K, V> modify(K k, V f(V v), V dflt) => new IMap._internal(_order, _tree.modify(_order, k, f, dflt));
 
   Option<IMap<K, V>> set(K k, V v) {
     final newMap = setIfPresent(k, v);
@@ -40,10 +40,10 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   IMap<K, V> setIfPresent(K k, V v) {
     final newTree = _tree.setIfPresent(_order, k, v);
-    return identical(_tree, newTree) ? this : new IMap(_order, newTree);
+    return identical(_tree, newTree) ? this : new IMap._internal(_order, newTree);
   }
 
-  IMap<K, V> remove(K k) => new IMap(_order, _tree.remove(_order, k));
+  IMap<K, V> remove(K k) => new IMap._internal(_order, _tree.remove(_order, k));
 
   IList<K> keys() => _tree.foldRight(nil(), (k, v, p) => new Cons(k, p));
 
@@ -59,22 +59,18 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   B foldMapKV<B>(Monoid<B> mi, B f(K k, V v)) => _tree.foldLeft(mi.zero(), (p, k, v) => mi.append(p, f(k, v)));
 
-  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap(_order, _emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
+  IMap<K, V2> mapWithKey<V2>(V2 f(K k, V v)) => foldLeftKV(new IMap._internal(_order, _emptyIMapAVLNode()), (p, k, v) => p.put(k, f(k, v)));
   IMap<K, V2> mapKV<V2>(V2 f(K k, V v)) => mapWithKey(f);
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
 
   G traverseKV<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(
-          new IMap(_order, _emptyIMapAVLNode())),
+          new IMap._internal(_order, _emptyIMapAVLNode())),
               (prev, k, v) => gApplicative.map2(prev, f(k, v), (IMap p, v2) => p.put(k, v2)));
 
   G traverseKV_<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(unit), (prev, k, v) => gApplicative.map2(prev, f(k, v), (_1, _2) => unit));
-
-  @override G traverse<G>(Applicative<G> gApplicative, G f(V v)) => traverseKV(gApplicative, (_, v) => f(v));
-
-  @override G traverse_<G>(Applicative<G> gApplicative, G f(V v)) => traverseKV_(gApplicative, (_, v) => f(v));
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
 
@@ -82,7 +78,7 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   @override B foldRight<B>(B z, B f(V v, B previous)) => _tree.foldRight(z, (k, v, p) => f(v, p));
 
-  @override IMap<K, V2> map<V2>(V2 f(V v)) => new IMap(_order, _tree.map(f));
+  @override IMap<K, V2> map<V2>(V2 f(V v)) => new IMap._internal(_order, _tree.map(f));
 
   Map<K, V> toMap() => foldLeftKV(new Map(), (p, K k, V v) => p..[k] = v);
 
@@ -129,12 +125,47 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
   void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
 
   void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
+
+  @override IMap<K, B> mapWithIndex<B>(B f(int i, V a)) =>
+    _tree.foldLeft<Tuple2<int, IMap<K, B>>>(tuple2(0, emptyMap()), (t, k, v) => t.apply((i, acc) => tuple2(i+1, acc.put(k, f(i, v))))).value2; // TODO: optimize
+
+  @override IMap<K, Tuple2<int, V>> zipWithIndex() => mapWithIndex(tuple2);
+
+  @override bool all(bool f(V a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override bool any(bool f(V a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override V concatenate(Monoid<V> mi) => foldMap(mi, id); // TODO: optimize
+
+  @override Option<V> concatenateO(Semigroup<V> si) => foldMapO(si, id); // TODO: optimize
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, V a)) =>
+    foldLeft<Tuple2<B, int>>(tuple2(z, 0), (t, a) => tuple2(f(t.value1, t.value2, a), t.value2+1)).value1; // TODO: optimize
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(V a)) =>
+    foldMap(new OptionMonoid(si), composeF(some, f)); // TODO: optimize
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, V a, B previous)) =>
+    foldRight<Tuple2<B, int>>(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1; // TODO: optimize
+
+  @override V intercalate(Monoid<V> mi, V v) =>
+    foldRight(none<V>(), (V cv, Option<V> ov) => some(mi.append(cv, ov.fold(mi.zero, mi.appendC(v))))) | mi.zero(); // TODO: optimize
+
+  @override int length() => foldLeft(0, (a, b) => a+1); // TODO: optimize
+
+  @override Option<V> maximum(Order<V> ov) => concatenateO(ov.maxSi());
+
+  @override Option<V> minimum(Order<V> ov) => concatenateO(ov.minSi());
+
+  @override IMap<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
+
+  @override IMap<K, Tuple2<V, B>> strengthR<B>(B b) => map((v) => tuple2(v, b));
 }
 
 
 IMap<K, V> imap<K extends Comparable, V>(Map<K, V> m) => new IMap.from(comparableOrder(), m);
 IMap<K, V> imapWithOrder<K, K2 extends K, V>(Order<K> o, Map<K2, V> m) => new IMap.from(o, m);
-IMap<K, V> emptyMap<K extends Comparable, V>() => new IMap(comparableOrder(), _emptyIMapAVLNode());
+IMap<K, V> emptyMap<K extends Comparable, V>() => new IMap._internal(comparableOrder(), _emptyIMapAVLNode());
 IMap<K, V> singletonMap<K extends Comparable, V>(K k, V v) => emptyMap<K, V>().put(k, v);
 
 class IMapMonoid<K, V> extends Monoid<IMap<K, V>> {
@@ -159,8 +190,8 @@ Monoid<IMap<K, V>> imapMi<K extends Comparable, V>() => imapMonoid(secondSemigro
 
 final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
 
-abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V> {
-  _IMapAVLNode();
+abstract class _IMapAVLNode<K, V> implements FunctorOps<_IMapAVLNode<K, dynamic>, V> {
+  const _IMapAVLNode();
 
   _IMapAVLNode<K, V> insert(Order<K> order, K k, V v);
   _IMapAVLNode<K, V> remove(Order<K> order, K k);
@@ -184,6 +215,10 @@ abstract class _IMapAVLNode<K, V> extends FunctorOps<_IMapAVLNode<K, dynamic>, V
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b)));
 
   _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty();
+
+  @override _IMapAVLNode<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
+
+  @override _IMapAVLNode<K, Tuple2<V, B>> strengthR<B>(B b) => map((v) => tuple2(v, b));
 }
 
 class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -385,7 +420,7 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 }
 
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
-  _EmptyIMapAVLNode();
+  const _EmptyIMapAVLNode();
 
   @override B foldLeft<B>(B z, B f(B previous, K k, V v)) => z;
 

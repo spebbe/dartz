@@ -1,6 +1,8 @@
 part of dartz;
 
-abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Option, A>, ApplicativeOps<Option, A>, ApplicativePlusOps<Option, A>, MonadOps<Option, A>, MonadPlusOps<Option, A>, TraversableMonadOps<Option, A>, TraversableMonadPlusOps<Option, A>, PlusOps<Option, A> {
+abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
+  const Option();
+
   B fold<B>(B ifNone(), B ifSome(A a));
 
   B cata<B, B2 extends B>(B ifNone(), B2 ifSome(A a)) => fold(ifNone, ifSome);
@@ -10,14 +12,13 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
   A operator |(A dflt) => getOrElse(() => dflt);
 
-  @override Option<B> pure<B>(B b) => some(b);
   @override Option<B> map<B>(B f(A a)) => fold(none, (A a) => some(f(a)));
   @override Option<B> ap<B>(Option<Function1<A, B>> ff) => fold(none, (A a) => ff.fold(none, (Function1<A, B> f) => some(f(a))));
   @override Option<B> bind<B>(Option<B> f(A a)) => fold(none, f);
   @override Option<B> flatMap<B>(Option<B> f(A a)) => fold(none, f);
   @override Option<B> andThen<B>(Option<B> next) => fold(none, (_) => next);
 
-  @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) => fold(() => gApplicative.pure(none()), (a) => gApplicative.map(f(a), some));
+
 
   IList<Option<B>> traverseIList<B>(IList<B> f(A a)) => fold(() => cons(none(), nil()), (a) => f(a).map(some));
 
@@ -35,7 +36,6 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 
   static State<S, Option<A>> sequenceState<S, A>(Option<State<S, A>> osa) => osa.traverseState(id);
 
-  @override Option<A> empty() => none();
   @override Option<A> plus(Option<A> o2) => orElse(() => o2);
 
   @override Option<A> filter(bool predicate(A a)) => fold(none, (a) => predicate(a) ? this : none());
@@ -73,15 +73,61 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
-  Iterable<A> toIterable() => fold(() => cast(_emptyIterable), (a) => new _SingletonIterable(a));
+  Iterable<A> toIterable() => fold(() => const Iterable.empty(), (a) => new _SingletonIterable(a));
   Iterator<A> iterator() => toIterable().iterator;
 
   void forEach(void sideEffect(A a)) => fold(() => null, sideEffect);
+
+  @override bool all(bool f(A a)) => map(f)|true;
+
+  @override bool any(bool f(A a)) => map(f)|false;
+
+  @override Option<A> appendElement(A a) => orElse(() => some(a));
+
+  @override A concatenate(Monoid<A> mi) => getOrElse(mi.zero);
+
+  @override Option<A> concatenateO(Semigroup<A> si) => this;
+
+  @override B foldLeft<B>(B z, B f(B previous, A a)) => fold(() => z, (a) => f(z, a));
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) => fold(() => z, (a) => f(z, 0, a));
+
+  @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => fold(bMonoid.zero, f);
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) => map(f);
+
+  @override B foldRight<B>(B z, B f(A a, B previous)) => fold(() => z, (a) => f(a, z));
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, A a, B previous))=> fold(() => z, (a) => f(0, a, z));
+
+  @override A intercalate(Monoid<A> mi, A a) => fold(mi.zero, id);
+
+  @override int length() => fold(() => 0, (_) => 1);
+
+  @override Option<B> mapWithIndex<B>(B f(int i, A a)) => map((a) => f(0, a));
+
+  @override Option<A> maximum(Order<A> oa) => this;
+
+  @override Option<A> minimum(Order<A> oa) => this;
+
+  Tuple2<Option<A>, Option<A>> partition(bool f(A a)) => map(f)|false ? tuple2(this, none()) : tuple2(none(), this);
+
+  @override Option<A> prependElement(A a) => some(a).orElse(() => this);
+
+  @override Option<B> replace<B>(B replacement) => map((_) => replacement);
+
+  Option<A> reverse() => this;
+
+  @override Option<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Option<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  @override Option<Tuple2<int, A>> zipWithIndex() => map((a) => tuple2(0, a));
 }
 
 class Some<A> extends Option<A> {
   final A _a;
-  Some(this._a);
+  const Some(this._a);
   A get value => _a;
   @override B fold<B>(B ifNone(), B ifSome(A a)) => ifSome(_a);
   @override bool operator ==(other) => other is Some && other._a == _a;
@@ -89,6 +135,7 @@ class Some<A> extends Option<A> {
 }
 
 class None<A> extends Option<A> {
+  const None();
   @override B fold<B>(B ifNone(), B ifSome(A a)) => ifNone();
   @override bool operator ==(other) => other is None;
   @override int get hashCode => 0;
@@ -99,29 +146,19 @@ Option<A> some<A>(A a) => new Some(a);
 Option<A> option<A>(bool test, A value) => test ? some(value) : none();
 Option<A> optionOf<A>(A value) => value != null ? some(value) : none();
 
-class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
-  OptionMonadPlus() : super(some, none);
-
+class OptionMonadPlus extends MonadPlus<Option> with Monad<Option>, ApplicativePlus<Option>, Applicative<Option>, Functor<Option>, PlusEmpty<Option>, Plus<Option> {
   @override Option<B> map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
   @override Option<B> ap<A, B>(Option<A> fa, Option<Function1<A, B>> ff) => fa.ap(ff);
   @override Option<B> bind<A, B>(Option<A> fa, Option<B> f(A a)) => fa.bind(f);
+  @override Option<A> empty<A>() => none();
+  @override Option<A> plus<A>(Option<A> f1, Option<A> f2) => f1.plus(f2);
+  @override Option<A> pure<A>(A a) => some(a);
 }
 
-final OptionMonadPlus OptionMP = new OptionMonadPlus();
-MonadPlus<Option<A>> optionMP<A>() => cast(OptionMP);
-final Traversable<Option> OptionTr = new TraversableOpsTraversable<Option>();
-Traversable<Option<A>> optionTr<A>() => cast(OptionTr);
-
-class OptionTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
-  Monad _stackedM;
-  OptionTMonad(this._stackedM);
-  Monad underlying() => OptionMP;
-
-  @override M pure<A>(A a) => cast(_stackedM.pure(some(a)));
-  @override M bind<A, B>(M moa, M f(A a)) => cast(_stackedM.bind(moa, (Option o) => o.fold(() => _stackedM.pure(none()), cast(f))));
+class OptionTraversable extends Traversable<Option> {
+  @override B foldMap<A, B>(Monoid<B> bMonoid, Option<A> fa, B f(A a)) => fa.foldMap(bMonoid, f);
+  @override Option map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
 }
-
-Monad optionTMonad(Monad mmonad) => new OptionTMonad(mmonad);
 
 class OptionMonoid<A> extends Monoid<Option<A>> {
   final Semigroup<A> _tSemigroup;

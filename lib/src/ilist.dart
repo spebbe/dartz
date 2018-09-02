@@ -3,7 +3,7 @@ part of dartz;
 // Internally implemented using imperative loops and mutations, for stack safety and performance.
 // The external API should be safe and referentially transparent, though.
 
-abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, A>, ApplicativeOps<IList, A>, ApplicativePlusOps<IList, A>, MonadOps<IList, A>, MonadPlusOps<IList, A>, TraversableMonadOps<IList, A>, TraversableMonadPlusOps<IList, A>, PlusOps<IList, A> {
+abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
   Option<A> get headOption;
 
   Option<IList<A>> get tailOption;
@@ -16,7 +16,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
 
   void _unsafeSetTail(IList<A> newTail);
 
-  IList();
+  const IList();
 
   factory IList.from(Iterable<A> iterable) {
     final IList<A> aNil = nil();
@@ -47,30 +47,6 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
       result = next;
     }
     return resultHead;
-  }
-
-  @override IList<B> pure<B>(B b) => new Cons(b, nil());
-
-  @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) {
-    var result = gApplicative.pure(nil());
-    var current = this;
-    while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = gApplicative.map2(result, gb, (IList a, h) => new Cons(h, a));
-      current = current._unsafeTail();
-    }
-    return gApplicative.map(result, (l) => l.reverse());
-  }
-
-  @override G traverse_<G>(Applicative<G> gApplicative, G f(A a)) {
-    var result = gApplicative.pure(unit);
-    var current = this;
-    while (current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = gApplicative.map2(result, gb, (a, h) => unit);
-      current = current._unsafeTail();
-    }
-    return result;
   }
 
   @override IList<B> bind<B>(IList<B> f(A a)) {
@@ -150,8 +126,6 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => foldLeft(bMonoid.zero(), (a, b) => bMonoid.append(a, f(b)));
 
   IList<A> reverse() => foldLeft(nil(), (a, h) => new Cons(h, a));
-
-  @override IList<A> empty() => nil();
 
   @override IList<A> plus(IList<A> l2) => foldRight(l2, (e, p) => new Cons(e, p));
 
@@ -342,6 +316,75 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
   static Future<IList<A>> sequenceFuture<A>(IList<Future<A>> lfa) => lfa.traverseFuture(id);
 
   static State<S, IList<A>> sequenceState<A, S>(IList<State<S, A>> lsa) => lsa.traverseState(id);
+
+  @override IList<B> mapWithIndex<B>(B f(int i, A a)) {
+    final IList<B> bNil = nil();
+    if (!_isCons()) {
+      return bNil;
+    }
+    int i = 0;
+    Cons<B> last = new Cons(f(i++, _unsafeHead()), bNil);
+    if (!_unsafeTail()._isCons()) {
+      return last;
+    }
+    final result = last;
+    var current = _unsafeTail();
+    while (current._isCons()) {
+      final next = new Cons(f(i++, current._unsafeHead()), bNil);
+      last._unsafeSetTail(next);
+      last = next;
+      current = current._unsafeTail();
+    }
+    return result;
+  }
+
+  @override IList<Tuple2<int, A>> zipWithIndex() => mapWithIndex(tuple2);
+
+  @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override IList<B> andThen<B>(IList<B> next) => bind((_) => next);
+
+  @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override IList<B> ap<B>(IList<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override A concatenate(Monoid<A> mi) => foldMap(mi, id);
+
+  @override Option<A> concatenateO(Semigroup<A> si) => foldMapO(si, id);
+
+  @override B foldLeftWithIndex<B>(B z, B f(B previous, int i, A a)) {
+    var i = 0;
+    var result = z;
+    var current = this;
+    while (current._isCons()) {
+      result = f(result, i++, current._unsafeHead());
+      current = current._unsafeTail();
+    }
+    return result;
+  }
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) =>
+    uncons(none, (head, tail) => some(tail.foldLeft(f(head), (acc, a) => si.append(acc, f(a)))));
+
+  @override B foldRightWithIndex<B>(B z, B f(int i, A a, B previous)) =>
+    foldRight<Tuple2<B, int>>(tuple2(z, length()-1), (a, t) => tuple2(f(t.value2, a, t.value1), t.value2-1)).value1; // TODO: optimize
+
+  @override A intercalate(Monoid<A> mi, A a) =>
+    foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero(); // TODO: optimize
+
+  @override int length() =>
+    foldLeft(0, (a, b) => a+1); // TODO: optimize
+
+  @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
+
+  @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
+
+  @override IList<B> replace<B>(B replacement) => map((_) => replacement);
+
+  @override IList<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override IList<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
 }
 
 class Cons<A> extends IList<A> {
@@ -360,6 +403,8 @@ class Cons<A> extends IList<A> {
 }
 
 class _Nil<A> extends IList<A> {
+  const _Nil();
+
   bool _isCons() => false;
   A _unsafeHead() => throw new UnsupportedError("_unsafeHead called on _Nil");
   IList<A> _unsafeTail() => throw new UnsupportedError("_unsafeTail called on _Nil");

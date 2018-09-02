@@ -8,20 +8,19 @@ void main() {
   //final qc = new QuickCheck(maxSize: 300, seed: 42);
 
   test("demo", () async {
-    final EvaluationMonad M = new EvaluationMonad(tuple2Monoid(IListMi, StringMi));
+    final EvaluationMonad<String, String, Tuple2<IList<String>, String>, int> M = new EvaluationMonad(tuple2Monoid(ilistMi(), StringMi));
 
-    final Evaluation inc =
-        M.get() >= ((oldState) {
+    final inc =
+        M.get().bind((oldState) {
           final newState = oldState+1;
-          return M.put(newState) >> M.write(new Tuple2(IListMP.pure("State transition from $oldState to $newState"), "!"));
+          return M.put(newState).andThen(M.write(new Tuple2(ilist(["State transition from $oldState to $newState"]), "!")));
         });
 
     final Evaluation p =
-        inc >>
-        (M.pure("hej") >= (v) =>
-         inc >>
-         M.get() >= ((s) => (s == 7) ? M.asks((suffix) => v + cast(suffix)) : M.raiseError("Gaah! State wasn't 7!!!"))
-        ) << inc;
+        inc.andThen(
+          M.pure("hej").bind((v) =>
+         inc.andThen(M.get().bind((s) => (s == 7) ? M.asks((suffix) => v + suffix) : M.raiseError("Gaah! State wasn't 7!!!"))))
+        ).bind((a) => inc.replace(a));
 
     expect(await p.run("!", 5), right(tuple3(tuple2(ilist(["State transition from 5 to 6", "State transition from 6 to 7", "State transition from 7 to 8"]), "!!!"), 8, "hej!")));
     expect(await p.run("!", 6), left("Gaah! State wasn't 7!!!"));

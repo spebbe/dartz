@@ -9,9 +9,9 @@ typedef Conveyor<F, Unit> SinkF<F, O>(O o);
 typedef Conveyor<F, O> ChannelF<F, I, O>(I i);
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> with ApplicativeOps<Conveyor/*<F, dynamic>*/, O>, ApplicativePlusOps<Conveyor/*<F, dynamic>*/, O>, MonadOps<Conveyor/*<F, dynamic>*/, O>, MonadPlusOps<Conveyor/*<F, dynamic>*/, O>, PlusOps<Conveyor/*<F, dynamic>*/, O> {
+abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
-  A interpret<A>(A ifProduce(O head, Conveyor<F, O> tail), A ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A ifHalt(Object err));
+  A interpret<A>(A ifProduce(O head, Conveyor<F, O> tail), covariant A ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A ifHalt(Object err));
 
   static Conveyor<F, O> produce<F, O>(O head, [Conveyor<F, O> tail]) => new _Produce(head, tail ?? halt(End));
   static Conveyor<F, O> consume<F, A, O>(F req, Function1<Either<Object, A>, Conveyor<F, O>> recv) => new _Consume(req, recv);
@@ -84,6 +84,22 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
             (req, recv) => monadCatch.bind(monadCatch.attempt(req), (Either<Object, dynamic> e) => go(Try(() => recv(e)), acc)),
             (err) => err == End ? monadCatch.pure(acc.reverse()) : monadCatch.fail(err));
     return cast(go(this, nil()));
+  }
+
+  static Task<IList<O>> runLogTask<O>(Conveyor<Task, O> cto) {
+    Task<IList<O>> go(Conveyor<Task, O> cur, IList<O> acc) =>
+      cur.interpret((h, t) => go(t, cons(h, acc)),
+          (req, recv) => req.attempt().bind((Either<Object, dynamic> e) => go(Try(() => recv(e)), acc)),
+          (err) => err == End ?  new Task(() => new Future.value(acc.reverse())) : new Task(() => new Future.error(err)));
+    return cast(go(cto, nil()));
+  }
+
+  static Free<IOOp, IList<O>> runLogIO<O>(Conveyor<Free<IOOp, dynamic>, O> cio) {
+    Free<IOOp, IList<O>> go(Conveyor<Free<IOOp, dynamic>, O> cur, IList<O> acc) =>
+      cur.interpret((h, t) => go(t, cons(h, acc)),
+          (req, recv) => liftF<IOOp, Either<Object, IList<O>>>(new Attempt(req)).flatMap((Either<Object, dynamic> e) => go(Try(() => recv(e)), acc)),
+          (err) => err == End ? new Pure(acc.reverse()) : liftF(new Fail(err)));
+    return cast(go(cio, nil()));
   }
 
   Conveyor<F, O2> drain<O2>() =>
@@ -160,7 +176,7 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O3> tee<O2, O3>(Conveyor<F, O2> c2, Conveyor<Both<O, O2>, O3> t) => t.interpret<Conveyor<F, O3>>(
       (h, t) => produce(h, tee(c2, t))
-      ,(side, recv) => side == Tee._getL
+      ,(side, recv) => side.direction == BothDirection.LEFT
           ? interpret(
           (o, ot) => ot.tee(c2, Try(() => recv(right(o))))
           ,(reqL, recvL) => consume(reqL, (ea) => recvL(ea).tee(c2, t))
@@ -177,11 +193,21 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
 
   Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
 
-  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap(cast(id));
+  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap((a) => a as Conveyor<F, Unit>);
 
   Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(cast(id));
 
   Conveyor<F, O2> onto<O2>(Conveyor<F, O2> f(Conveyor<F, O> c)) => f(this);
+
+  @override Conveyor<F, Tuple2<B, O>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Conveyor<F, Tuple2<O, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  @override Conveyor<F, B> andThen<B>(Conveyor<F, B> next) => bind((_) => next);
+
+  @override Conveyor<F, B> ap<B>(Conveyor<F, Function1<O, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override Conveyor<F, B> replace<B>(B replacement) => map((_) => replacement);
 }
 
 class _Produce<F, O> extends Conveyor<F, O> {
@@ -197,7 +223,7 @@ class _Consume<F, A, O> extends Conveyor<F, O> {
   final F /** really F<A> **/ _req;
   final Function1<Either<Object, A>, Conveyor<F, O>> _recv;
   _Consume(this._req, this._recv);
-  A2 interpret<A2>(A2 ifProduce(O head, Conveyor<F, O> tail), A2 ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A2 ifHalt(Object err)) => ifConsume(_req, cast(_recv));
+  A2 interpret<A2>(A2 ifProduce(O head, Conveyor<F, O> tail), A2 ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A2 ifHalt(Object err)) => ifConsume(_req, (ea) => _recv(ea.map((a) => a as A)));
 
   @override String toString() => "Consume($_req, $_recv)";
 }

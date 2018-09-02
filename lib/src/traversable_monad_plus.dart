@@ -12,6 +12,7 @@ abstract class TraversableMonadPlus<F> implements Traversable<F>, MonadPlus<F> {
 }
 
 abstract class TraversableMonadPlusOps<F, A> implements TraversableOps<F, A>, MonadPlusOps<F, A> {
+  /*
   // TODO: Only requires ApplicativePlus, not MonadPlus
   Tuple2<F, F> partition(bool f(A a)) =>
       foldRight(tuple2(empty(), empty()), (A a, acc) => f(a)
@@ -20,4 +21,5 @@ abstract class TraversableMonadPlusOps<F, A> implements TraversableOps<F, A>, Mo
 
   // TODO: Only requires Foldable and ApplicativePlus
   F reverse() => foldLeft(empty(), (r, e) => cast<TraversableMonadPlusOps<F, A>>(r).prependElement(e));
+  */
 }

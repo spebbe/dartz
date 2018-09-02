@@ -1,6 +1,6 @@
 part of dartz;
 
-class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>, ApplicativeOps<IVector, A>, ApplicativePlusOps<IVector, A>, MonadOps<IVector, A>, MonadPlusOps<IVector, A>, TraversableMonadOps<IVector, A>, TraversableMonadPlusOps<IVector, A>, PlusOps<IVector, A> {
+class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
   final IMap<int, A> _elementsByIndex;
   final int _offset;
   final int _length;
@@ -31,7 +31,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   IVector<A> setIfPresent(int index, A a) => new IVector._internal(_elementsByIndex.setIfPresent(_offset+index, a), _offset, _length);
 
-  @override IVector<B> pure<B>(B b) => emptyVector<B>().appendElement(b);
+  IVector<B> pure<B>(B b) => emptyVector<B>().appendElement(b);
 
   @override IVector<B> map<B>(B f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
 
@@ -41,7 +41,7 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override IVector<B> flatMap<B>(Function1<A, IVector<B>> f) => bind(f);
 
-  @override IVector<A> empty() => emptyVector();
+  IVector<A> empty() => emptyVector();
 
   @override IVector<A> plus(IVector<A> fa2) {
     final int l = length();
@@ -58,10 +58,6 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
       }
     }
   }
-
-  @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) =>
-      _elementsByIndex.foldLeft(gApplicative.pure(emptyVector()),
-          (prev, a) => gApplicative.map2(prev, f(a), (IVector p, a2) => p.appendElement(a2)));
 
   Option<IVector<B>> traverseOption<B>(Option<B> f(A a)) =>
     _elementsByIndex.foldLeft(some(emptyVector()),
@@ -129,6 +125,36 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
   Iterator<A> iterator() => _elementsByIndex.valueIterator();
 
   void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
+
+  @override IVector<Tuple2<int, A>> zipWithIndex() => mapWithIndex(tuple2);
+
+  @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+
+  @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
+
+  @override A concatenate(Monoid<A> mi) => foldMap(mi, id); // TODO: optimize
+
+  @override Option<A> concatenateO(Semigroup<A> si) => foldMapO(si, id); // TODO: optimize
+
+  @override Option<B> foldMapO<B>(Semigroup<B> si, B f(A a)) =>
+    foldMap(new OptionMonoid(si), composeF(some, f)); // TODO: optimize
+
+  @override A intercalate(Monoid<A> mi, A a) =>
+    foldRight(none<A>(), (A ca, Option<A> oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero(); // TODO: optimize
+
+  @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
+
+  @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
+
+  @override IVector<B> andThen<B>(IVector<B> next) => bind((_) => next);
+
+  @override IVector<B> ap<B>(IVector<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+
+  @override IVector<B> replace<B>(B replacement) => map((_) => replacement);
+
+  @override IVector<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override IVector<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 }
 
 IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);

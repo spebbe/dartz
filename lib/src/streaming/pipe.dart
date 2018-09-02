@@ -3,13 +3,13 @@ part of dartz_streaming;
 class From<A> {}
 
 class Pipe {
-  static final From _get = new From();
+  //static final From _get = new From();
 
   static Conveyor<From<I>, O> produce<I, O>(O h, [Conveyor<From<I>, O> t]) =>
       Conveyor.produce(h, t);
 
   static Conveyor<From<I>, O> consume<I, O>(Function1<I, Conveyor<From<I>, O>> recv, [Function0<Conveyor<From<I>, O>> fallback]) =>
-      Conveyor.consume(cast(_get), (Either<Object, I> ea) => ea.fold(
+      Conveyor.consume(new From(), (Either<Object, I> ea) => ea.fold(
           (err) => err == Conveyor.End ? (fallback == null ? halt() : fallback()) : Conveyor.halt(err)
           ,(I i) => Conveyor.Try(() => recv(i))));
 
@@ -74,7 +74,7 @@ class Pipe {
   }
 
   static Conveyor<From<A>, A> skipDuplicates<A>([Eq<A> _eq]) {
-    final Eq<A> eq = _eq ?? cast(ObjectEq);
+    final Eq<A> eq = _eq ?? objectEq();
     Conveyor<From<A>, A> loop(A lastA) => consume((A a) => eq.eq(lastA, a) ? loop(lastA) : produce(a, loop(a)));
     return consume((A a) => produce(a, loop(a)));
   }

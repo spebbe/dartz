@@ -4,7 +4,7 @@ part of dartz;
 // Binds are stack safe but relatively expensive, because of Future chaining.
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949
-class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dynamic>*/, A> with ApplicativeOps<Evaluation/*<E, R, W, S, dynamic>*/, A>, MonadOps<Evaluation/*<E, R, W, S, dynamic>*/, A> {
+class Evaluation<E, R, W, S, A> implements MonadOps<Evaluation<E, R, W, S, dynamic>, A> {
   final Monoid<W> _W;
   final Function2<R, S, Future<Either<E, Tuple3<W, S, A>>>> _run;
 
@@ -60,11 +60,15 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
 
   Future<Either<E, A>> value(R r, S s) => run(r, s).then((e) => e.map((t) => t.value3));
 
-  @override Evaluation<E, R, W, S, A> operator <<(Evaluation<E, R, W, S, dynamic> next) => bind((a) => next.map((_) => a));
-
   @override Evaluation<E, R, W, S, B> replace<B>(B replacement) => map((_) => replacement);
 
   Evaluation<E, R, W, S, Unit> replicate_(int n) => n > 0 ? flatMap((_) => replicate_(n-1)) : pure(unit);
+
+  @override Evaluation<E, R, W, S, Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+
+  @override Evaluation<E, R, W, S, Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  @override Evaluation<E, R, W, S, B> ap<B>(Evaluation<E, R, W, S, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
 }
 
 class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic>> with Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {

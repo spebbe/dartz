@@ -1,6 +1,6 @@
 part of dartz;
 
-class Task<A> extends FunctorOps<Task, A> with ApplicativeOps<Task, A>, MonadOps<Task, A>, MonadCatchOps<Task, A> {
+class Task<A> implements MonadCatchOps<Task, A> {
   final Function0<Future<A>> _run;
 
   Task(this._run);
@@ -11,7 +11,7 @@ class Task<A> extends FunctorOps<Task, A> with ApplicativeOps<Task, A>, MonadOps
 
   @override Task<B> bind<B>(Function1<A, Task<B>> f) => new Task(() => _run().then((a) => f(a).run()));
 
-  @override Task<B> pure<B>(B b) => new Task(() => new Future.value(b));
+  Task<B> pure<B>(B b) => new Task(() => new Future.value(b));
 
   @override Task<Either<Object, A>> attempt() => new Task(() => run().then(right).catchError((err) => left<Object, A>(err)));
 

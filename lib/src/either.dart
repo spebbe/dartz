@@ -65,7 +65,7 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 
-  Iterable<R> toIterable() => fold((_) => cast(_emptyIterable), (r) => new _SingletonIterable(r));
+  Iterable<R> toIterable() => fold((_) => const Iterable.empty(), (r) => new _SingletonIterable(r));
   Iterator<R> iterator() => toIterable().iterator;
 
   void forEach(void sideEffect(R r)) => fold((_) => null, sideEffect);
@@ -151,10 +151,10 @@ class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
 }
 
 final EitherMonad EitherM = new EitherMonad();
-EitherMonad<L> eitherM<L>() => cast(EitherM);
+EitherMonad<L> eitherM<L>() => new EitherMonad();
 final Traversable<Either> EitherTr = new TraversableOpsTraversable<Either>();
-Traversable<Either<L, R>> eitherTr<L, R>() => cast(EitherTr);
-
+Traversable<Either<L, R>> eitherTr<L, R>() => new TraversableOpsTraversable();
+/*
 class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
   Monad _stackedM;
   EitherTMonad(this._stackedM);
@@ -165,4 +165,4 @@ class EitherTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
 }
 
 Monad eitherTMonad(Monad mmonad) => new EitherTMonad(mmonad);
-
+*/

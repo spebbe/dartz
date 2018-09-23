@@ -12,7 +12,7 @@ abstract class Free<F, A> implements MonadOps<Free<F, dynamic>, A> {
   @override Free<F, B> replace<B>(B replacement) => map((_) => replacement);
 
   R fold<R>(R ifPure(A a), R ifSuspend(F fa), R ifBind(Free<F, dynamic> ffb, _FreeF<F, A> f));
-
+/*
   Free<F, A> step() {
     Free<F, A> current = this;
     while(current is Bind) {
@@ -24,12 +24,19 @@ abstract class Free<F, A> implements MonadOps<Free<F, dynamic>, A> {
     }
     return current;
   }
-
+*/
 
   MA foldMap<M, MA extends M>(Monad<M> m, M f(F fa)) =>
       cast(/*step().*/fold((a) => m.pure(a), (fa) => f(fa), (ffb, f2) => m.bind(ffb.foldMap(m, f), (c) => f2(c).foldMap(m, f))));
 
+
+  Future<A> foldMapFuture(Future f(F fa)) {
+    return /*step().*/ fold((a) => new Future.microtask(() => a), (fa) => f(fa).then((a) { return a as A;}), (ffb, f2) => ffb.foldMapFuture(f).then((c) => f2(c).foldMapFuture(f)));
+  }
+
+
   @override Free<F, B> flatMap<B>(Function1<A, Free<F, B>> f) => new Bind(this, (a) => f(cast(a)));
+
   @override Free<F, B> andThen<B>(Free<F, B> next) => bind((_) => next);
 
   static Free<F, C> map2<F, A, A2 extends A, B, B2 extends B, C>(Free<F, A2> fa, Free<F, B2> fb, C fun(A a, B b)) =>

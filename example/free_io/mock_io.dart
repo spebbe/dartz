@@ -68,5 +68,5 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockPerformIO<A>(Free<IOOp, A> io, IMap<String, IVector<String>> input) =>
     _interpret(io).run(input, emptyMap());
 
-Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> cio, IMap<String, IVector<String>> input) =>
-    _interpret(cio.runLog<Free<IOOp, A>>(iomc())).run(input, emptyMap());
+Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, IList<A>>>> mockConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> cio, IMap<String, IVector<String>> input) =>
+    _interpret(Conveyor.runLogIO(cio)).run(input, emptyMap());

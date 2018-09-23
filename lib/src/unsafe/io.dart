@@ -16,9 +16,10 @@ Future unsafeIOInterpreter(IOOp io) {
     return new Future.value(unit);
 
   } else if (io is Attempt) {
-    return unsafePerformIO(io.fa).then(right).catchError(left);
+    return unsafePerformIO(io.fa).then((wut) => io.succeed(wut)).catchError((err, s) {print("&&& ${err}, ${s}"); return io.fail(err); });
 
   } else if (io is Fail) {
+    print("--- ${io.failure}");
     return new Future.error(io.failure);
 
   } else if (io is OpenFile) {
@@ -47,6 +48,6 @@ Future unsafeIOInterpreter(IOOp io) {
   }
 }
 
-Future<A> unsafePerformIO<A>(Free<IOOp, A> io) => io.foldMap(FutureM, unsafeIOInterpreter);
+Future<A> unsafePerformIO<A>(Free<IOOp, A> io) => io.foldMapFuture(unsafeIOInterpreter);
 
 Future<Either<Object, IList<A>>> unsafeConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> conveyor) => unsafePerformIO(IOM.attempt(Conveyor.runLogIO(conveyor)));

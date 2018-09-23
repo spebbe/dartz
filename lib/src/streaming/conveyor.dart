@@ -79,7 +79,7 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
     final trimmed = cycle.pipe(Pipe.window2()).takeWhile((pair) => pair != sentinel);
     return trimmed.map((t) => t.value2).flatMap((o) => o.fold(() => halt(End), (v) => produce(v)));
   }
-
+/*
   FLA runLog<FLA extends F>(MonadCatch<F> monadCatch) {
     F go(Conveyor<F, O> cur, IList<O> acc) =>
         cur.interpret((h, t) => go(t, cons(h, acc)),
@@ -87,21 +87,21 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
             (err) => err == End ? monadCatch.pure(acc.reverse()) : monadCatch.fail(err));
     return cast(go(this, nil()));
   }
-
+*/
   static Task<IList<O>> runLogTask<O>(Conveyor<Task, O> cto) {
     Task<IList<O>> go(Conveyor<Task, O> cur, IList<O> acc) =>
       cur.interpret((h, t) => go(t, cons(h, acc)),
           (req, recv) => req.attempt().bind((Either<Object, dynamic> e) => go(Try(() => recv(e)), acc)),
-          (err) => err == End ?  new Task(() => new Future.value(acc.reverse())) : new Task(() => new Future.error(err)));
-    return cast(go(cto, nil()));
+          (err) => err == End ? new Task(() => new Future.value(acc.reverse())) : new Task(() => new Future.error(err)));
+    return go(cto, nil());
   }
 
   static Free<IOOp, IList<O>> runLogIO<O>(Conveyor<Free<IOOp, dynamic>, O> cio) {
     Free<IOOp, IList<O>> go(Conveyor<Free<IOOp, dynamic>, O> cur, IList<O> acc) =>
       cur.interpret((h, t) => go(t, cons(h, acc)),
-          (req, recv) => liftF<IOOp, Either<Object, IList<O>>>(new Attempt(req)).flatMap((Either<Object, dynamic> e) => go(Try(() => recv(e)), acc)),
+          (req, recv) => liftF<IOOp, Either<Object, dynamic>>(new Attempt(req)).flatMap((e) => go(Try(() => recv(e)), acc)),
           (err) => err == End ? new Pure(acc.reverse()) : liftF(new Fail(err)));
-    return cast(go(cio, nil()));
+    return go(cio, nil());
   }
 
   Conveyor<F, O2> drain<O2>() =>
@@ -197,7 +197,7 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap((a) => a as Conveyor<F, Unit>);
 
-  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap(cast(id));
+  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap((a) => a as Conveyor<F, O2>);
 
   Conveyor<F, O2> onto<O2>(Conveyor<F, O2> f(Conveyor<F, O> c)) => f(this);
 
@@ -242,5 +242,4 @@ class _End {}
 
 class _Kill {}
 
-final MonadPlus<Conveyor> ConveyorMP = new MonadPlusOpsMonadPlus<Conveyor>((a) => Conveyor.produce(a), () => Conveyor.halt(Conveyor.End));
-MonadPlus<Conveyor<F, O>> conveyorMP<F, O>() => cast(ConveyorMP);
+MonadPlus<Conveyor<F, O>> conveyorMP<F, O>() => new MonadPlusOpsMonadPlus((a) => Conveyor.produce(a as O), () => Conveyor.halt(Conveyor.End));

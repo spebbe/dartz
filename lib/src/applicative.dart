@@ -40,7 +40,7 @@ abstract class Applicative<F> implements Functor<F> {
 */
   // Workaround: Dumbing down types in generic liftX to give subclasses a chance to do proper typing...
   //             OMG, it just got worse... not much left of the types since 2.0.0-dev.32.0 :-(
-
+/*
   Function lift<A, B>(B f(A a)) => cast((F fa) => map(fa, f));
   Function lift2<A, B, C>(C f(A a, B b)) => (F fa, F fb) => ap(fb, map(fa, curry2(f)));
   Function lift3<A, B, C, D>(D f(A a, B b, C c)) => (F fa, F fb, F fc) => ap(fc, ap(fb, map(fa, curry3(f))));
@@ -53,11 +53,12 @@ abstract class Applicative<F> implements Functor<F> {
   F map4<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, E f(A a, B b, C c, D d)) => cast(lift4(f)(fa, fb, fc, fd));
   F map5<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, EFF f(A a, B b, C c, D d, E e)) => cast(lift5(f)(fa, fb, fc, fd, fe));
   F map6<A, A2 extends A, B, B2 extends B, C, C2 extends C, D, D2 extends D, E, E2 extends E, EFF, EFF2 extends EFF, G>(covariant F fa, covariant F fb, covariant F fc, covariant F fd, covariant F fe, covariant F ff, G f(A a, B b, C c, D d, E e, EFF fff)) => cast(lift6(f)(fa, fb, fc, fd, fe, ff));
-
-  Applicative<F> /** Applicative<F<G<_>>> **/ composeA(Applicative G) => new ComposedApplicative(this, G);
+*/
+  //Applicative<F> /** Applicative<F<G<_>>> **/ composeA(Applicative G) => new ComposedApplicative(this, G);
 }
 
 // Compose Applicative<F<_>> with Applicative<G<_>>, yielding Applicative<F<G<_>>>
+/*
 class ComposedApplicative<F, G> extends Functor<F> with Applicative<F> {
   final Applicative<F> _F;
   final Applicative<G> _G;
@@ -70,7 +71,7 @@ class ComposedApplicative<F, G> extends Functor<F> with Applicative<F> {
 
   @override F map<A, B>(F fga, B f(A _)) => _F.map(fga, (G ga) => _G.map(ga, f));
 }
-
+*/
 abstract class ApplicativeOps<F, A> implements FunctorOps<F, A> {
 //  F pure<B>(B b);
   F ap<B>(covariant F ff);

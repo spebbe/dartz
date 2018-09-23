@@ -56,6 +56,9 @@ class Delay<A> extends IOOp<A> {
 class Attempt<A> extends IOOp<Either<Object, A>> {
   final Free<IOOp, A> fa;
   Attempt(this.fa);
+
+  Either<Object, A> succeed(A a) => right(a);
+  Either<Object, A> fail(Object err) => left(err);
 }
 
 class Fail<A> extends IOOp<A> {

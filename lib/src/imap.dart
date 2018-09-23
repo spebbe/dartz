@@ -65,7 +65,7 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
   IMap<K, V2> mapKV<V2>(V2 f(K k, V v)) => mapWithKey(f);
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
-
+/*
   G traverseKV<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(
           new IMap._internal(_order, _emptyIMapAVLNode())),
@@ -73,7 +73,7 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
 
   G traverseKV_<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
       _tree.foldLeft(gApplicative.pure(unit), (prev, k, v) => gApplicative.map2(prev, f(k, v), (_1, _2) => unit));
-
+*/
   @override B foldMap<B>(Monoid<B> bMonoid, B f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
 
   @override B foldLeft<B>(B z, B f(B previous, V v)) => _tree.foldLeft(z, (p, k, v) => f(p, v));

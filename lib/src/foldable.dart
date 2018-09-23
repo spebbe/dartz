@@ -32,13 +32,13 @@ abstract class Foldable<F> {
 
   A intercalate<A>(Monoid<A> mi, F fa, A a) => foldRight<A, Option<A>>(fa, none(), (A ca, oa) => some(mi.append(ca, oa.fold(mi.zero, mi.appendC(a))))) | mi.zero();
 
-  G collapse<A, G>(ApplicativePlus<G> ap, F fa) => foldLeft(fa, ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
+  //G collapse<A, G>(ApplicativePlus<G> ap, F fa) => foldLeft(fa, ap.empty(), (p, a) => ap.plus(p, ap.pure(a)));
 
-  G foldLeftM<A, B, G>(Monad<G> m, F fa, B z, G f(B previous, A a)) => foldRight<A, Function1<B, G>>(fa, m.pure, (a, b) => (w) => m.bind(f(w, a), b))(z);
+  //G foldLeftM<A, B, G>(Monad<G> m, F fa, B z, G f(B previous, A a)) => foldRight<A, Function1<B, G>>(fa, m.pure, (a, b) => (w) => m.bind(f(w, a), b))(z);
 
-  G foldRightM<A, B, G>(Monad<G> m, F fa, B z, G f(A a, B previous)) => foldLeft<A, Function1<B, G>>(fa, m.pure, (b, a) => (w) => m.bind(f(a, w), b))(z);
+  //G foldRightM<A, B, G>(Monad<G> m, F fa, B z, G f(A a, B previous)) => foldLeft<A, Function1<B, G>>(fa, m.pure, (b, a) => (w) => m.bind(f(a, w), b))(z);
 
-  G foldMapM<A, B, G>(Monad<G> m, Monoid<B> bMonoid, F fa, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), cast(m.lift2(bMonoid.append))), fa, f);
+  //G foldMapM<A, B, G>(Monad<G> m, Monoid<B> bMonoid, F fa, G f(A a)) => foldMap(monoid(() => m.pure(bMonoid.zero()), cast(m.lift2(bMonoid.append))), fa, f);
 }
 
 abstract class FoldableOps<F, A> {

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1
+
+- Massive performance improvements for many operations on IMap on Dart 2
+  - Inserts and lookups are now almost as fast on Dart 2 as on Dart 1
+- Fixed some tests that passed for the wrong reason...
+
 ## 0.8.0
 
 - Bridge release with few breaking changes, full Dart 1 support and rudimentary Dart 2 support

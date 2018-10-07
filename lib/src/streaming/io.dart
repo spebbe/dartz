@@ -6,7 +6,7 @@ class IO {
 
   static final Conveyor<Free<IOOp, dynamic>, SinkF<Free<IOOp, dynamic>, String>> stdoutWriter = Source.constant(IOM, (String s) => Source.eval_(io.println(s)));
 
-  static Conveyor<Free<IOOp, dynamic>, ChannelF<Free<IOOp, dynamic>, A, A>> stdoutPeeker<A>() => Source.constant(IOM, (A a) => Source.eval(io.println(a.toString()) >> IOM.pure(a)));
+  static Conveyor<Free<IOOp, dynamic>, ChannelF<Free<IOOp, dynamic>, A, A>> stdoutPeeker<A>() => Source.constant(IOM, (A a) => Source.eval(io.println(a.toString()).andThen(IOM.pure(a))));
 
   static Conveyor<Free<IOOp, dynamic>, UnmodifiableListView<int>> fileReader(String path, [int chunkBytes = 4096]) => Source.resource(
       io.openFile(path, true),

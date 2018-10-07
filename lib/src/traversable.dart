@@ -12,7 +12,7 @@ abstract class Traversable<F> extends Functor<F> with Foldable<F> {
 
   F mapWithIndex<B>(F fa, B f(int i, a)) {
     final M = stateM<int>();
-    return cast(traverse<State<int, dynamic>>(M, fa, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0));
+    return cast(traverse<State<int, dynamic>>(M, fa, (e) => M.get().bind((i) => M.put(i + 1).map((_) => f(i, e)))).value(0));
   }
 
   F zipWithIndex(F fa) => mapWithIndex(fa, tuple2);
@@ -35,7 +35,7 @@ abstract class TraversableOps<F, A> extends FunctorOps<F, A> with FoldableOps<F,
 
   F mapWithIndex<B>(B f(int i, A a)) {
     final M = stateM<int>();
-    return cast(traverse<State<int, dynamic>>(M, (e) => M.get().bind((i) => M.put(i + 1).replace(f(i, e)))).value(0));
+    return cast(traverse<State<int, dynamic>>(M, (e) => M.get().bind((i) => M.put(i + 1).map((_) => f(i, e)))).value(0));
   }
 
   F zipWithIndex() => mapWithIndex(tuple2);

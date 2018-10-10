@@ -22,7 +22,10 @@ void main() {
     expect(intStringToSwedish("2"), right("två"));
     expect(intStringToSwedish("fyrtiosjutton"), left("could not parse 'fyrtiosjutton' to int"));
     expect(intStringToSwedish("3"), left("could not translate 'three' to swedish"));
+    expect(intStringToSwedish("4").isLeft(), true);
+    expect(intStringToSwedish("4").isRight(), false);
     expect(intStringToSwedish("4"), left("could not translate '4' to english"));
+    expect(intStringToSwedish("4").swap(), right("could not translate '4' to english"));
   });
 /*
   test("transformer demo", () async {

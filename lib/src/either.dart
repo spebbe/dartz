@@ -9,6 +9,9 @@ abstract class Either<L, R> extends TraversableOps<Either/*<L, dynamic>*/, R> wi
   R operator |(R dflt) => getOrElse(() => dflt);
   Either<L2, R> leftMap<L2>(L2 f(L l)) => fold((L l) => left(f(l)), right);
   Option<R> toOption() => fold((_) => none(), some);
+  bool isLeft() => fold((_) => true, (_) => false);
+  bool isRight() => fold((_) => false, (_) => true);
+  Either<R, L> swap() => fold(right, left);
 
   @override Either<L, R2> pure<R2>(R2 r2) => right(r2);
   @override Either<L, R2> map<R2>(R2 f(R r)) => fold(left, (R r) => right(f(r)));

@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 //import 'package:enumerators/combinators.dart' as c;
 import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
-import 'dart:async';
+//import 'dart:async';
 import 'laws.dart';
 
 void main() {

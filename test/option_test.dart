@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 //import 'package:enumerators/enumerators.dart';
-import 'enumerators_stubs.dart';
+//import 'enumerators_stubs.dart';
 //import 'package:enumerators/combinators.dart' as c;
 import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';

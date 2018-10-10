@@ -37,11 +37,11 @@ void main() {
     }));
   });
 
-  test("pair iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil<Tuple2<int, int>>(), (k, v, IList<Tuple2<int, int>> p) => cons(tuple2(k, v), p)) == ilist((m as IHashMap<int, int>).pairIterable()))));
+  test("pair iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<Tuple2<int, int>>>(nil<Tuple2<int, int>>(), (k, v, IList<Tuple2<int, int>> p) => cons(tuple2(k, v), p)) == ilist(m.pairIterable()))));
 
-  test("key iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(k, p)) == ilist((m as IHashMap<int, int>).keyIterable()))));
+  test("key iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(k, p)) == ilist(m.keyIterable()))));
 
-  test("value iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(v, p)) == ilist((m as IHashMap<int, int>).valueIterable()))));
+  test("value iterable", () => qc.check(forall(intIHashMaps, (IHashMap<int, int> m) => m.foldRightKV<IList<int>>(nil<int>(), (k, v, IList<int> p) => cons(v, p)) == ilist(m.valueIterable()))));
 
   group("IHashMapTr", () => checkTraversableLaws(IHashMapTr, intIHashMaps));
 

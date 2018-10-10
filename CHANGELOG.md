@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.2
+
+- Added isLeft, isRight and swap to Either
+- Fixed some type issues on 2.1.0-dev.6.0
+
 ## 0.8.1
 
 - Massive performance improvements for many operations on IMap on Dart 2

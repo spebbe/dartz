@@ -186,5 +186,3 @@ class _SingletonIterator<A> extends Iterator<A> {
   @override A get current => _moves == 1 ? _singleton : null;
   @override bool moveNext() => ++_moves == 1;
 }
-
-final _emptyIterable = new Iterable<dynamic>.empty();

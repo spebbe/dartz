@@ -177,7 +177,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
           return false;
         }
       }
-      return otherCurrent is _Nil;
+      return otherCurrent is Nil;
     } else {
       return false;
     }
@@ -402,20 +402,20 @@ class Cons<A> extends IList<A> {
   @override Option<IList<A>> get tailOption => some(_tail);
 }
 
-class _Nil<A> extends IList<A> {
-  const _Nil();
+class Nil<A> extends IList<A> {
+  const Nil();
 
   bool _isCons() => false;
-  A _unsafeHead() => throw new UnsupportedError("_unsafeHead called on _Nil");
-  IList<A> _unsafeTail() => throw new UnsupportedError("_unsafeTail called on _Nil");
-  void _unsafeSetTail(IList<A> newTail) => throw new UnsupportedError("_unsafeSetTail called on _Nil");
+  A _unsafeHead() => throw new UnsupportedError("_unsafeHead called on Nil");
+  IList<A> _unsafeTail() => throw new UnsupportedError("_unsafeTail called on Nil");
+  void _unsafeSetTail(IList<A> newTail) => throw new UnsupportedError("_unsafeSetTail called on Nil");
 
   @override Option<A> get headOption => none();
 
   @override Option<IList<A>> get tailOption => none();
 }
 
-IList<A> nil<A>() => new _Nil();
+IList<A> nil<A>() => new Nil();
 IList<A> cons<A>(A head, IList<A> tail) => new Cons(head, tail);
 
 final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, nil()), nil);

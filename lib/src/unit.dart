@@ -1,10 +1,11 @@
 part of dartz;
 
-abstract class Unit {}
-class _ConcreteUnit extends Unit {
+class Unit {
+  const Unit._internal();
   @override String toString() => "()";
 }
-final Unit unit = new _ConcreteUnit();
+
+const Unit unit = const Unit._internal();
 
 class UnitMonoid extends Monoid<Unit> {
   @override Unit zero() => unit;

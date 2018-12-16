@@ -5,8 +5,6 @@ import 'dart:async';
 import 'package:dartz/dartz_streaming.dart';
 import 'package:dartz/dartz_unsafe.dart';
 
-import 'dart:io';
-
 amain() async {
 
   final pathToThisFile = "/Users/bjorns/Documents/Development/github/spebbe/dartz/example/streaming_io/example.dart";// Platform.script.toFilePath();

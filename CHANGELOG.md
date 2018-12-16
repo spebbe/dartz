@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.3
+
+- Preliminary Dart 2.2.0 compatibility
+- 'cast' now generates "implicit" checks, causing dart2js to produce dramatically more efficient js code in some cases
+
 ## 0.8.2
 
 - Added isLeft, isRight and swap to Either

@@ -82,8 +82,6 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   @override bool any(bool f(R r)) => map(f)|false;
 
-  @override Either<L, R> appendElement(R r) => orElse(() => right(r));
-
   @override R concatenate(Monoid<R> mi) => getOrElse(mi.zero);
 
   @override Option<R> concatenateO(Semigroup<R> si) => toOption();
@@ -105,8 +103,6 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   @override Option<R> maximum(Order<R> or) => toOption();
 
   @override Option<R> minimum(Order<R> or) => toOption();
-
-  @override Either<L, R> prependElement(R r) => right<L, R>(r).orElse(() => this);
 
   @override Either<L, B> replace<B>(B replacement) => map((_) => replacement);
 

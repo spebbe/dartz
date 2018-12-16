@@ -69,7 +69,10 @@ final Order<double> DoubleOrder = new ComparableOrder<double>();
 
 final Order<String> StringOrder = new ComparableOrder<String>();
 
-A cast<A>(dynamic a) => a as A;
+A cast<A>(dynamic a) {
+  final A ca = a;
+  return ca;
+}
 
 class IteratorEq<A> extends Eq<Iterator<A>> {
   final Eq<A> _aEq;

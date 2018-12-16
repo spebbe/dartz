@@ -20,7 +20,7 @@ void main() {
         inc >>
         (M.pure("hej") >= (v) =>
          inc >>
-         M.get() >= ((s) => (s == 7) ? M.asks((suffix) => v + suffix) : M.raiseError("Gaah! State wasn't 7!!!"))
+         M.get() >= ((s) => (s == 7) ? M.asks((suffix) => v + cast(suffix)) : M.raiseError("Gaah! State wasn't 7!!!"))
         ) << inc;
 
     expect(await p.run("!", 5), right(tuple3(tuple2(ilist(["State transition from 5 to 6", "State transition from 6 to 7", "State transition from 7 to 8"]), "!!!"), 8, "hej!")));

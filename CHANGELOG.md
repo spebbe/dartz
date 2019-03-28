@@ -1,12 +1,21 @@
 # Changelog
 
+## 0.9.0 WIP
+
+- Type class hierarchy reworked to be implemented rather than extended
+- Removed monad transformers and some other stuff that can't be made type safe on Dart 2
+- IList and Option has some const support
+- Dart 2.2.0 support
+- Conveyor works on Dart 2!
+- TODO: ...more things...
+
 ## 0.8.9
 
 - Polished pana score
 
 ## 0.8.8
-
-- Dart 2.6.0 compatibility
+ 
+ - Dart 2.6.0 compatibility
 
 ## 0.8.7
 

@@ -18,10 +18,9 @@ Future unsafeIOInterpreter(IOOp io) {
     return new Future.value(unit);
 
   } else if (io is Attempt) {
-    return unsafePerformIO(io.fa).then((wut) => io.succeed(wut)).catchError((err, s) {print("&&& ${err}, ${s}"); return io.fail(err); });
+    return unsafePerformIO(io.fa).then(io.succeed).catchError(io.fail);
 
   } else if (io is Fail) {
-    print("--- ${io.failure}");
     return new Future.error(io.failure);
 
   } else if (io is OpenFile) {

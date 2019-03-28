@@ -1,13 +1,13 @@
 library streaming_io_example;
 
-import 'dart:async';
-
 import 'package:dartz/dartz_streaming.dart';
 import 'package:dartz/dartz_unsafe.dart';
 
-amain() async {
+import 'dart:io';
 
-  final pathToThisFile = "/Users/bjorns/Documents/Development/github/spebbe/dartz/example/streaming_io/example.dart";// Platform.script.toFilePath();
+main() async {
+
+  final pathToThisFile = Platform.script.toFilePath();
 
   // Construct Conveyor that:
   // 1. Reads lines from this file
@@ -26,8 +26,6 @@ amain() async {
   // since the Conveyor finishes as soon as the fifth comment is consumed.
   // The file will be closed as soon as the Conveyor finishes.
 
-  print("Here we go!");
-
   await unsafeConveyIO(firstFiveCommentsInThisFile.to(IO.stdoutWriter));
 
   // Conveyors are pure values, and can safely be reused:
@@ -35,11 +33,4 @@ amain() async {
 
   // ...and composed further:
   await unsafeConveyIO(firstFiveCommentsInThisFile.map((s) => s.toUpperCase()).to(IO.stdoutWriter));
-}
-
-void main() {
-  print("Starting!");
-  amain();
-  //sleep(new Duration(seconds: 1));
-  new Future(() => print("Bye!"));
 }

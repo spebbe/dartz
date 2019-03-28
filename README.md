@@ -22,6 +22,8 @@ Dart 2 has a much stricter type system, making it impossible to pull off the sam
 Therefore, the open, type class based design of older versions of `dartz` is gradually being replaced by a more closed design, with a fixed set of type class instances interacting through hard coded logic. Some things, such as monad transformers, will probably have to be completely removed.
 Starting with version 0.8.0 and going forward, more and more of `dartz` will be Dart 2 compatible, at the expense of many breaking API changes. If you are developing for Dart 1, you might be happier sticking with version 0.7.5.
 
+TODO: Document 0.9.0+
+
 ##### Status for versions >= 0.8.0
 
 * Core design is in flux, with a lot of restructuring going on

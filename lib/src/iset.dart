@@ -56,16 +56,8 @@ class ISet<A> implements FoldableOps<ISet, A> {
 
   @override String toString() => "iset<${_tree.toIList().map((a) => a.toString()).intercalate(StringMi, ", ")}>";
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<A> toIterable() => _tree.toIterable();
-
-  Iterator<A> iterator() => _tree.iterator();
-
-  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
-
-
   @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(A a)) => all(f);
 
   @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
 
@@ -90,6 +82,15 @@ class ISet<A> implements FoldableOps<ISet, A> {
   @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
 
   @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
+
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<A> toIterable() => _tree.toIterable();
+
+  Iterator<A> iterator() => _tree.iterator();
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 final Foldable<ISet> ISetFo = new FoldableOpsFoldable<ISet>();

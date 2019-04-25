@@ -2,7 +2,6 @@
 
 part of dartz;
 
-// Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R> {
   const Either();
 
@@ -67,13 +66,6 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   @override String toString() => fold((l) => 'Left($l)', (r) => 'Right($r)');
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<R> toIterable() => fold((_) => const Iterable.empty(), (r) => new _SingletonIterable(r));
-  Iterator<R> iterator() => toIterable().iterator;
-
-  void forEach(void sideEffect(R r)) => fold((_) => null, sideEffect);
-
   @override B foldMap<B>(Monoid<B> bMonoid, B f(R r)) => fold((_) => bMonoid.zero(), f);
 
   @override Either<L, B> mapWithIndex<B>(B f(int i, R r)) => map((r) => f(0, r));
@@ -81,6 +73,7 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   @override Either<L, Tuple2<int, R>> zipWithIndex() => map((r) => tuple2(0, r));
 
   @override bool all(bool f(R r)) => map(f)|true;
+  @override bool every(bool f(R r)) => all(f);
 
   @override bool any(bool f(R r)) => map(f)|false;
 
@@ -115,6 +108,13 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   @override Either<L, Tuple2<R, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 
   @override Either<L, B> ap<B>(Either<L, Function1<R, B>> ff) => ff.bind((f) => map(f));
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<R> toIterable() => fold((_) => const Iterable.empty(), (r) => new _SingletonIterable(r));
+  Iterator<R> iterator() => toIterable().iterator;
+
+  void forEach(void sideEffect(R r)) => fold((_) => null, sideEffect);
 }
 
 class Left<L, R> extends Either<L, R> {

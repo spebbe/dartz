@@ -5,7 +5,6 @@ part of dartz;
 // Prestacked Future<Either<E, Reader<R> + Writer<W> + State<S>>> monad.
 // Binds are stack safe but relatively expensive, because of Future chaining.
 
-// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class Evaluation<E, R, W, S, A> implements MonadOps<Evaluation<E, R, W, S, dynamic>, A> {
   final Monoid<W> _W;
   final Function2<R, S, Future<Either<E, Tuple3<W, S, A>>>> _run;

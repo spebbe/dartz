@@ -4,7 +4,6 @@ part of dartz;
 
 // Bind on plain State is *not* stack safe. Composition of StateT with stack safe monad, such as Trampoline, is.
 
-// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class State<S, A> implements MonadOps<State<S, dynamic>, A> {
   final Function1<S, Tuple2<A, S>> _run;
   Tuple2<A, S> run(S s) => _run(s);
@@ -45,7 +44,6 @@ class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S,
 final StateMonad StateM = new StateMonad();
 StateMonad<S> stateM<S>() => new StateMonad();
 
-// Workaround for https://github.com/dart-lang/sdk/issues/29949
 class StateT<F, S, A> implements MonadOps<StateT<F, S, dynamic>, A> {
   final Monad<F> _FM;
   final Function1<S, F> _run;

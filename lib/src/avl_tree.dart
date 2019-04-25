@@ -44,15 +44,8 @@ class AVLTree<A> implements FoldableOps<AVLTree, A> {
 
   @override String toString() => 'avltree<${toIList()}>';
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<A> toIterable() => new _AVLTreeIterable(this);
-
-  Iterator<A> iterator() => toIterable().iterator;
-
-  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
-
   @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(A a)) => all(f);
 
   @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
 
@@ -77,6 +70,15 @@ class AVLTree<A> implements FoldableOps<AVLTree, A> {
   @override Option<A> maximum(Order<A> oa) => concatenateO(oa.maxSi());
 
   @override Option<A> minimum(Order<A> oa) => concatenateO(oa.minSi());
+
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<A> toIterable() => new _AVLTreeIterable(this);
+
+  Iterator<A> iterator() => toIterable().iterator;
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 abstract class _AVLNode<A> {

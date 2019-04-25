@@ -108,36 +108,15 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
 
   @override String toString() => "imap{${foldMapKV<IList<String>>(ilistMi(), (k, v) => new Cons("$k: $v", nil())).intercalate(StringMi, ", ")}}";
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable(this);
-
-  Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
-
-  Iterable<K> keyIterable() => new _IMapKeyIterable(this);
-
-  Iterator<K> keyIterator() => keyIterable().iterator;
-
-  Iterable<V> valueIterable() => new _IMapValueIterable(this);
-
-  Iterator<V> valueIterator() => valueIterable().iterator;
-
-  Iterable<Tuple2<K, V>> toIterable() => pairIterable();
-
-  Iterator<Tuple2<K, V>> iterator() => pairIterator();
-
-  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
-
-  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
-
   @override IMap<K, B> mapWithIndex<B>(B f(int i, V a)) =>
     _tree.foldLeft<Tuple2<int, IMap<K, B>>>(tuple2(0, emptyMap()), (t, k, v) => t.apply((i, acc) => tuple2(i+1, acc.put(k, f(i, v))))).value2; // TODO: optimize
 
   @override IMap<K, Tuple2<int, V>> zipWithIndex() => mapWithIndex(tuple2);
 
-  @override bool all(bool f(V a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool all(bool f(V v)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(V v)) => all(f);
 
-  @override bool any(bool f(V a)) => foldMap(BoolOrMi, f); // TODO: optimize
+  @override bool any(bool f(V v)) => foldMap(BoolOrMi, f); // TODO: optimize
 
   @override V concatenate(Monoid<V> mi) => foldMap(mi, id); // TODO: optimize
 
@@ -164,6 +143,29 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
   @override IMap<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
 
   @override IMap<K, Tuple2<V, B>> strengthR<B>(B b) => map((v) => tuple2(v, b));
+
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<Tuple2<K, V>> pairIterable() => new _IMapPairIterable(this);
+
+  Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
+
+  Iterable<K> keyIterable() => new _IMapKeyIterable(this);
+
+  Iterator<K> keyIterator() => keyIterable().iterator;
+
+  Iterable<V> valueIterable() => new _IMapValueIterable(this);
+
+  Iterator<V> valueIterator() => valueIterable().iterator;
+
+  Iterable<Tuple2<K, V>> toIterable() => pairIterable();
+
+  Iterator<Tuple2<K, V>> iterator() => pairIterator();
+
+  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
+
+  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
 }
 
 

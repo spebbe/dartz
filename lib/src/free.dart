@@ -4,7 +4,6 @@ part of dartz;
 
 typedef Free<F, A> _FreeF<F, A>(dynamic x);
 
-// Workaround for https://github.com/dart-lang/sdk/issues/29949
 abstract class Free<F, A> implements MonadOps<Free<F, dynamic>, A> {
 
   @override Free<F, B> map<B>(B f(A a)) => bind((a) => new Pure(f(a)));

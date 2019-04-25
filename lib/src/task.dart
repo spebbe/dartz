@@ -7,7 +7,7 @@ class Task<A> implements MonadCatchOps<Task, A> {
 
   Task(this._run);
 
-  static Task<A> delay<A>(Function0<A> f) => new Task(() => new Future(f));
+  static Task<A> delay<A>(Function0<A> f) => new Task(() => new Future.microtask(f));
 
   Future<A> run() => _run();
 
@@ -42,7 +42,7 @@ class TaskMonadCatch extends Functor<Task> with Applicative<Task>, Monad<Task>, 
 
   @override Task<A> fail<A>(Object err) => new Task(() => new Future.error(err));
 
-  @override Task<A> pure<A>(A a) => new Task(() => new Future.value(a));
+  @override Task<A> pure<A>(A a) => new Task(() => new Future.microtask(() => a));
 }
 
 final MonadCatch<Task> TaskMC = new TaskMonadCatch();

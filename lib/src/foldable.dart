@@ -63,6 +63,7 @@ abstract class FoldableOps<F, A> {
   bool any(bool f(A a)) => foldMap(BoolOrMi, f);
 
   bool all(bool f(A a)) => foldMap(BoolAndMi, f);
+  bool every(bool f(A a)) => all(f);
 
   Option<A> minimum(Order<A> oa) => concatenateO(new MinSemigroup(oa));
 

@@ -70,6 +70,7 @@ final Order<double> DoubleOrder = new ComparableOrder<double>();
 final Order<String> StringOrder = new ComparableOrder<String>();
 
 A cast<A>(dynamic a) {
+  // ignore: invalid_assignment
   final A ca = a;
   return ca;
 }

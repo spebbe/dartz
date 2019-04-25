@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.4
+
+- Added transform, filter, where and partition to ISet
+
 ## 0.8.3
 
 - Preliminary Dart 2.2.0 compatibility

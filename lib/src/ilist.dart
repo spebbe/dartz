@@ -233,22 +233,6 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
 
   static IList<A> flattenOption<A>(IList<Option<A>> oas) => oas.flatMap((oa) => oa.fold(nil, (a) => cons(a, nil())));
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
-
-  Iterable<A> toIterable() => new _IListIterable(this);
-
-  Iterator<A> iterator() => new _IListIterator(this);
-
-  void forEach(void sideEffect(A a)) {
-    var current = this;
-    while (current._isCons()) {
-      sideEffect(current._unsafeHead());
-      current = current._unsafeTail();
-    }
-  }
-
   Option<IList<B>> traverseOption<B>(Option<B> f(A a)) {
     Option<IList<B>> result = some(nil());
     var current = this;
@@ -304,6 +288,17 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     return result.map((l) => l.reverse());
   }
 
+  Free<F, IList<B>> traverseFree<F, B>(Free<F, B> f(A a)) {
+    Free<F, IList<B>> result = new Pure(nil());
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
   Option<IList<B>> traverseOptionM<B>(Option<IList<B>> f(A a)) {
     var result = some(nil<B>());
     var current = this;
@@ -317,11 +312,13 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
 
   static Option<IList<A>> sequenceOption<A>(IList<Option<A>> loa) => loa.traverseOption(id);
 
-  static Either<L, IList<A>> sequenceEither<A, L>(IList<Either<L, A>> loa) => loa.traverseEither(id);
+  static Either<L, IList<A>> sequenceEither<A, L>(IList<Either<L, A>> lea) => lea.traverseEither(id);
 
   static Future<IList<A>> sequenceFuture<A>(IList<Future<A>> lfa) => lfa.traverseFuture(id);
 
   static State<S, IList<A>> sequenceState<A, S>(IList<State<S, A>> lsa) => lsa.traverseState(id);
+
+  static Free<F, IList<A>> sequenceFree<F, A>(IList<Free<F, A>> lfa) => lfa.traverseFree(id);
 
   @override IList<B> mapWithIndex<B>(B f(int i, A a)) {
     final IList<B> bNil = nil();
@@ -347,6 +344,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
   @override IList<Tuple2<int, A>> zipWithIndex() => mapWithIndex(tuple2);
 
   @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(A a)) => all(f);
 
   @override IList<B> andThen<B>(IList<B> next) => bind((_) => next);
 
@@ -390,6 +388,22 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
   @override IList<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
 
   @override IList<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  List<A> toList() => foldLeft([], (List<A> p, a) => p..add(a));
+
+  Iterable<A> toIterable() => new _IListIterable(this);
+
+  Iterator<A> iterator() => new _IListIterator(this);
+
+  void forEach(void sideEffect(A a)) {
+    var current = this;
+    while (current._isCons()) {
+      sideEffect(current._unsafeHead());
+      current = current._unsafeTail();
+    }
+  }
 
 }
 

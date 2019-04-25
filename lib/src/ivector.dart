@@ -118,17 +118,10 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
 
   @override String toString() => "ivector[${map((A a) => a.toString()).intercalate(StringMi, ', ')}]";
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<A> toIterable() => _elementsByIndex.valueIterable();
-
-  Iterator<A> iterator() => _elementsByIndex.valueIterator();
-
-  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
-
   @override IVector<Tuple2<int, A>> zipWithIndex() => mapWithIndex(tuple2);
 
   @override bool all(bool f(A a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(A a)) => all(f);
 
   @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
 
@@ -155,6 +148,15 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
   @override IVector<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
 
   @override IVector<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<A> toIterable() => _elementsByIndex.valueIterable();
+
+  Iterator<A> iterator() => _elementsByIndex.valueIterator();
+
+  void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
 IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);

@@ -57,28 +57,6 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   @override bool operator ==(other) => identical(this, other) || (other is IHashMap && _map == other._map);
   @override int get hashCode => _map.hashCode;
 
-  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
-
-  Iterable<Tuple2<K, V>> pairIterable() => _map.valueIterable().expand((tuples) => tuples.toIterable());
-
-  Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
-
-  Iterable<K> keyIterable() => pairIterable().map((t) => t.value1);
-
-  Iterator<K> keyIterator() => keyIterable().iterator;
-
-  Iterable<V> valueIterable() => pairIterable().map((t) => t.value2);
-
-  Iterator<V> valueIterator() => valueIterable().iterator;
-
-  Iterable<Tuple2<K, V>> toIterable() => pairIterable();
-
-  Iterator<Tuple2<K, V>> iterator() => pairIterator();
-
-  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
-
-  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
-
   @override B foldMap<B>(Monoid<B> bMonoid, B f(V a)) => _map.foldMap(bMonoid, (kvs) => kvs.foldMap(bMonoid, (t) => f(t.value2)));
 
   @override IHashMap<K, B> mapWithIndex<B>(B f(int i, V a)) => throw "not implemented!!!"; // TODO
@@ -86,6 +64,7 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   @override IHashMap<K, Tuple2<int, V>> zipWithIndex() => mapWithIndex(tuple2);
 
   @override bool all(bool f(V a)) => foldMap(BoolAndMi, f); // TODO: optimize
+  @override bool every(bool f(V v)) => all(f);
 
   @override bool any(bool f(V a)) => foldMap(BoolOrMi, f); // TODO: optimize
 
@@ -114,6 +93,29 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   @override IHashMap<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
 
   @override IHashMap<K, Tuple2<V, B>> strengthR<B>(B b) => map((v) => tuple2(v, b));
+
+
+  // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
+
+  Iterable<Tuple2<K, V>> pairIterable() => _map.valueIterable().expand((tuples) => tuples.toIterable());
+
+  Iterator<Tuple2<K, V>> pairIterator() => pairIterable().iterator;
+
+  Iterable<K> keyIterable() => pairIterable().map((t) => t.value1);
+
+  Iterator<K> keyIterator() => keyIterable().iterator;
+
+  Iterable<V> valueIterable() => pairIterable().map((t) => t.value2);
+
+  Iterator<V> valueIterator() => valueIterable().iterator;
+
+  Iterable<Tuple2<K, V>> toIterable() => pairIterable();
+
+  Iterator<Tuple2<K, V>> iterator() => pairIterator();
+
+  void forEach(void sideEffect(V v)) => foldLeft(null, (_, v) => sideEffect(v));
+
+  void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
 }
 
 final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();

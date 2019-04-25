@@ -35,6 +35,17 @@ class ISet<A> extends FoldableOps<ISet, A> {
 
   IList<A> toIList() => _tree.toIList();
 
+  ISet<B> transform<B>(Order<B> order, B f(A a)) => foldLeft(new ISet.empty(order), (acc, a) => acc.insert(f(a)));
+
+  ISet<A> filter(bool predicate(A a)) => foldLeft(this, (acc, a) => predicate(a) ? acc : acc.remove(a));
+  ISet<A> where(bool predicate(A a)) => filter(predicate);
+
+  Tuple2<ISet<A>, ISet<A>> partition(bool f(A a)) =>
+    foldLeft(tuple2(new ISet.empty(_tree._order), new ISet.empty(_tree._order)),
+        (acc, a) => f(a)
+          ? acc.map1((s1) => s1.insert(a))
+          : acc.map2((s2) => s2.insert(a)));
+
   @override bool operator ==(other) => identical(this, other) || (other is ISet && _tree == other._tree);
 
   @override int get hashCode => _tree.hashCode;

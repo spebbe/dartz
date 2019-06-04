@@ -6,6 +6,7 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   B cata<B, B2 extends B>(B ifNone(), B2 ifSome(A a)) => fold(ifNone, ifSome);
   Option<A> orElse(Option<A> other()) => fold(other, (_) => this);
   A getOrElse(A dflt()) => fold(dflt, (a) => a);
+  A get() => getOrElse(() => throw StateError("Unexpectedly empty Option: $this"));
   Either<B, A> toEither<B>(B ifNone()) => fold(() => left(ifNone()), (a) => right(a));
   Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
   A operator |(A dflt) => getOrElse(() => dflt);

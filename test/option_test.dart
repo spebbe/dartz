@@ -56,4 +56,11 @@ void main() {
     expect(some(1).toIterable().toList(), [1]);
     expect(none().toIterable().toList(), []);
   });
+
+  group("Some", () {
+    test("value", () {
+      final some = Some(2);
+      expect(some.value, 2);
+    });
+  });
 }

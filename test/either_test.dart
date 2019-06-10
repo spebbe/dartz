@@ -66,4 +66,18 @@ void main() {
     expect(right(1).toIterable().toList(), [1]);
     expect(left("nope").toIterable().toList(), []);
   });
+
+  group("Left", () {
+    test("value", () {
+      final left = new Left(2);
+      expect(left.value, 2);
+    });
+  });
+
+  group("Right", () {
+    test("value", () {
+      final right = new Right(2);
+      expect(right.value, 2);
+    });
+  });
 }

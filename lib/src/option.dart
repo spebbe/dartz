@@ -82,6 +82,7 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
 class Some<A> extends Option<A> {
   final A _a;
   Some(this._a);
+  A get value => _a;
   @override B fold<B>(B ifNone(), B ifSome(A a)) => ifSome(_a);
   @override bool operator ==(other) => other is Some && other._a == _a;
   @override int get hashCode => _a.hashCode;

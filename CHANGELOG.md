@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.5
+
+- Compatibility with Dart > 2.3.2 through workaround for https://github.com/dart-lang/sdk/issues/35097
+  - Thanks @modulovalue and @CatherineThompson for reporting!
+- Direct `value` access on Some, Left and Right
+  - Thanks @modulovalue for PR #15!
+
 ## 0.8.4
 
 - Added transform, filter, where and partition to ISet

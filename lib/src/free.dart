@@ -83,7 +83,7 @@ class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dy
 
   @override Free<F, A> pure<A>(A a) => new Pure(a);
 
-  @override Free<F, B> bind<A, B>(Free<F, A> fa, Free<F, B> f(A a)) => fa.bind(f);
+  @override Free<F, dynamic> bind<A, B>(Free<F, A> fa, Free<F, B> f(A a)) => fa.bind(f);
 
 }
 

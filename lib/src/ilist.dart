@@ -163,7 +163,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     return none();
   }
 
-  bool get isEmpty => this is _Nil;
+  bool get isEmpty => this is Nil;
 
   @override String toString() => 'ilist[' + map((A a) => a.toString()).intercalate(StringMi, ', ') + ']';
 

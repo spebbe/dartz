@@ -157,4 +157,21 @@ void main() {
     }));
   });
 
+  test("to option", () {
+    qc.check(forall(intILists, (dynamicL) {
+      final l = dynamicL as IList<int>;
+      final empty = l.option.fold(() => true, (_) => false);
+      return empty == (l == nil());
+    }));
+  });
+
+  test("asCons, head and tail", () {
+    int sumThroughAsCons(IList<int> l) => l.asCons().fold(() => 0, (c) => c.head + sumThroughAsCons(c.tail));
+
+    qc.check(forall(intILists, (dynamicL) {
+      final l = dynamicL as IList<int>;
+      return sumThroughAsCons(l) == l.concatenate(IntSumMi);
+    }));
+  });
+
 }

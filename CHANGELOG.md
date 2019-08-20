@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.6
+
+- Added asCons() and option to IList (issue #17, thanks @modulovalue)
+- Added isEmpty to AVLTree, IList, IMap, ISet and IVector (issue #23, thanks @rich-j)
+- Compatibility with Dart 2.4.0 (issue #18, thanks @xsobolx)
+
 ## 0.8.5
 
 - Compatibility with Dart > 2.3.2 through workaround for https://github.com/dart-lang/sdk/issues/35097

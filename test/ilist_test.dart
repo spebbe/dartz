@@ -174,4 +174,6 @@ void main() {
     }));
   });
 
+  test("isEmpty", () => qc.check(forall(intILists, (IList<int> il) => (il.length() == 0) == il.isEmpty)));
+
 }

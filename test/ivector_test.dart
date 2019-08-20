@@ -154,4 +154,6 @@ void main() {
     }));
   });
 
+  test("isEmpty", () => qc.check(forall(intIVectors, (IVector<int> v) => (v.length() == 0) == v.isEmpty)));
+
 }

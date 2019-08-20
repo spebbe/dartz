@@ -45,4 +45,6 @@ void main() {
   group("AVLTree FoldableOps", () => checkFoldableOpsProperties(intTrees));
 
   test("iterable", () => qc.check(forall(intTrees, (t) => t.toIList() == ilist((t as AVLTree<num>).toIterable()))));
+
+  test("isEmpty", () => qc.check(forall(intTrees, (AVLTree<num> t) => (t.length() == 0) == t.isEmpty)));
 }

@@ -102,6 +102,8 @@ class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
 
   Order<K> get order => _order;
 
+  bool get isEmpty => _tree.empty;
+
   @override bool operator ==(other) => identical(this, other) || (other is IMap && _order == other._order && ObjectIteratorEq.eq(iterator(), other.iterator()));
 
   @override int get hashCode => _order.hashCode ^ pairs().hashCode;

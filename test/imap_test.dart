@@ -139,4 +139,7 @@ void main() {
   group("IMapMi", () => checkMonoidLaws(IMapMi, c.ints.map((i) => new IMap.from(comparableOrder(), {i: i}))));
 
   group("IMap FoldableOps", () => checkFoldableOpsProperties(intIMaps));
+
+  test("isEmpty", () => qc.check(forall(intIMaps, (IMap<int, int> m) => (m.length() == 0) == m.isEmpty)));
+
 }

@@ -108,6 +108,8 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override int length() => _length;
 
+  bool get isEmpty => length() == 0;
+
   // TODO: kill MonadOps flatten and rename in 0.8.0
   static IVector<A> flattenIVector<A>(IVector<IVector<A>> ffa) => ffa.flatMap(id);
 

@@ -46,6 +46,8 @@ class ISet<A> extends FoldableOps<ISet, A> {
           ? acc.map1((s1) => s1.insert(a))
           : acc.map2((s2) => s2.insert(a)));
 
+  bool get isEmpty => _tree.isEmpty;
+
   @override bool operator ==(other) => identical(this, other) || (other is ISet && _tree == other._tree);
 
   @override int get hashCode => _tree.hashCode;

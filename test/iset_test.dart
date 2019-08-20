@@ -73,4 +73,6 @@ void main() {
     return doubledSum == sum*2;
   })));
 
+  test("isEmpty", () => qc.check(forall(intSets, (ISet<int> s) => (s.length() == 0) == s.isEmpty)));
+
 }

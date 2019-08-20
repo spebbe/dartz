@@ -187,6 +187,8 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return none();
   }
 
+  bool get isEmpty => this is _Nil;
+
   @override String toString() => 'ilist[' + map((A a) => a.toString()).intercalate(StringMi, ', ') + ']';
 
   @override bool operator ==(other) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.7
+
+- Refined types on Task, for better Dart 2 support (issue #24, thanks @rlavolee)
+
 ## 0.8.6
 
 - Added asCons() and option to IList (issue #17, thanks @modulovalue)

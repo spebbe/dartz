@@ -13,11 +13,11 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
 
   @override State<S, B> pure<B>(B b) => new State((s) => new Tuple2(b, s));
   @override State<S, B> map<B>(B f(A a)) => new State((S s) => run(s).map1(f));
-  @override State<S, B> bind<B>(State<S, B> f(A a)) => new State((S s) {
+  @override State<S, B> bind<B>(Function1<A, State<S, B>> f) => new State((S s) {
     final ran = run(s);
     return f(ran.value1).run(ran.value2);
   });
-  @override State<S, B> flatMap<B>(State<S, B> f(A a)) => bind(f);
+  @override State<S, B> flatMap<B>(Function1<A, State<S, B>> f) => bind(f);
   @override State<S, B> andThen<B>(State<S, B> next) => bind((_) => next);
   @override State<S, A> operator <<(State<S, dynamic> next) => bind((a) => next.map((_) => a));
 }
@@ -25,7 +25,7 @@ class State<S, A> extends FunctorOps<State/*<S, dynamic>*/, A> with ApplicativeO
 class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S, dynamic>>, Monad<State<S, dynamic>> {
   @override State<S, A> pure<A>(A a) => new State((S s) => new Tuple2(a, s));
   @override State<S, B> map<A, B>(State<S, A> fa, B f(A a)) => fa.map(f);
-  @override State<S, B> bind<A, B>(State<S, A> fa, State<S, B> f(A a)) => fa.bind(f);
+  @override State<S, B> bind<A, B>(State<S, A> fa, Function1<A, State<S, B>> f) => fa.bind(f);
 
   State<S, S> get() => new State((S s) => new Tuple2(s, s));
   State<S, A> gets<A>(A f(S s)) => new State((S s) => new Tuple2(f(s), s));
@@ -49,10 +49,10 @@ class StateT<F, S, A> extends FunctorOps<StateT/*<F, S, dynamic>*/, A> with Appl
 
   @override StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
   @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, B> t) => t.map1(f)));
-  @override StateT<F, S, B> bind<B>(StateT<F, S, B> f(A a)) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
+  @override StateT<F, S, B> bind<B>(Function1<A, StateT<F, S, B>> f) => new StateT(_FM, (S s) => _FM.bind(_FM.pure(() => _run(s)), (F tt()) {
     return _FM.bind(tt(), (Tuple2<A, S> t) => f(t.value1)._run(t.value2));
   }));
-  @override StateT<F, S, B> flatMap<B>(StateT<F, S, B> f(A a)) => bind(f);
+  @override StateT<F, S, B> flatMap<B>(Function1<A, StateT<F, S, B>> f) => bind(f);
   @override StateT<F, S, B> andThen<B>(StateT<F, S, B> next) => bind((_) => next);
   @override StateT<F, S, A> operator <<(StateT<F, S, dynamic> next) => bind((a) => next.map((_) => a));
   @override StateT<F, S, B> replace<B>(B b) => map((_) => b);
@@ -65,7 +65,7 @@ class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<
 
   @override StateT<F, S, A> pure<A>(A a) =>  new StateT(_FM, (S s) => _FM.pure(new Tuple2(a, s)));
   @override StateT<F, S, B> map<A, B>(StateT<F, S, A> fa, B f(A a)) => fa.map(f);
-  @override StateT<F, S, B> bind<A, B>(StateT<F, S, A> fa, StateT<F, S, B> f(A a)) => fa.bind(f);
+  @override StateT<F, S, B> bind<A, B>(StateT<F, S, A> fa, Function1<A, StateT<F, S, B>> f) => fa.bind(f);
 
   StateT<F, S, S> get() => new StateT(_FM, (S s) => _FM.pure(new Tuple2(s, s)));
   StateT<F, S, A> gets<A>(A f(S s)) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(f(s), s)));

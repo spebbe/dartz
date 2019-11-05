@@ -2,7 +2,7 @@ part of dartz;
 
 class IdMonad extends Functor with Applicative, Monad {
   @override pure<A>(A a) => a;
-  @override bind<A, B>(A fa, B f(A a)) => f(fa);
+  @override bind<A, B>(A fa, Function1<A, B> f) => f(fa);
 
   IList<A> replicate<A>(int n, A fa) => new IList.from(new List.filled(n, fa));
 }

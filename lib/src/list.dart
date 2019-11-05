@@ -5,7 +5,7 @@ part of dartz;
 
 class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List>, Plus<List> {
   @override List<A> pure<A>(A a) => [a];
-  @override List<B> bind<A, B>(List<A> fa, List<B> f(A a)) => fa.expand(f).toList();
+  @override List<B> bind<A, B>(List<A> fa, Function1<A, List<B>> f) => fa.expand(f).toList();
 
   @override List<A> empty<A>() => [];
   @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);

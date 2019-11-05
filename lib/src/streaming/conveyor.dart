@@ -53,12 +53,12 @@ abstract class Conveyor<F, O> extends FunctorOps<Conveyor/*<F, dynamic>*/, O> wi
   Conveyor<F, O> onHaltEnd(Conveyor<F, O> f()) =>
       onHalt((err) => err == End ? f() : halt(err));
 
-  Conveyor<F, O2> flatMap<O2>(Conveyor<F, O2> f(O o)) =>
+  Conveyor<F, O2> flatMap<O2>(Function1<O, Conveyor<F, O2>> f) =>
       interpret((h, t) => tryOrDie(() => (f(h).onHalt((err) => err == End ? halt(End) : kill<O2>().plus(halt(err)))).lazyPlus(() => t.flatMap(f))),
           (req, recv) => consume(req, (ea) => recv(ea).flatMap(f)),
           halt);
 
-  Conveyor<F, O2> bind<O2>(Conveyor<F, O2> f(O o)) => flatMap(f);
+  Conveyor<F, O2> bind<O2>(Function1<O, Conveyor<F, O2>> f) => flatMap(f);
 
   Conveyor<F, O> prependElement(O o) => pure(o).plus(this);
 

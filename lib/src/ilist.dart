@@ -77,7 +77,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return result;
   }
 
-  @override IList<B> bind<B>(IList<B> f(A a)) {
+  @override IList<B> bind<B>(Function1<A, IList<B>> f) {
     final IList<B> bNil = nil();
     if (!_isCons()) {
       return bNil;
@@ -117,7 +117,7 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     return resultHead ?? bNil;
   }
 
-  @override IList<B> flatMap<B>(IList<B> f(A a)) => bind(f);
+  @override IList<B> flatMap<B>(Function1<A, IList<B>> f) => bind(f);
 
   @override IList<B> map<B>(B f(A a)) {
     final IList<B> bNil = nil();

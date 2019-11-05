@@ -18,7 +18,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
           run(r, s).then((leftOrRight) =>
               leftOrRight.map((t) => new Tuple3(t.value1, t.value2, f(t.value3)))));
 
-  Evaluation<E, R, W, S, B> bind<B>(Evaluation<E, R, W, S, B> f(A a)) {
+  Evaluation<E, R, W, S, B> bind<B>(Function1<A, Evaluation<E, R, W, S, B>> f) {
     return new Evaluation(_W, (r, s) {
       return new Future.microtask(() {
         return run(r, s).then((leftOrRight) {
@@ -40,7 +40,7 @@ class Evaluation<E, R, W, S, A> extends FunctorOps<Evaluation/*<E, R, W, S, dyna
     });
   }
 
-  Evaluation<E, R, W, S, B> flatMap<B>(Evaluation<E, R, W, S, B> f(A a)) => bind(f);
+  Evaluation<E, R, W, S, B> flatMap<B>(Function1<A, Evaluation<E, R, W, S, B>> f) => bind(f);
 
   Evaluation<E, R, W, S, A> handleError(Evaluation<E, R, W, S, A> onError(E err)) {
     return new Evaluation(_W, (R r, S s) {
@@ -75,7 +75,7 @@ class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic
 
   @override Evaluation<E, R, W, S, B> map<A, B>(Evaluation<E, R, W, S, A> fa, B f(A a)) => fa.map(f);
 
-  @override Evaluation<E, R, W, S, B> bind<A, B>(Evaluation<E, R, W, S, A> fa, Evaluation<E, R, W, S, B> f(A a)) => fa.bind(f);
+  @override Evaluation<E, R, W, S, B> bind<A, B>(Evaluation<E, R, W, S, A> fa, Function1<A, Evaluation<E, R, W, S, B>> f) => fa.bind(f);
 
   @override Evaluation<E, R, W, S, A> pure<A>(A a) => new Evaluation(_W, (r, s) {
     return new Future.value(new Right(new Tuple3(_W.zero(), s, a)));

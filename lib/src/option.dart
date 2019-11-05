@@ -13,8 +13,8 @@ abstract class Option<A> extends TraversableOps<Option, A> with FunctorOps<Optio
   @override Option<B> pure<B>(B b) => some(b);
   @override Option<B> map<B>(B f(A a)) => fold(none, (A a) => some(f(a)));
   @override Option<B> ap<B>(Option<Function1<A, B>> ff) => fold(none, (A a) => ff.fold(none, (Function1<A, B> f) => some(f(a))));
-  @override Option<B> bind<B>(Option<B> f(A a)) => fold(none, f);
-  @override Option<B> flatMap<B>(Option<B> f(A a)) => fold(none, f);
+  @override Option<B> bind<B>(Function1<A, Option<B>> f) => fold(none, f);
+  @override Option<B> flatMap<B>(Function1<A, Option<B>> f) => fold(none, f);
   @override Option<B> andThen<B>(Option<B> next) => fold(none, (_) => next);
 
   @override G traverse<G>(Applicative<G> gApplicative, G f(A a)) => fold(() => gApplicative.pure(none()), (a) => gApplicative.map(f(a), some));
@@ -104,7 +104,7 @@ class OptionMonadPlus extends MonadPlusOpsMonadPlus<Option> {
 
   @override Option<B> map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
   @override Option<B> ap<A, B>(Option<A> fa, Option<Function1<A, B>> ff) => fa.ap(ff);
-  @override Option<B> bind<A, B>(Option<A> fa, Option<B> f(A a)) => fa.bind(f);
+  @override Option<B> bind<A, B>(Option<A> fa, Function1<A, Option<B>> f) => fa.bind(f);
 }
 
 final OptionMonadPlus OptionMP = new OptionMonadPlus();

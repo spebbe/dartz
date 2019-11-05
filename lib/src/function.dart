@@ -43,7 +43,7 @@ Function1<A, B> constF<A, B>(B b) => (A a) => b;
 
 class Function0TraversableMonad extends Traversable<Function0> with Applicative<Function0>, Monad<Function0>, TraversableMonad<Function0> {
   @override Function0 pure<A>(A a) => () => a;
-  @override Function0 bind<A, B>(Function0<A> fa, Function0<B> f(A a)) => () => f(fa())();
+  @override Function0 bind<A, B>(Function0<A> fa, Function1<A, Function0<B>> f) => () => f(fa())();
   @override G traverse<G>(Applicative<G> gApplicative, Function0 fa, G f(a)) => gApplicative.map(f(fa()), (b) => () => b);
 }
 

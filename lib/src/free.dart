@@ -9,7 +9,7 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
 
   @override Free<F, B> map<B>(B f(A a)) => bind((a) => new Pure(f(a)));
 
-  @override Free<F, B> bind<B>(Free<F, B> f(A a)) => new Bind(this, (a) => f(cast(a)));
+  @override Free<F, B> bind<B>(Function1<A, Free<F, B>> f) => new Bind(this, (a) => f(cast(a)));
 
   @override Free<F, B> replace<B>(B replacement) => map((_) => replacement);
 
@@ -31,7 +31,7 @@ abstract class Free<F, A> extends FunctorOps<Free/*<F, dynamic>*/, A> with Appli
   MA foldMap<M, MA extends M>(Monad<M> m, M f(F fa)) =>
       cast(/*step().*/fold((a) => m.pure(a), (fa) => f(fa), (ffb, f2) => m.bind(ffb.foldMap(m, f), (c) => f2(c).foldMap(m, f))));
 
-  @override Free<F, B> flatMap<B>(Free<F, B> f(A a)) => new Bind(this, (a) => f(cast(a)));
+  @override Free<F, B> flatMap<B>(Function1<A, Free<F, B>> f) => new Bind(this, (a) => f(cast(a)));
   @override Free<F, B> andThen<B>(Free<F, B> next) => bind((_) => next);
   @override Free<F, A> operator <<(Free<F, dynamic> next) => bind((a) => next.map((_) => a));
 
@@ -76,7 +76,7 @@ class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dy
 
   @override Free<F, A> pure<A>(A a) => new Pure(a);
 
-  @override Free<F, B> bind<A, B>(Free<F, A> fa, Free<F, B> f(A a)) => fa.bind(f);
+  @override Free<F, B> bind<A, B>(Free<F, A> fa, Function1<A, Free<F, B>> f) => fa.bind(f);
 
 }
 

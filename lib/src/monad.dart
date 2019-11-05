@@ -21,7 +21,7 @@ class ComposedMonad<F, G> extends Functor<F> with Applicative<F>, Monad<F> {
 
   @override F pure<A>(a) => _F.pure(_G.pure(a));
 
-  @override F bind<A, B>(F fga, F f(_)) => _F.bind(fga, (G ga) => _F.map(_GT.traverse(_F, ga, f), _G.join));
+  @override F bind<A, B>(F fga, Function1<dynamic, F>f) => _F.bind(fga, (G ga) => _F.map(_GT.traverse(_F, ga, f), _G.join));
 }
 
 abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {

@@ -37,9 +37,9 @@ class IVector<A> extends TraversableOps<IVector, A> with FunctorOps<IVector, A>,
 
   @override IVector<B> mapWithIndex<B>(B f(int i, A a)) => new IVector._internal(_elementsByIndex.mapWithKey((i, a) => f(i-_offset, a)), _offset, _length);
 
-  @override IVector<B> bind<B>(IVector<B> f(A a)) => foldLeft(emptyVector(), (p, a) => p.plus(f(a)));
+  @override IVector<B> bind<B>(Function1<A, IVector<B>> f) => foldLeft(emptyVector(), (p, a) => p.plus(f(a)));
 
-  @override IVector<B> flatMap<B>(IVector<B> f(A a)) => bind(f);
+  @override IVector<B> flatMap<B>(Function1<A, IVector<B>> f) => bind(f);
 
   @override IVector<A> empty() => emptyVector();
 

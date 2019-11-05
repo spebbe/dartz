@@ -9,7 +9,7 @@ class Task<A> extends FunctorOps<Task, A> with ApplicativeOps<Task, A>, MonadOps
 
   Future<A> run() => _run();
 
-  @override Task<B> bind<B>(Task<B> f(A a)) => new Task(() => _run().then((a) => f(a).run()));
+  @override Task<B> bind<B>(Function1<A, Task<B>> f) => new Task(() => _run().then((a) => f(a).run()));
 
   @override Task<B> pure<B>(B b) => new Task(() => new Future.value(b));
 
@@ -27,7 +27,7 @@ class Task<A> extends FunctorOps<Task, A> with ApplicativeOps<Task, A>, MonadOps
 
   @override Task<B> ap<B>(Task<Function1<A, B>> ff) => ff.bind(map); // TODO: optimize
 
-  @override Task<B> flatMap<B>(Task<B> f(A a)) => new Task(() => _run().then((a) => f(a).run()));
+  @override Task<B> flatMap<B>(Function1<A, Task<B>> f) => new Task(() => _run().then((a) => f(a).run()));
 
   @override Task<B> replace<B>(B replacement) => map((_) => replacement);
 }
@@ -36,7 +36,7 @@ class TaskMonadCatch extends Functor<Task> with Applicative<Task>, Monad<Task>, 
 
   @override Task<Either<Object, A>> attempt<A>(Task<A> fa) => fa.attempt();
 
-  @override Task<B> bind<A, B>(Task<A> fa, Task<B> f(A a)) => fa.bind(f);
+  @override Task<B> bind<A, B>(Task<A> fa, Function1<A,  Task<B>> f) => fa.bind(f);
 
   @override Task<A> fail<A>(Object err) => new Task(() => new Future.error(err));
 

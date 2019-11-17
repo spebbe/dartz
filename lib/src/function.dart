@@ -2,13 +2,27 @@
 
 part of dartz;
 
-typedef A Function0<A>();
-typedef B Function1<A, B>(A a);
-typedef C Function2<A, B, C>(A a, B b);
-typedef D Function3<A, B, C, D>(A a, B b, C c);
-typedef E Function4<A, B, C, D, E>(A a, B b, C c, D d);
-typedef F Function5<A, B, C, D, E, F>(A a, B b, C c, D d, E e);
-typedef G Function6<A, B, C, D, E, F, G>(A a, B b, C c, D d, E e, F f);
+typedef A Function0 <A>                                                            ();
+typedef B Function1 <A, B>                                                         (A a);
+typedef C Function2 <A, B, C>                                                      (A a, B b);
+typedef D Function3 <A, B, C, D>                                                   (A a, B b, C c);
+typedef E Function4 <A, B, C, D, E>                                                (A a, B b, C c, D d);
+typedef F Function5 <A, B, C, D, E, F>                                             (A a, B b, C c, D d, E e);
+typedef G Function6 <A, B, C, D, E, F, G>                                          (A a, B b, C c, D d, E e, F f);
+typedef H Function7 <A, B, C, D, E, F, G, H>                                       (A a, B b, C c, D d, E e, F f, G g);
+typedef I Function8 <A, B, C, D, E, F, G, H, I>                                    (A a, B b, C c, D d, E e, F f, G g, H h);
+typedef J Function9 <A, B, C, D, E, F, G, H, I, J>                                 (A a, B b, C c, D d, E e, F f, G g, H h, I i);
+typedef K Function10<A, B, C, D, E, F, G, H, I, J, K>                              (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j);
+typedef L Function11<A, B, C, D, E, F, G, H, I, J, K, L>                           (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k);
+typedef M Function12<A, B, C, D, E, F, G, H, I, J, K, L, M>                        (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l);
+typedef N Function13<A, B, C, D, E, F, G, H, I, J, K, L, M, N>                     (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m);
+typedef O Function14<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O>                  (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n);
+typedef P Function15<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P>               (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o);
+typedef Q Function16<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q>            (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o, P p);
+typedef R Function17<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R>         (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o, P p, Q q);
+typedef S Function18<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S>      (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o, P p, Q q, R r);
+typedef T Function19<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T>   (A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o, P p, Q q, R r, S s);
+typedef U Function20<A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U>(A a, B b, C c, D d, E e, F f, G g, H h, I i, J j, K k, L l, M m, N n, O o, P p, Q q, R r, S s, T t);
 
 
 Function1<A, Function1<B, C>> curry2<A, B, C>(Function2<A, B, C> fun) => (a) => (b) => fun(a, b);

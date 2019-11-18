@@ -16,7 +16,6 @@ class Tuple2<T1, T2> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple2 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2
           );
@@ -99,7 +98,6 @@ class Tuple3<T1, T2, T3> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple3 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3
@@ -197,7 +195,6 @@ class Tuple4<T1, T2, T3, T4> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple4 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -306,7 +303,6 @@ class Tuple5<T1, T2, T3, T4, T5> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple5 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -390,7 +386,6 @@ class Tuple6<T1, T2, T3, T4, T5, T6> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple6 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -482,7 +477,6 @@ class Tuple7<T1, T2, T3, T4, T5, T6, T7> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple7 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -582,7 +576,6 @@ class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple8 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -690,7 +683,6 @@ class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple9 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -806,7 +798,6 @@ class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple10 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -930,7 +921,6 @@ class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple11 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1062,7 +1052,6 @@ class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple12 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1202,7 +1191,6 @@ class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple13 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1350,7 +1338,6 @@ class Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple14 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1506,7 +1493,6 @@ class Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple15 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1670,7 +1656,6 @@ class Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple16 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -1842,7 +1827,6 @@ class Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple17 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -2022,7 +2006,6 @@ class Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple18 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -2210,7 +2193,6 @@ class Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple19 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&
@@ -2406,7 +2388,6 @@ class Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   bool operator ==(Object other) =>
       identical(this, other) ||
           (other is Tuple20 &&
-              runtimeType == other.runtimeType &&
               value1 == other.value1 &&
               value2 == other.value2 &&
               value3 == other.value3 &&

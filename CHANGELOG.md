@@ -7,6 +7,7 @@
 - IList and Option has some const support
 - Dart 2.2.0 support
 - Conveyor works on Dart 2!
+- TupleXX and FunctionXX arities up to 20, courtesy of @modulovalue!
 - TODO: ...more things...
 
 ## 0.8.8

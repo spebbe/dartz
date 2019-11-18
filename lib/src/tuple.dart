@@ -28,7 +28,7 @@ class Tuple2<T1, T2> {
   @override
   String toString() => '($value1, $value2)';
 
-  Tuple2 copyWith({
+  Tuple2<T1, T2> copyWith({
     T1 value1,
     T2 value2,
   }) {
@@ -54,8 +54,6 @@ class Tuple2<T1, T2> {
 
 //</editor-fold>
 }
-
-Tuple2<T1, T2> tuple2<T1, T2>(T1 v1, T2 v2) => new Tuple2(v1, v2);
 
 class Tuple2Semigroup<T1, T2> extends Semigroup<Tuple2<T1, T2>> {
   final Semigroup<T1> _value1Semigroup;
@@ -112,7 +110,7 @@ class Tuple3<T1, T2, T3> {
   @override
   String toString() => '($value1, $value2, $value3)';
 
-  Tuple3 copyWith({
+  Tuple3<T1, T2, T3> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -142,8 +140,6 @@ class Tuple3<T1, T2, T3> {
 
 //</editor-fold>
 }
-
-Tuple3<T1, T2, T3> tuple3<T1, T2, T3>(T1 v1, T2 v2, T3 v3) => new Tuple3(v1, v2, v3);
 
 class Tuple3Semigroup<T1, T2, T3> extends Semigroup<Tuple3<T1, T2, T3>> {
   final Semigroup<T1> _value1Semigroup;
@@ -211,7 +207,7 @@ class Tuple4<T1, T2, T3, T4> {
   @override
   String toString() => '($value1, $value2, $value3, $value4)';
 
-  Tuple4 copyWith({
+  Tuple4<T1, T2, T3, T4> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -245,8 +241,6 @@ class Tuple4<T1, T2, T3, T4> {
 
 //</editor-fold>
 }
-
-Tuple4<T1, T2, T3, T4> tuple4<T1, T2, T3, T4>(T1 v1, T2 v2, T3 v3, T4 v4) => new Tuple4(v1, v2, v3, v4);
 
 class Tuple4Semigroup<T1, T2, T3, T4> extends Semigroup<Tuple4<T1, T2, T3, T4>> {
   final Semigroup<T1> _value1Semigroup;
@@ -321,7 +315,7 @@ class Tuple5<T1, T2, T3, T4, T5> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5)';
 
-  Tuple5 copyWith({
+  Tuple5<T1, T2, T3, T4, T5> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -406,7 +400,7 @@ class Tuple6<T1, T2, T3, T4, T5, T6> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6)';
 
-  Tuple6 copyWith({
+  Tuple6<T1, T2, T3, T4, T5, T6> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -499,7 +493,7 @@ class Tuple7<T1, T2, T3, T4, T5, T6, T7> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7)';
 
-  Tuple7 copyWith({
+  Tuple7<T1, T2, T3, T4, T5, T6, T7> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -600,7 +594,7 @@ class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8)';
 
-  Tuple8 copyWith({
+  Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -709,7 +703,7 @@ class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9)';
 
-  Tuple9 copyWith({
+  Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -826,7 +820,7 @@ class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10)';
 
-  Tuple10 copyWith({
+  Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -951,7 +945,7 @@ class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11)';
 
-  Tuple11 copyWith({
+  Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1084,7 +1078,7 @@ class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12)';
 
-  Tuple12 copyWith({
+  Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1225,7 +1219,7 @@ class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13)';
 
-  Tuple13 copyWith({
+  Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1374,7 +1368,7 @@ class Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14)';
 
-  Tuple14 copyWith({
+  Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1531,7 +1525,7 @@ class Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15)';
 
-  Tuple15 copyWith({
+  Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1696,7 +1690,7 @@ class Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15, $value16)';
 
-  Tuple16 copyWith({
+  Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -1869,7 +1863,7 @@ class Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15, $value16, $value17)';
 
-  Tuple17 copyWith({
+  Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -2050,7 +2044,7 @@ class Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15, $value16, $value17, $value18)';
 
-  Tuple18 copyWith({
+  Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -2239,7 +2233,7 @@ class Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15, $value16, $value17, $value18, $value19)';
 
-  Tuple19 copyWith({
+  Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -2436,7 +2430,7 @@ class Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
   @override
   String toString() => '($value1, $value2, $value3, $value4, $value5, $value6, $value7, $value8, $value9, $value10, $value11, $value12, $value13, $value14, $value15, $value16, $value17, $value18, $value19, $value20)';
 
-  Tuple20 copyWith({
+  Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> copyWith({
     T1 value1,
     T2 value2,
     T3 value3,
@@ -2534,3 +2528,61 @@ class Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
 
 //</editor-fold>
 }
+
+Tuple2<T1, T2>
+tuple2<T1, T2>(T1 v1, T2 v2) =>
+    new Tuple2(v1, v2);
+Tuple3<T1, T2, T3>
+tuple3<T1, T2, T3>(T1 v1, T2 v2, T3 v3) =>
+    new Tuple3(v1, v2, v3);
+Tuple4<T1, T2, T3, T4>
+tuple4<T1, T2, T3, T4>(T1 v1, T2 v2, T3 v3, T4 v4) =>
+    new Tuple4(v1, v2, v3, v4);
+Tuple5<T1, T2, T3, T4, T5>
+tuple5<T1, T2, T3, T4, T5>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5) =>
+    new Tuple5(v1, v2, v3, v4, v5);
+Tuple6<T1, T2, T3, T4, T5, T6>
+tuple6<T1, T2, T3, T4, T5, T6>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6) =>
+    new Tuple6(v1, v2, v3, v4, v5, v6);
+Tuple7<T1, T2, T3, T4, T5, T6, T7>
+tuple7<T1, T2, T3, T4, T5, T6, T7>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7) =>
+    new Tuple7(v1, v2, v3, v4, v5, v6, v7);
+Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>
+tuple8<T1, T2, T3, T4, T5, T6, T7, T8>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8) =>
+    new Tuple8(v1, v2, v3, v4, v5, v6, v7, v8);
+Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>
+tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9) =>
+    new Tuple9(v1, v2, v3, v4, v5, v6, v7, v8, v9);
+Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
+tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10) =>
+    new Tuple10(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10);
+Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
+tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11) =>
+    new Tuple11(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11);
+Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
+tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12) =>
+    new Tuple12(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12);
+Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
+tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13) =>
+    new Tuple13(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13);
+Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
+tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14) =>
+    new Tuple14(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14);
+Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
+tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15) =>
+    new Tuple15(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15);
+Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
+tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15, T16 v16) =>
+    new Tuple16(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16);
+Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>
+tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15, T16 v16, T17 v17) =>
+    new Tuple17(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17);
+Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>
+tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15, T16 v16, T17 v17, T18 v18) =>
+    new Tuple18(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18);
+Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>
+tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15, T16 v16, T17 v17, T18 v18, T19 v19) =>
+    new Tuple19(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19);
+Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>
+tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20>(T1 v1, T2 v2, T3 v3, T4 v4, T5 v5, T6 v6, T7 v7, T8 v8, T9 v9, T10 v10, T11 v11, T12 v12, T13 v13, T14 v14, T15 v15, T16 v16, T17 v17, T18 v18, T19 v19, T20 v20) =>
+    new Tuple20(v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18, v19, v20);

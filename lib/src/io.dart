@@ -68,7 +68,8 @@ class Fail<A> extends IOOp<A> {
 
 class Gather<A> extends IOOp<IList<A>> {
   final IList<Free<IOOp, A>> ops;
-  Gather(this.ops);
+  final Function1<IList<dynamic>, IList<A>> cast;
+  Gather(this.ops, this.cast);
 }
 
 class IOMonad extends FreeMonad<IOOp> implements MonadCatch<Free<IOOp, dynamic>> {
@@ -106,7 +107,7 @@ class IOOps<F> extends FreeOps<F, IOOp> {
 
   Free<F, A> fail<A>(Object failure) => liftOp(new Fail(failure));
 
-  Free<F, IList<A>> gather<A>(IList<Free<IOOp, A>> ops) => liftOp(new Gather(ops));
+  Free<F, IList<A>> gather<A>(IList<Free<IOOp, A>> ops) => liftOp(new Gather(ops, (l) => l.map((e) => cast<A>(e))));
 }
 
 final io = new IOOps<IOOp>(new IdFreeComposer());

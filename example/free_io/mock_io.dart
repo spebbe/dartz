@@ -45,7 +45,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.pure(unit);
 
   } else if (io is ReadBytes) {
-    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? new UnmodifiableListView([]) : new UnmodifiableListView(_utf8.encode(s)));
+    return mockReadFile((io.file as _MockFileRef).name).map((s) => s == null ? new UnmodifiableListView(<int>[]) : new UnmodifiableListView(_utf8.encode(s)));
 
   } else if (io is WriteBytes) {
     return MockM.write(ivector(["${(io.file as _MockFileRef).name}: ${_utf8.decode(io.bytes.toList())}"]));
@@ -57,7 +57,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return _interpret(io.a);
 
   } else if (io is Gather) {
-    return io.ops.traverseEvaluation(ivectorMi(), _interpret);
+    return io.ops.traverseEvaluation(ivectorMi<String>(), _interpret).map(io.cast);
 
   } else {
     return MockM.raiseError("Unimplemented IO op: $io");
@@ -66,7 +66,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
 
 // Technique: Interpret Free monad and run resulting Evaluation using reader (mocked inputs) and initial state (index in input vector)
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, A>>> mockPerformIO<A>(Free<IOOp, A> io, IMap<String, IVector<String>> input) =>
-    _interpret(io).run(input, emptyMap());
+    io.foldMapEvaluation(MockM, mockIOInterpreter).run(input, emptyMap());
 
 Future<Either<String, Tuple3<IVector<String>, IMap<String, int>, IList<A>>>> mockConveyIO<A>(Conveyor<Free<IOOp, dynamic>, A> cio, IMap<String, IVector<String>> input) =>
-    _interpret(Conveyor.runLogIO(cio)).run(input, emptyMap());
+    mockPerformIO(Conveyor.runLogIO(cio), input);

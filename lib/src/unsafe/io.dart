@@ -42,7 +42,7 @@ Future unsafeIOInterpreter(IOOp io) {
     return new Future.delayed(io.duration, () => unsafePerformIO(io.a));
 
   } else if (io is Gather) {
-    return io.ops.traverseFuture(unsafePerformIO);
+    return io.ops.traverseFuture(unsafePerformIO).then(io.cast);
 
   } else {
     throw new UnimplementedError("Unimplemented IO op: $io");

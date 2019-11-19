@@ -31,7 +31,8 @@ main() async {
   final expectedOutput = right(ivector(["stdout: MockedPublicClass             <- mockedPart.dart"]));
 
   // ...and test it using a non side effecting interpreter...
-  assert((await mockConveyIO(program, mockedInputs)).map((result) => result.value1) == expectedOutput);
+  final actualOutput = (await mockConveyIO(program, mockedInputs)).map((result) => result.value1);
+  print("program produces expected output for mocked input: ${actualOutput == expectedOutput}");
 
   // ...or just run it using an interpreter that does real IO side effects!
   await unsafeConveyIO(program);

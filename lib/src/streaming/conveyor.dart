@@ -192,9 +192,9 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
 
-  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap((a) => a as Conveyor<F, Unit>);
+  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap((a) => cast<Conveyor<F, Unit>>(a));
 
-  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap((a) => a as Conveyor<F, O2>);
+  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap((a) => cast<Conveyor<F, O2>>(a));
 
   Conveyor<F, O2> onto<O2>(Conveyor<F, O2> f(Conveyor<F, O> c)) => f(this);
 
@@ -222,7 +222,7 @@ class _Consume<F, A, O> extends Conveyor<F, O> {
   final F /** really F<A> **/ _req;
   final Function1<Either<Object, A>, Conveyor<F, O>> _recv;
   _Consume(this._req, this._recv);
-  A2 interpret<A2>(A2 ifProduce(O head, Conveyor<F, O> tail), A2 ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A2 ifHalt(Object err)) => ifConsume(_req, (ea) => _recv(ea.map((a) => a as A)));
+  A2 interpret<A2>(A2 ifProduce(O head, Conveyor<F, O> tail), A2 ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A2 ifHalt(Object err)) => ifConsume(_req, (ea) => _recv(ea.map((a) => cast<A>(a))));
 
   @override String toString() => "Consume($_req, $_recv)";
 }
@@ -239,4 +239,4 @@ class _End {}
 
 class _Kill {}
 
-MonadPlus<Conveyor<F, O>> conveyorMP<F, O>() => new MonadPlusOpsMonadPlus((a) => Conveyor.produce(a as O), () => Conveyor.halt(Conveyor.End));
+MonadPlus<Conveyor<F, O>> conveyorMP<F, O>() => new MonadPlusOpsMonadPlus((a) => Conveyor.produce(cast<O>(a)), () => Conveyor.halt(Conveyor.End));

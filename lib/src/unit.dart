@@ -1,4 +1,5 @@
 // ignore_for_file: unnecessary_new
+// ignore_for_file: unnecessary_const
 
 part of dartz;
 

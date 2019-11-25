@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.9
+
+- Polished pana score
+
 ## 0.8.8
 
 - Dart 2.6.0 compatibility

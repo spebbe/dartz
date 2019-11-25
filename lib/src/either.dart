@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // Workaround for https://github.com/dart-lang/sdk/issues/29949

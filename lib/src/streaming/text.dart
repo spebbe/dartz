@@ -1,3 +1,6 @@
+// ignore_for_file: unnecessary_new
+// ignore_for_file: unnecessary_const
+
 part of dartz_streaming;
 
 class Text {
@@ -16,7 +19,7 @@ class Text {
         final buffered = (spill|"") + s;
         final lines = ilist(buffered.split("\n"));
         return lines.reverse().uncons(Pipe.halt, (newSpill, completeLines) =>
-            completeLines.foldLeft(_lines(option(newSpill.length > 0, newSpill)), (rest, line) => Conveyor.produce(line, rest))
+            completeLines.foldLeft(_lines(option(newSpill.isNotEmpty, newSpill)), (rest, line) => Conveyor.produce(line, rest))
         );
       }, () => spill.fold(Pipe.halt, Pipe.produce));
 
@@ -46,7 +49,7 @@ class Text {
     return loop(new UnmodifiableListView([]));
   }
 
-  static Conveyor<From<String>, String> regexp(String regexpSource, {int group: 0}) {
+  static Conveyor<From<String>, String> regexp(String regexpSource, {int group = 0}) {
     final regexp = new RegExp(regexpSource);
     final pipe = Pipe.consume<String, String>((s) {
       final matches = ilist(regexp.allMatches(s)).filter((m) => m.groupCount >= group);

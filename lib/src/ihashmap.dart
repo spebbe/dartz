@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // NOTE: IHashMap is backed by an AVL tree, not by a traditional hash table, so lookup/insert is O(log n), not O(1)

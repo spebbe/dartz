@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 class Task<A> extends FunctorOps<Task, A> with ApplicativeOps<Task, A>, MonadOps<Task, A>, MonadCatchOps<Task, A> {

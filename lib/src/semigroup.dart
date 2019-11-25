@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 abstract class Semigroup<A> {

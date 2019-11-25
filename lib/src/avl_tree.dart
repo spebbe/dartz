@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // Not technically stack safe
@@ -263,7 +265,7 @@ class _AVLTreeIterable<A> extends Iterable<A> {
 class _AVLTreeIterator<A> extends Iterator<A> {
 
   bool _started = false;
-  _NonEmptyAVLNode<A> _currentNode = null;
+  _NonEmptyAVLNode<A> _currentNode;
   IList<_NonEmptyAVLNode<A>> _path = nil();
 
   _AVLTreeIterator(this._currentNode);

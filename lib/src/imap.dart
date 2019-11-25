@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 class IMap<K, V> extends TraversableOps<IMap<K, dynamic>, V> {
@@ -461,7 +463,7 @@ class _IMapValueIterable<K, V> extends _IMapIterable<K, V, V> {
 abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
 
   bool _started = false;
-  _NonEmptyIMapAVLNode<K, V> _currentNode = null;
+  _NonEmptyIMapAVLNode<K, V> _currentNode;
   IList<_NonEmptyIMapAVLNode<K, V>> _path = nil();
 
   _IMapAVLNodeIterator(this._currentNode);

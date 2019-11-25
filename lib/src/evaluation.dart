@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // Prestacked Future<Either<E, Reader<R> + Writer<W> + State<S>>> monad.

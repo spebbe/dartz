@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // Internally implemented using imperative loops and mutations, for stack safety and performance.
@@ -82,8 +84,8 @@ abstract class IList<A> extends TraversableOps<IList, A> with FunctorOps<IList, 
     if (!_isCons()) {
       return bNil;
     }
-    Cons<B> result = null;
-    IList<B> resultHead = null;
+    Cons<B> result;
+    IList<B> resultHead;
     var current = this;
     var sub = f(current._unsafeHead());
     while(current._isCons() && !sub._isCons()) {
@@ -430,7 +432,7 @@ class _IListIterable<A> extends Iterable<A> {
 class _IListIterator<A> extends Iterator<A> {
   bool _started = false;
   IList<A> _l;
-  A _current = null;
+  A _current;
 
   _IListIterator(this._l);
 

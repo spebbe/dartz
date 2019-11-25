@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // Bind on plain State is *not* stack safe. Composition of StateT with stack safe monad, such as Trampoline, is.

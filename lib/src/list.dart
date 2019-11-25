@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // List is mutable, so use with care.
@@ -38,7 +40,7 @@ class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
 
   @override M pure<A>(A a) => _stackedM.pure([a]);
   M _concat(M a, M b) => _stackedM.bind(a, (Iterable l1) => _stackedM.map(b, (Iterable l2) => new List.from(l1)..addAll(l2)));
-  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (List l) => ((l.length == 0) ? pure([]) : l.map<M>(cast(f)).reduce(_concat)));
+  @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (List l) => ((l.isEmpty) ? pure([]) : l.map<M>(cast(f)).reduce(_concat)));
 }
 
 Monad<M> listTMonad<M>(Monad<M> mmonad) => new ListTMonad(mmonad);

@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 part of dartz;
 
 // NOTE: First simplistic attempt at practical dart lenses. A bit wonky and different from STAB lenses/prisms. Will probably change in the future.

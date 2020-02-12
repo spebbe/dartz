@@ -156,4 +156,22 @@ void main() {
 
   test("isEmpty", () => qc.check(forall(intIVectors, (IVector<int> v) => (v.length() == 0) == v.isEmpty)));
 
+  test("indexOf", () {
+    qc.check(forall3(intIVectors, c.ints, c.ints, (IVector<int> v, int i, int s) {
+      final index = v.isEmpty ? 0 : i.abs() % v.length();
+      final start = v.isEmpty ? 0 : s.abs() % v.length();
+      final element = v[index]|0;
+      return v.indexOf(element, start: start)|-1 == v.toIterable().toList().indexOf(element, start);
+    }));
+  });
+
+  test("indexOf manual", () {
+    final v = ivector(["x", "b"]).dropFirst().prependElement("a").appendElement("c").plus(ivector(["a", "b", "c"]));
+    expect(v.indexOf("a"), some(0));
+    expect(v.indexOf("b"), some(1));
+    expect(v.indexOf("c"), some(2));
+    expect(v.indexOf("a", start: 1), some(3));
+    expect(v.indexOf("a", start: 100), none());
+    expect(v.indexOf("d"), none());
+  });
 }

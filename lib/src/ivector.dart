@@ -108,6 +108,21 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
 
   bool get isEmpty => length() == 0;
 
+  static final Option<int> _NOT_FOUND = none();
+
+  Option<int> indexOf(A element, {int start = 0, Eq<A> eq}) {
+    final effectiveEq = eq ?? ObjectEq;
+    return _elementsByIndex.cata(_NOT_FOUND, (_) => _NOT_FOUND, (result, index, v, cataLeft, cataRight) {
+      if ((index-_offset) < start) {
+        return cataRight(result);
+      } else {
+        return cataLeft(result)
+          .orElse(() => effectiveEq.eq(element, v) ? some(index-_offset) : _NOT_FOUND)
+          .orElse(() => cataRight(result));
+      }
+    });
+  }
+
   // TODO: kill MonadOps flatten and rename in 0.8.0
   static IVector<A> flattenIVector<A>(IVector<IVector<A>> ffa) => ffa.flatMap(id);
 

@@ -1,15 +1,14 @@
 # Changelog
 
-## 0.9.0 WIP
+## 0.9.0
 
 - Type class hierarchy reworked to be implemented rather than extended
 - Removed monad transformers and some other stuff that can't be made type safe on Dart 2
 - IList and Option has some const support
-- Dart 2.2.0 support
+- Improved Dart 2 support
 - Conveyor works on Dart 2!
 - TupleXX and FunctionXX arities up to 20, courtesy of @modulovalue!
 - IVector#indexOf
-- TODO: ...more things...
 
 ## 0.8.9
 

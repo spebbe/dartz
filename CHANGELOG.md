@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+- Dart 2.8.1 compatibility
+
 ## 0.9.0
 
 - Type class hierarchy reworked to be implemented rather than extended

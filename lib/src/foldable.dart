@@ -4,7 +4,7 @@ part of dartz;
 
 abstract class Foldable<F> {
   // def foldMap[A, B: Monoid](fa: Option[A], f: A => B): B
-  B foldMap<A, B>(Monoid<B> bMonoid, covariant F fa, B f(A a));
+  B foldMap<A, B>(Monoid<B> bMonoid, F fa, B f(A a));
 
   B foldRight<A, B>(F fa, B z, B f(A a, B previous)) => foldMap<A, Endo<B>>(endoMi(), fa, curry2(f))(z);
 

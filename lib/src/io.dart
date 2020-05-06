@@ -74,7 +74,7 @@ class Gather<A> extends IOOp<IList<A>> {
 
 class IOMonad extends FreeMonad<IOOp> implements MonadCatch<Free<IOOp, dynamic>> {
   @override Free<IOOp, A> pure<A>(A a) => new Pure(a);
-  @override Free<IOOp, Either<Object, A>> attempt<A>(Free<IOOp, A> fa) => liftF(new Attempt(fa));
+  @override Free<IOOp, Either<Object, A>> attempt<A>(covariant Free<IOOp, A> fa) => liftF(new Attempt(fa));
   @override Free<IOOp, A> fail<A>(Object err) => liftF(new Fail(err));
   // appease the twisted type system (issue #18)
   @override Free<IOOp, B> bind<A, B>(Free<IOOp, A> fa, Function1<A, Free<IOOp, B>> f) => super.bind(fa, f);

@@ -7,10 +7,10 @@ part of dartz;
 
 class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List>, Plus<List> {
   @override List<A> pure<A>(A a) => [a];
-  @override List<B> bind<A, B>(List<A> fa, Function1<A, List<B>> f) => fa.expand(f).toList();
+  @override List<B> bind<A, B>(covariant List<A> fa, covariant Function1<A, List<B>> f) => fa.expand(f).toList();
 
   @override List<A> empty<A>() => [];
-  @override List<A> plus<A>(List<A> f1, List<A> f2) => new List.from(f1)..addAll(f2);
+  @override List<A> plus<A>(covariant List<A> f1, covariant List<A> f2) => new List.from(f1)..addAll(f2);
 
   /*
   @override G traverse<G>(Applicative<G> gApplicative, List fas, G f(_)) => fas.fold(gApplicative.pure([]), (previous, e) {
@@ -22,7 +22,7 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
   });
   */
 
-  @override B foldMap<A, B>(Monoid<B> bMonoid, List<A> fa, B f(A a)) => fa.fold(bMonoid.zero(), (z, a) => bMonoid.append(z, f(a)));
+  @override B foldMap<A, B>(Monoid<B> bMonoid, covariant List<A> fa, B f(A a)) => fa.fold(bMonoid.zero(), (z, a) => bMonoid.append(z, f(a)));
 }
 
 class ListMonoid<A> extends Monoid<List<A>> {

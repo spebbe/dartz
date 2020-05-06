@@ -36,9 +36,9 @@ class Task<A> implements MonadCatchOps<Task, A> {
 
 class TaskMonadCatch extends Functor<Task> with Applicative<Task>, Monad<Task>, MonadCatch<Task> {
 
-  @override Task<Either<Object, A>> attempt<A>(Task<A> fa) => fa.attempt();
+  @override Task<Either<Object, A>> attempt<A>(covariant Task<A> fa) => fa.attempt();
 
-  @override Task<B> bind<A, B>(Task<A> fa, Function1<A,  Task<B>> f) => fa.bind(f);
+  @override Task<B> bind<A, B>(covariant Task<A> fa, covariant Function1<A,  Task<B>> f) => fa.bind(f);
 
   @override Task<A> fail<A>(Object err) => new Task(() => new Future.error(err));
 

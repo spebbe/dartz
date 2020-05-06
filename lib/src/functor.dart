@@ -3,8 +3,7 @@
 part of dartz;
 
 abstract class Functor<F> {
-  // Workaround: abusing "covariant" to partially make up for lack of higher kinded types
-  F map<A, B>(covariant F fa, B f(A a));
+  F map<A, B>(F fa, B f(A a));
 
   F strengthL<A, B>(F fa, B b) => map(fa, (a) => tuple2(b, a));
 

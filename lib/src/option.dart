@@ -154,17 +154,17 @@ Option<A> option<A>(bool test, A value) => test ? some(value) : none();
 Option<A> optionOf<A>(A value) => value != null ? some(value) : none();
 
 class OptionMonadPlus extends MonadPlus<Option> with Monad<Option>, ApplicativePlus<Option>, Applicative<Option>, Functor<Option>, PlusEmpty<Option>, Plus<Option> {
-  @override Option<B> map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
-  @override Option<B> ap<A, B>(Option<A> fa, Option<Function1<A, B>> ff) => fa.ap(ff);
-  @override Option<B> bind<A, B>(Option<A> fa, Function1<A, Option<B>> f) => fa.bind(f);
+  @override Option<B> map<A, B>(covariant Option<A> fa, B f(A a)) => fa.map(f);
+  @override Option<B> ap<A, B>(covariant Option<A> fa, covariant Option<Function1<A, B>> ff) => fa.ap(ff);
+  @override Option<B> bind<A, B>(covariant Option<A> fa, covariant Function1<A, Option<B>> f) => fa.bind(f);
   @override Option<A> empty<A>() => none();
-  @override Option<A> plus<A>(Option<A> f1, Option<A> f2) => f1.plus(f2);
+  @override Option<A> plus<A>(covariant Option<A> f1, covariant Option<A> f2) => f1.plus(f2);
   @override Option<A> pure<A>(A a) => some(a);
 }
 
 class OptionTraversable extends Traversable<Option> {
-  @override B foldMap<A, B>(Monoid<B> bMonoid, Option<A> fa, B f(A a)) => fa.foldMap(bMonoid, f);
-  @override Option map<A, B>(Option<A> fa, B f(A a)) => fa.map(f);
+  @override B foldMap<A, B>(Monoid<B> bMonoid, covariant Option<A> fa, B f(A a)) => fa.foldMap(bMonoid, f);
+  @override Option<B> map<A, B>(covariant Option<A> fa, B f(A a)) => fa.map(f);
 }
 
 class OptionMonoid<A> extends Monoid<Option<A>> {

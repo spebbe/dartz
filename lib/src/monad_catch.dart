@@ -3,7 +3,7 @@
 part of dartz;
 
 abstract class MonadCatch<F> implements Monad<F> {
-  F attempt<A>(covariant F fa); // F<A> => F<Either<Object, A>>
+  F attempt<A>(F fa); // F<A> => F<Either<Object, A>>
   F fail<A>(Object err); // Object => F<A>
 }
 

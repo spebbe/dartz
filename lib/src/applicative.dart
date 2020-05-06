@@ -4,11 +4,11 @@ part of dartz;
 
 abstract class Applicative<F> implements Functor<F> {
   F pure<A>(A a);
-  F ap<A, B>(covariant F fa, covariant F ff);
+  F ap<A, B>(F fa, F ff);
 
   F get nothing => pure(unit);
 
-  @override F map<A, B>(covariant F fa, B f(A a)) => ap(fa, pure(f));
+  @override F map<A, B>(F fa, B f(A a)) => ap(fa, pure(f));
 /*
   F traverseA(Traversable g, ga, F f(_)) => g.traverse(this, ga, f);
 

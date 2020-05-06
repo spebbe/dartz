@@ -32,8 +32,8 @@ class State<S, A> implements MonadOps<State<S, dynamic>, A> {
 
 class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S, dynamic>>, Monad<State<S, dynamic>> {
   @override State<S, A> pure<A>(A a) => new State((S s) => new Tuple2(a, s));
-  @override State<S, B> map<A, B>(State<S, A> fa, B f(A a)) => fa.map(f);
-  @override State<S, B> bind<A, B>(State<S, A> fa, Function1<A, State<S, B>> f) => fa.bind(f);
+  @override State<S, B> map<A, B>(covariant State<S, A> fa, covariant B f(A a)) => fa.map(f);
+  @override State<S, B> bind<A, B>(covariant State<S, A> fa, covariant Function1<A, State<S, B>> f) => fa.bind(f);
 
   State<S, S> get() => new State((S s) => new Tuple2(s, s));
   State<S, A> gets<A>(A f(S s)) => new State((S s) => new Tuple2(f(s), s));
@@ -75,8 +75,8 @@ class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<
   StateTMonad(this._FM);
 
   @override StateT<F, S, A> pure<A>(A a) =>  new StateT(_FM, (S s) => _FM.pure(new Tuple2(a, s)));
-  @override StateT<F, S, B> map<A, B>(StateT<F, S, A> fa, B f(A a)) => fa.map(f);
-  @override StateT<F, S, B> bind<A, B>(StateT<F, S, A> fa, Function1<A, StateT<F, S, B>> f) => fa.bind(f);
+  @override StateT<F, S, B> map<A, B>(covariant StateT<F, S, A> fa, covariant B f(A a)) => fa.map(f);
+  @override StateT<F, S, B> bind<A, B>(covariant StateT<F, S, A> fa, covariant Function1<A, StateT<F, S, B>> f) => fa.bind(f);
 
   StateT<F, S, S> get() => new StateT(_FM, (S s) => _FM.pure(new Tuple2(s, s)));
   StateT<F, S, A> gets<A>(A f(S s)) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(f(s), s)));

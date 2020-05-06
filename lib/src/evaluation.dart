@@ -72,15 +72,15 @@ class Evaluation<E, R, W, S, A> implements MonadOps<Evaluation<E, R, W, S, dynam
   @override Evaluation<E, R, W, S, B> ap<B>(Evaluation<E, R, W, S, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
 }
 
-class EvaluationMonad<E, R, W, S> extends Functor<Evaluation<E, R, W, S, dynamic>> with Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {
+class EvaluationMonad<E, R, W, S> extends Object with Functor<Evaluation<E, R, W, S, dynamic>>, Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {
 
   final Monoid<W> _W;
 
   EvaluationMonad(this._W);
 
-  @override Evaluation<E, R, W, S, B> map<A, B>(Evaluation<E, R, W, S, A> fa, B f(A a)) => fa.map(f);
+  @override Evaluation<E, R, W, S, B> map<A, B>(covariant Evaluation<E, R, W, S, A> fa, covariant B f(A a)) => fa.map(f);
 
-  @override Evaluation<E, R, W, S, B> bind<A, B>(Evaluation<E, R, W, S, A> fa, Function1<A, Evaluation<E, R, W, S, B>> f) => fa.bind(f);
+  @override Evaluation<E, R, W, S, B> bind<A, B>(covariant Evaluation<E, R, W, S, A> fa, covariant Function1<A, Evaluation<E, R, W, S, B>> f) => fa.bind(f);
 
   @override Evaluation<E, R, W, S, A> pure<A>(A a) => new Evaluation(_W, (r, s) {
     return new Future.value(new Right(new Tuple3(_W.zero(), s, a)));

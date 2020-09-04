@@ -14,7 +14,7 @@ abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
   Either<dynamic, A> operator %(ifNone) => toEither(() => ifNone);
   A operator |(A dflt) => getOrElse(() => dflt);
 
-  @override Option<B> map<B>(B f(A a)) => fold(none, (A a) => some(f(a)));
+  @override Option<B> map<B>(B f(A a)) => fold(none, (A a) => optionOf(f(a)));
   @override Option<B> ap<B>(Option<Function1<A, B>> ff) => fold(none, (A a) => ff.fold(none, (Function1<A, B> f) => some(f(a))));
   @override Option<B> bind<B>(Function1<A, Option<B>> f) => fold(none, f);
   @override Option<B> flatMap<B>(Function1<A, Option<B>> f) => fold(none, f);

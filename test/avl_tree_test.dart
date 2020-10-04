@@ -1,23 +1,20 @@
 import 'package:test/test.dart';
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
-//import 'package:propcheck/propcheck.dart';
-import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
-  final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intTrees = c.listsOf(c.ints).map((l) =>  new AVLTree.fromIList(NumOrder, ilist(l)));
+  final pt = new PropTest();
+  final intTrees = Gen.listOf(Gen.ints).map((l) => new AVLTree.fromIList(NumOrder, ilist(l)));
 
   test("min", () {
-    qc.check(forall(intTrees,
-        (t) => t.concatenateO(NumMinSi) == (t as AVLTree<num>).min()));
+    pt.check(forAll(intTrees)(
+        (t) => t.concatenateO(NumMinSi) == t.min()));
   });
 
   test("max", () {
-    qc.check(forall(intTrees,
-        (t) => t.concatenateO(NumMaxSi) == (t as AVLTree<num>).max()));
+    pt.check(forAll(intTrees)(
+        (t) => t.concatenateO(NumMaxSi) == t.max()));
   });
 
   test("demo", () {
@@ -33,7 +30,7 @@ void main() {
 
   group("equality", () {
     test("equality", () {
-      qc.check(forall2(intTrees, intTrees,
+      pt.check(forAll2(intTrees, intTrees)(
           (t1, t2) =>
           (t1 == t1) &&
               (t2 == t2) &&
@@ -44,7 +41,7 @@ void main() {
 
   group("AVLTree FoldableOps", () => checkFoldableOpsProperties(intTrees));
 
-  test("iterable", () => qc.check(forall(intTrees, (t) => t.toIList() == ilist((t as AVLTree<num>).toIterable()))));
+  test("iterable", () => pt.check(forAll(intTrees)((t) => t.toIList() == ilist(t.toIterable()))));
 
-  test("isEmpty", () => qc.check(forall(intTrees, (AVLTree<num> t) => (t.length() == 0) == t.isEmpty)));
+  test("isEmpty", () => pt.check(forAll(intTrees)((AVLTree<num> t) => (t.length() == 0) == t.isEmpty)));
 }

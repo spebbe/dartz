@@ -1,21 +1,20 @@
 import 'package:test/test.dart';
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
-  group("NumSumMi", () => checkMonoidLaws(NumSumMi, c.ints));
+  group("NumSumMi", () => checkMonoidLaws(NumSumMi, Gen.ints));
 
-  group("NumProductMi", () => checkMonoidLaws(NumProductMi, c.ints));
+  group("NumProductMi", () => checkMonoidLaws(NumProductMi, Gen.ints));
 
-  group("NumMaxSi", () => checkSemigroupLaws(NumMaxSi, c.ints));
+  group("NumMaxSi", () => checkSemigroupLaws(NumMaxSi, Gen.ints));
 
-  group("NumMinSi", () => checkSemigroupLaws(NumMinSi, c.ints));
+  group("NumMinSi", () => checkSemigroupLaws(NumMinSi, Gen.ints));
 
-  group("StringMi", () => checkMonoidLaws(StringMi, c.strings));
+  group("StringMi", () => checkMonoidLaws(StringMi, Gen.strings));
 
-  group("BoolOrMi", () => checkMonoidLaws(BoolOrMi, c.bools));
+  group("BoolOrMi", () => checkMonoidLaws(BoolOrMi, Gen.bools));
 
-  group("BoolAndMi", () => checkMonoidLaws(BoolAndMi, c.bools));
+  group("BoolAndMi", () => checkMonoidLaws(BoolAndMi, Gen.bools));
 }

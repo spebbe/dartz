@@ -65,15 +65,62 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
   IMap<K, V2> mapKV<V2>(V2 f(K k, V v)) => mapWithKey(f);
 
   IList<Tuple2<K, V>> pairs() => _tree.foldRight(nil(), (k, v, p) => new Cons(tuple2(k, v), p));
-/*
-  G traverseKV<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
-      _tree.foldLeft(gApplicative.pure(
-          new IMap._internal(_order, _emptyIMapAVLNode())),
-              (prev, k, v) => gApplicative.map2(prev, f(k, v), (IMap p, v2) => p.put(k, v2)));
 
-  G traverseKV_<G>(Applicative<G> gApplicative, G f(K k, V v)) =>
-      _tree.foldLeft(gApplicative.pure(unit), (prev, k, v) => gApplicative.map2(prev, f(k, v), (_1, _2) => unit));
-*/
+  Future<IMap<K, V2>> traverseFuture<V2>(Future<V2> f(K k, V v)) =>
+    _tree.foldLeft(new Future.microtask(() => new IMap<K, V2>.empty(order)), (prev, k, v) => prev.then((p) => f(k, v).then((v2) => p.put(k, v2))));
+
+  Option<IMap<K, V2>> traverseOption<V2>(Option<V2> f(K k, V v)) =>
+    _tree.foldLeft(Some(new IMap<K, V2>.empty(order)),
+        (prev, k, v) => prev.flatMap((p) => f(k, v).map((v2) => p.put(k, v2))));
+
+  Either<L, IMap<K, V2>> traverseEither<L, V2>(Either<L, V2> f(K k, V v)) =>
+    _tree.foldLeft(Right(new IMap<K, V2>.empty(order)),
+        (prev, k, v) => prev.flatMap((p) => f(k, v).map((v2) => p.put(k, v2))));
+
+  Free<F, IMap<K, V2>> traverseFree<F, V2>(Free<F, V2> f(K k, V v)) =>
+    _tree.foldLeft(new Pure(new IMap<K, V2>.empty(order)),
+        (prev, k, v) => prev.flatMap((p) => f(k, v).map((v2) => p.put(k, v2))));
+
+  Free<F, Unit> traverseFree_<F>(Free<F, Unit> f(K k, V v)) =>
+    _tree.foldLeft(new Pure(unit), (prev, k, v) => prev.andThen(f(k, v)));
+
+  State<S, IMap<K, V2>> traverseState<S, V2>(State<S, V2> f(K k, V v)) =>
+    _tree.foldLeft(new State((s) => tuple2(new IMap<K, V2>.empty(order), s)),
+        (prev, k, v) => prev.flatMap((p) => f(k, v).map((v2) => p.put(k, v2))));
+
+  State<S, Unit> traverseState_<S>(State<S, Unit> f(K k, V v)) =>
+    _tree.foldLeft(new State((s) => tuple2(unit, s)), (prev, k, v) => prev.andThen(f(k, v)));
+
+  Evaluation<E, R, W, S, IMap<K, V2>> traverseEvaluation<E, R, W, S, V2>(Monoid<W> WMi, Evaluation<E, R, W, S, V2> f(K k, V v)) =>
+    _tree.foldLeft(new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, new IMap<K, V2>.empty(order))))),
+        (prev, k, v) => prev.flatMap((p) => f(k, v).map((v2) => p.put(k, v2))));
+
+  Evaluation<E, R, W, S, Unit> traverseEvaluation_<E, R, W, S>(Monoid<W> WMi, Evaluation<E, R, W, S, Unit> f(K k, V v)) =>
+    _tree.foldLeft(new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, unit)))),
+        (prev, k, v) => prev.andThen(f(k, v)));
+
+  static V _idKV<K, V>(K k, V v) => v;
+
+  static Option<IMap<K, V>> sequenceOption<K, V>(IMap<K, Option<V>> mov) => mov.traverseOption(_idKV);
+
+  static Either<L, IMap<K, V>> sequenceEither<K, V, L>(IMap<K, Either<L, V>> mev) => mev.traverseEither(_idKV);
+
+  static Future<IMap<K, V>> sequenceFuture<K, V>(IMap<K, Future<V>> mfv) => mfv.traverseFuture(_idKV);
+
+  static State<S, IMap<K, V>> sequenceState<K, V, S>(IMap<K, State<S, V>> msv) => msv.traverseState(_idKV);
+
+  static State<S, Unit> sequenceState_<K, S>(IMap<K, State<S, Unit>> msv) => msv.traverseState_(_idKV);
+
+  static Free<F, IMap<K, V>> sequenceFree<K, V, F>(IMap<K, Free<F, V>> mfv) => mfv.traverseFree(_idKV);
+
+  static Free<F, Unit> sequenceFree_<K, F>(IMap<K, Free<F, Unit>> mfv) => mfv.traverseFree_(_idKV);
+
+  static Evaluation<E, R, W, S, IMap<K, V>> sequenceEvaluation<K, V, E, R, W, S>(Monoid<W> WMi, IMap<K, Evaluation<E, R, W, S, V>> mev) =>
+    mev.traverseEvaluation(WMi, _idKV);
+
+  static Evaluation<E, R, W, S, Unit> sequenceEvaluation_<K, E, R, W, S>(Monoid<W> WMi, IMap<K, Evaluation<E, R, W, S, Unit>> mev) =>
+    mev.traverseEvaluation_(WMi, _idKV);
+
   @override B foldMap<B>(Monoid<B> bMonoid, B f(V v)) =>  _tree.foldLeft(bMonoid.zero(), (p, k, v) => bMonoid.append(p, f(v)));
 
   @override B foldLeft<B>(B z, B f(B previous, V v)) => _tree.foldLeft(z, (p, k, v) => f(p, v));
@@ -440,7 +487,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override Option<K> getKey(Order<K> order, K k) => none();
 
-  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode(k, v, _emptyIMapAVLNode(), _emptyIMapAVLNode());
+  @override _IMapAVLNode<K, V> insert(Order<K> order, K k, V v) => new _NonEmptyIMapAVLNode(k, v, this, this);
 
   @override _IMapAVLNode<K, V> remove(Order<K> order, K k) => this;
 
@@ -452,7 +499,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   @override _IMapAVLNode<K, V> setIfPresent(Order<K> order, K k, V v) => this;
 
-  @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, _emptyIMapAVLNode(), _emptyIMapAVLNode());
+  @override _IMapAVLNode<K, V> modify(Order<K> order, K k, V f(V v), V dflt) => new _NonEmptyIMapAVLNode(k, dflt, this, this);
 
   @override _IMapAVLNode<K, V2> map<V2>(V2 f(V v)) => _emptyIMapAVLNode();
 

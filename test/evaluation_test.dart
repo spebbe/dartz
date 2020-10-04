@@ -1,11 +1,10 @@
 import 'package:test/test.dart';
-//import 'package:propcheck/propcheck.dart';
 import 'package:dartz/dartz.dart';
 import 'dart:async';
-//import 'laws.dart';
+
+import 'laws.dart';
 
 void main() {
-  //final qc = new QuickCheck(maxSize: 300, seed: 42);
 
   test("demo", () async {
     final EvaluationMonad<String, String, Tuple2<IList<String>, String>, int> M = new EvaluationMonad(tuple2Monoid(ilistMi(), StringMi));
@@ -27,8 +26,7 @@ void main() {
   });
 
   group("EvaluationM", () {
-    // TODO: async law checks
-    // checkMonadLaws(qc, new EvaluationMonad(IListMi));
+    checkMonadLaws(new EvaluationMonad(IListMi), equality: (e1, e2) async => await e1.run(unit, unit) == await e2.run(unit, unit));
   });
 
   test("stack safety", () async {

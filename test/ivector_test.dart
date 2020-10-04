@@ -1,15 +1,12 @@
 import "package:test/test.dart";
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
-//import 'package:propcheck/propcheck.dart';
-import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 
 void main() {
-  final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intLists = c.listsOf(c.ints);
+  final pt = new PropTest();
+  final intLists = Gen.listOf(Gen.ints);
   final intIVectors = intLists.map(ivector);
 
   group("IVectorM", () => checkMonadLaws(IVectorMP));
@@ -50,9 +47,7 @@ void main() {
   });
 
   test("IVector update", () {
-    qc.check(forall2(intLists, c.ints, (dynamicL, dynamicI) {
-      final l = dynamicL as List<int>;
-      final i = dynamicI as int;
+    pt.check(forAll2(intLists, Gen.ints)((l, i) {
       if (l.length == 0) {
         return true;
       } else {
@@ -65,8 +60,7 @@ void main() {
   });
 
   test("IVector removeFirst", () {
-    qc.check(forall(intLists, (dynamicL) {
-      final l = dynamicL as List<int>;
+    pt.check(forAll(intLists)((l) {
       final v = new IVector.from(l);
       if (l.length > 0) {
         final removed = l.removeAt(0);
@@ -78,8 +72,7 @@ void main() {
   });
 
   test("IVector dropFirst", () {
-    qc.check(forall(intLists, (dynamicL) {
-      final l = dynamicL as List<int>;
+    pt.check(forAll(intLists)((l) {
       final v = new IVector.from(l);
       if (l.length > 0) {
         l.removeAt(0);
@@ -91,8 +84,7 @@ void main() {
   });
 
   test("IVector removeLast", () {
-    qc.check(forall(intLists, (dynamicL) {
-      final l = dynamicL as List<int>;
+    pt.check(forAll(intLists)((l) {
       final v = new IVector.from(l);
       if (l.length > 0) {
         final removed = l.removeLast();
@@ -104,8 +96,7 @@ void main() {
   });
 
   test("IVector dropLast", () {
-    qc.check(forall(intLists, (dynamicL) {
-      final l = dynamicL as List<int>;
+    pt.check(forAll(intLists)((l) {
       final v = new IVector.from(l);
       if (l.length > 0) {
         l.removeLast();
@@ -117,15 +108,14 @@ void main() {
   });
 
   test("IVector foldLeftWithIndexBetween", () {
-    qc.check(forall(intIVectors, (dynamicV) {
-      final v = dynamicV as IVector<int>;
+    pt.check(forAll(intIVectors)((v) {
       final partialSum = v.foldLeftWithIndexBetween<int>(1, v.length()-2, 0, (sum, _, i) => sum+i);
       return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
     }));
   });
 
   test("IVector foldRightWithIndexBetween", () {
-    qc.check(forall(intIVectors, (IVector<int> v) {
+    pt.check(forAll(intIVectors)((IVector<int> v) {
       final partialSum = v.foldRightWithIndexBetween<int>(1, (v).length()-2, 0, (_, i, sum) => sum+i);
       return partialSum == v.dropFirst().dropLast().concatenate(IntSumMi);
     }));
@@ -133,10 +123,10 @@ void main() {
 
   group("IVector FoldableOps", () => checkFoldableOpsProperties(intIVectors));
 
-  test("iterable", () => qc.check(forall(intIVectors, (v) => v == ivector((v as IVector<int>).toIterable()))));
+  test("iterable", () => pt.check(forAll(intIVectors)((v) => v == ivector(v.toIterable()))));
 
   test("flattenOption", () {
-    qc.check(forall(intIVectors, (IVector<int> v) {
+    pt.check(forAll(intIVectors)((IVector<int> v) {
       final ov = v.map((i) => i % 2 == 0 ? some(i) : none<int>());
       final unitedV = IVector.flattenOption(ov);
       final evenV = v.filter((i) => i % 2 == 0);
@@ -145,8 +135,7 @@ void main() {
   });
 
   test("flattenIVector", () {
-    qc.check(forall(intIVectors, (dynamicV) {
-      final v = dynamicV as IVector<int>;
+    pt.check(forAll(intIVectors)((v) {
       final vv = v.map((int i) => i % 2 == 0 ? ivector([i]) : emptyVector<int>());
       final flattenedV = IVector.flattenIVector(vv);
       final evenV = v.filter((i) => i % 2 == 0);
@@ -154,10 +143,10 @@ void main() {
     }));
   });
 
-  test("isEmpty", () => qc.check(forall(intIVectors, (IVector<int> v) => (v.length() == 0) == v.isEmpty)));
+  test("isEmpty", () => pt.check(forAll(intIVectors)((IVector<int> v) => (v.length() == 0) == v.isEmpty)));
 
   test("indexOf", () {
-    qc.check(forall3(intIVectors, c.ints, c.ints, (IVector<int> v, int i, int s) {
+    pt.check(forAll3(intIVectors, Gen.ints, Gen.ints)((IVector<int> v, int i, int s) {
       final index = v.isEmpty ? 0 : i.abs() % v.length();
       final start = v.isEmpty ? 0 : s.abs() % v.length();
       final element = v[index]|0;
@@ -173,5 +162,20 @@ void main() {
     expect(v.indexOf("a", start: 1), some(3));
     expect(v.indexOf("a", start: 100), none());
     expect(v.indexOf("d"), none());
+  });
+
+  test("insertAt", () {
+    pt.check(forAll2(intIVectors, Gen.sizedInts)(
+        (v, i) => v.insertAt(i, i) == catching(() => ivector(v.toIterable().toList()..insert(i, i))).toOption()));
+  });
+
+  test("removeAt", () {
+    pt.check(forAll2(intIVectors, Gen.sizedInts)(
+        (v, i) => v.removeAt(i) == catching(() => ivector(v.toIterable().toList()..removeAt(i))).toOption()));
+  });
+
+  test("remove", () {
+    pt.check(forAll2(intIVectors, Gen.sizedInts)(
+        (v, i) => v.remove(i)|v == ivector(v.toIterable().toList()..remove(i))));
   });
 }

@@ -2,9 +2,11 @@
 
 part of dartz;
 
-// NOTE: IHashMap is backed by an AVL tree, not by a traditional hash table, so lookup/insert is O(log n), not O(1)
+// When possible, use IMap instead. IMap offers superior performance, a richer API and clearer iteration/equality semantics.
+
+// NOTE: IHashMap is backed by an AVL tree, not by a traditional hash table, so lookup/insert is O(log n), not O(1).
 //       Unlike IMap, IHashMap doesn't rely on a total ordering of keys, but instead uses hashCode and '==' to insert
-//       and locate key/value pairs in balanced bucket trees,
+//       and locate key/value pairs in balanced bucket trees.
 
 class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   final IMap<int, IList<Tuple2<K, V>>> _map;
@@ -15,7 +17,7 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
 
   factory IHashMap.from(Map<K, V> m) => m.keys.fold(new IHashMap.empty(), (IHashMap<K, V> p, K k) => p.put(k, m[k]));
 
-  factory IHashMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps, Order<K> kOrder) =>
+  factory IHashMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps) =>
     foldableOps.foldLeft(new IHashMap.empty(), (acc, kv) => kv.apply(acc.put));
 
   Option<V> get(K k) => _map.get(k.hashCode).bind((candidates) =>
@@ -27,9 +29,17 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
       (existing) => new Cons(tuple2(k, v), existing.filter((kv) => kv.value1 != k)),
       new Cons(tuple2(k, v), nil())));
 
-  IHashMap<K, V> remove(K k) => new IHashMap.internal(_map.modify(k.hashCode,
-      (existing) => existing.filter((kv) => kv.value1 != k),
-      nil()));
+  IHashMap<K, V> remove(K k) => _map[k.hashCode].fold(
+    () => this,
+    (existing) {
+      final filteredExisting =  existing.filter((kv) => kv.value1 != k);
+      if (filteredExisting.isEmpty) {
+        return new IHashMap.internal(_map.remove(k.hashCode));
+      } else {
+        return new IHashMap.internal(_map.put(k.hashCode, filteredExisting));
+      }
+    }
+  );
 
   IHashMap<K, V> modify(K k, V f(V v), V dflt) => new IHashMap.internal(_map.modify(k.hashCode,
       (existing) => existing
@@ -48,6 +58,8 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
 
   B foldRightKV<B>(B z, B f(K k, V v, B previous)) =>
       _map.foldRight(z, (kvs, prev) => kvs.foldRight(prev, (kv, pprev) => f(kv.value1, kv.value2, pprev)));
+
+  bool get isEmpty => _map.isEmpty;
 
   @override B foldLeft<B>(B z, B f(B previous, V v)) =>
       _map.foldLeft(z, (prev, kvs) => kvs.foldLeft(prev, (pprev, kv) => f(pprev, kv.value2)));

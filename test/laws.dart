@@ -1,70 +1,68 @@
+import 'dart:async';
+
 import 'package:test/test.dart';
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
-//import 'package:propcheck/propcheck.dart';
-import 'propcheck_stubs.dart';
-//import 'package:enumerators/enumerators.dart';
-import 'enumerators_stubs.dart';
 
 import 'package:dartz/dartz.dart';
 
-bool defaultEquality(a, b) => a == b;
+import 'proptest/PropTest.dart';
 
-final defaultQC = new QuickCheck(maxSize: 300, seed: 42);
+Future<bool> defaultEquality(a, b) async => await a == await b;
+
+final defaultPT = new PropTest();
 
 Tuple2<dynamic, String> giveDollar(dynamic something) => tuple2(something, "\$");
 Tuple2<dynamic, String> giveHash(dynamic something) => tuple2(something, "#");
 
-void checkFunctorLaws(Functor F, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkFunctorLaws(Functor F, Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("functor laws", () {
-    test("identity", () {
-        qc.check(forall(enumeration, (fa) => equality(F.map(fa, id), fa)));
+    test("identity", () async {
+      await pt.check(forAll(gen)((fa) => equality(F.map(fa, id), fa)));
     });
 
-    test("composite", () {
-      qc.check(forall(enumeration, (fa) =>
+    test("composite", () async {
+      await pt.check(forAll(gen)((fa) =>
           equality(F.map(F.map(fa, giveDollar), giveHash), F.map(fa, composeF(giveHash, giveDollar)))));
     });
   });
 }
 
-void checkFoldableLaws(Foldable F, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkFoldableLaws(Foldable F, Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("foldable laws", () {
-    test("foldLeft and foldMap consistency", () {
-      qc.check(forall(enumeration, (fa) =>
+    test("foldLeft and foldMap consistency", () async {
+      await pt.check(forAll(gen)((fa) =>
         equality(F.foldMap<dynamic, dynamic>(IListMi, fa, (a) => ilist([a])), F.foldLeft<dynamic, dynamic>(fa, ilist([]), (p, a) => p.plus(ilist([a]))))));
     });
 
-    test("foldRight and foldMap consistency", () {
-      qc.check(forall(enumeration, (fa) =>
+    test("foldRight and foldMap consistency", () async {
+      await pt.check(forAll(gen)((fa) =>
         equality(F.foldMap<dynamic, dynamic>(IListMi, fa, (a) => ilist([a])), F.foldRight<dynamic, dynamic>(fa, ilist([]), (a, p) => ilist([a]).plus(cast(p))))));
     });
 
   });
 }
 
-void checkFoldableOpsProperties(Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkFoldableOpsProperties(Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("foldable ops properties", () {
-    test("foldLeftWithIndex properties", () {
-      qc.check(forall(enumeration, (fa) =>
+    test("foldLeftWithIndex properties", () async {
+      await pt.check(forAll(gen)((fa) =>
           equality(fa.foldLeftWithIndex<IList<int>>(nil<int>(), (IList<int> p, int i, _) => cons(i, p)).reverse(), iota((fa as FoldableOps).length()))));
     });
 
-    test("foldRightWithIndex properties", () {
-      qc.check(forall(enumeration, (fa) =>
+    test("foldRightWithIndex properties", () async {
+      await pt.check(forAll(gen)((fa) =>
           equality(fa.foldRightWithIndex<IList<int>>(nil<int>(), (int i, _, IList<int> p) => cons(i, p)), iota((fa as FoldableOps).length()))));
     });
   });
 }
 
-void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkTraversableLaws(Traversable T, Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("traversable laws", () {
     test("identity traverse", () {
@@ -80,67 +78,69 @@ void checkTraversableLaws(Traversable T, Enumeration enumeration, {bool equality
     // TODO: check parallel fusion
   });
 
-  checkFunctorLaws(T, enumeration, equality: equality, qc: qc);
-  checkFoldableLaws(T, enumeration, equality: equality, qc: qc);
+  checkFunctorLaws(T, gen, equality: equality, pt: pt);
+  checkFoldableLaws(T, gen, equality: equality, pt: pt);
 }
 
-void checkMonadLaws<F>(Monad<F> M, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkMonadLaws<F>(Monad<F> M, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
   F double(dynamic i) => M.pure(i*2);
   F inc(dynamic i) => M.pure(i+1);
 
   group("monad laws", () {
-    test("left identity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind<dynamic, dynamic>(M.pure(a), double), double(a))));
+    test("left identity", () async {
+      await pt.check(forAll(Gen.ints)((a) => equality(M.bind<dynamic, dynamic>(M.pure(a), double), double(a))));
     });
 
-    test("right identity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.pure(a), M.pure), M.pure(a))));
+    test("right identity", () async {
+      await pt.check(forAll(Gen.ints)((a) => equality(M.bind(M.pure(a), M.pure), M.pure(a))));
     });
 
-    test("associativity", () {
-      qc.check(forall(c.ints, (a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (x) => M.bind(double(x), inc)))));
+    test("associativity", () async {
+      await pt.check(forAll(Gen.ints)((a) => equality(M.bind(M.bind(M.pure(a), double), inc), M.bind(M.pure(a), (x) => M.bind(double(x), inc)))));
     });
   });
 
-  checkFunctorLaws(M, c.ints.map((i) => M.pure(i)), equality: equality, qc: qc);
+  checkFunctorLaws(M, Gen.ints.map((i) => M.pure(i)), equality: equality, pt: pt);
 }
 
-void checkFoldableMonadLaws(Foldable F, Monad M, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkFoldableMonadLaws(Foldable F, Monad M, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("foldable+monad laws", () {
-    test("pure+concatenate identity", () {
-      qc.check(forall(c.ints, (int a) => equality(F.concatenate(IntSumMi, M.pure(a)), a)));
+    test("pure+concatenate identity", () async {
+      await pt.check(forAll(Gen.ints)((int a) => equality(F.concatenate(IntSumMi, M.pure(a)), a)));
     });
   });
 
 }
 
-void checkSemigroupLaws(Semigroup Si, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkSemigroupLaws(Semigroup Si, Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("semigroup laws", () {
-    test("associativity", () {
-      qc.check(forall3(enumeration, enumeration, enumeration, (f1, f2, f3) => equality(Si.append(f1, Si.append(f2, f3)), Si.append(Si.append(f1, f2), f3))));
+    test("associativity", () async {
+      await pt.check(forAll3(gen, gen, gen)((f1, f2, f3) {
+        return equality(Si.append(f1, Si.append(f2, f3)), Si.append(Si.append(f1, f2), f3));
+      }));
     });
   });
 
 }
 
 
-void checkMonoidLaws(Monoid Mi, Enumeration enumeration, {bool equality(a, b): defaultEquality, QuickCheck qc: null}) {
-  qc = qc != null ? qc : defaultQC;
+void checkMonoidLaws(Monoid Mi, Gen gen, {FutureOr<bool> equality(a, b): defaultEquality, PropTest pt: null}) {
+  pt = pt != null ? pt : defaultPT;
 
   group("monoid laws", () {
-    test("left identity", () {
-      qc.check(forall(enumeration, (a) => equality(a, Mi.append(Mi.zero(), a))));
+    test("left identity", () async {
+      await pt.check(forAll(gen)((a) => equality(a, Mi.append(Mi.zero(), a))));
     });
 
-    test("right identity", () {
-      qc.check(forall(enumeration, (a) => equality(a, Mi.append(a, Mi.zero()))));
+    test("right identity", () async {
+      await pt.check(forAll(gen)((a) => equality(a, Mi.append(a, Mi.zero()))));
     });
   });
 
-  checkSemigroupLaws(Mi, enumeration, equality:equality, qc:qc);
+  checkSemigroupLaws(Mi, gen, equality:equality, pt:pt);
 }

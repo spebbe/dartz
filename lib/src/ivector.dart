@@ -33,6 +33,40 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
 
   IVector<A> setIfPresent(int index, A a) => new IVector._internal(_elementsByIndex.setIfPresent(_offset+index, a), _offset, _length);
 
+  Option<IVector<A>> insertAt(int index, A newA) {
+    if(index >= 0 && index <= _length) {
+      if (index == 0) {
+        return some(prependElement(newA));
+      } else if (index == _length) {
+        return some(appendElement(newA));
+      } else {
+        return some(foldLeftWithIndex(emptyVector(), (acc, i, a) => i == index
+          ? acc.appendElement(newA).appendElement(a)
+          : acc.appendElement(a)));
+      }
+    } else {
+      return none();
+    }
+  }
+
+  Option<IVector<A>> removeAt(int index) {
+    if (index >= 0 && index < _length) {
+      if (index == 0) {
+        return some(dropFirst());
+      } else if (index == _length - 1) {
+        return some(dropLast());
+      } else {
+        return some(foldLeftWithIndex(emptyVector(), (acc, i, a) => i == index
+          ? acc
+          : acc.appendElement(a)));
+      }
+    } else {
+      return none();
+    }
+  }
+
+  Option<IVector<A>> remove(A a) => indexOf(a).flatMap(removeAt);
+
   IVector<B> pure<B>(B b) => emptyVector<B>().appendElement(b);
 
   @override IVector<B> map<B>(B f(A a)) => new IVector._internal(_elementsByIndex.map(f), _offset, _length);
@@ -74,7 +108,16 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
         (prev, a) => prev.then((p) => f(a).then((b) => p.appendElement(b))));
 
   State<S, IVector<B>> traverseState<S, B>(State<S, B> f(A a)) =>
-    _elementsByIndex.foldLeft(new State((s) => tuple2(emptyVector(), s)), (prev, a) => prev.flatMap((p) => f(a).map((b) => p.appendElement(b))));
+    _elementsByIndex.foldLeft(new State((s) => tuple2(emptyVector(), s)),
+        (prev, a) => prev.flatMap((p) => f(a).map((b) => p.appendElement(b))));
+
+  Free<F, IVector<B>> traverseFree<F, B>(Free<F, B> f(A a)) =>
+    _elementsByIndex.foldLeft(new Pure(emptyVector()),
+        (prev, a) => prev.flatMap((p) => f(a).map((b) => p.appendElement(b))));
+
+  Evaluation<E, R, W, S, IVector<B>> traverseEvaluation<E, R, W, S, B>(Monoid<W> WMi, Evaluation<E, R, W, S, B> f(A a)) =>
+    _elementsByIndex.foldLeft(new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, emptyVector())))),
+        (prev, a) => prev.flatMap((p) => f(a).map((b) => p.appendElement(b))));
 
   static Option<IVector<A>> sequenceOption<A>(IVector<Option<A>> voa) => voa.traverseOption(id);
 
@@ -83,6 +126,11 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
   static Future<IVector<A>> sequenceFuture<A>(IVector<Future<A>> vfa) => vfa.traverseFuture(id);
 
   static State<S, IVector<A>> sequenceState<S, A>(IVector<State<S, A>> vsa) => vsa.traverseState(id);
+
+  static Free<F, IVector<A>> sequenceFree<F, A>(IVector<Free<F, A>> vfa) => vfa.traverseFree(id);
+
+  static Evaluation<E, R, W, S, IVector<A>> sequenceEvaluation<E, R, W, S, A>(Monoid<W> WMi, IVector<Evaluation<E, R, W, S, A>> vea) =>
+    vea.traverseEvaluation(WMi, id);
 
   @override B foldMap<B>(Monoid<B> bMonoid, B f(A a)) => _elementsByIndex.foldMap(bMonoid, f);
 
@@ -123,7 +171,6 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
     });
   }
 
-  // TODO: kill MonadOps flatten and rename in 0.8.0
   static IVector<A> flattenIVector<A>(IVector<IVector<A>> ffa) => ffa.flatMap(id);
 
   static IVector<A> flattenOption<A>(IVector<Option<A>> oas) => oas.foldLeft(emptyVector(), (acc, oa) => oa.fold(() => acc, (a) => acc.appendElement(a)));

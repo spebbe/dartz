@@ -1,14 +1,11 @@
 import "package:test/test.dart";
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
-//import 'package:propcheck/propcheck.dart';
-import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
-  final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intLists = c.listsOf(c.ints);
+  final pt = new PropTest();
+  final intLists = Gen.listOf(Gen.ints);
   final intILists = intLists.map((l) => new IList.from(l));
 
   test("grab bag", () {
@@ -57,17 +54,17 @@ void main() {
   });
 
   test('length', () {
-    qc.check(forall(intLists, (l) => (l as List<int>).length == ilist(l as List<int>).length()));
+    pt.check(forAll(intLists)( (l) => l.length == ilist(l).length()));
   });
 
   test('reverse', () {
-    qc.check(forall2(intILists, intILists,
+    pt.check(forAll2(intILists, intILists)(
         (xs, ys) => xs.plus(ys).reverse() == ys.reverse().plus(xs.reverse())));
   });
 
   test('bind', () {
-    qc.check(forall(intILists,
-        (IList<int> l) => l.bind((i) => ilist([i, i])) == IList.flattenIList(l.map((i) => ilist([i, i])))));
+    pt.check(forAll(intILists)(
+        (l) => l.bind((i) => ilist([i, i])) == IList.flattenIList(l.map((i) => ilist([i, i])))));
   });
 
   test('traverse', () {
@@ -119,27 +116,24 @@ void main() {
   });
 
   test("equality", () {
-    qc.check(forall2(intILists, intILists, (dynamicL1, dynamicL2) {
-      final l1 = dynamicL1 as IList<int>;
-      final l2 = dynamicL2 as IList<int>;
-          return  (l1 == l1) &&
-            (l2 == l2) &&
-            (l1 == l1.reverse().reverse()) &&
-            (l2 == l2.reverse().reverse()) &&
-            (new Cons(1, l1) != l1) &&
-            ((l1 == l2) == (l1.toString() == l2.toString()));
-        }));
+    pt.check(forAll2(intILists, intILists)((l1, l2) {
+      return  (l1 == l1) &&
+        (l2 == l2) &&
+        (l1 == l1.reverse().reverse()) &&
+        (l2 == l2.reverse().reverse()) &&
+        (new Cons(1, l1) != l1) &&
+        ((l1 == l2) == (l1.toString() == l2.toString()));
+    }));
   });
 
   test("to/from iterable", () {
-    qc.check(forall(intILists, (l) => l == new IList.from((l as IList).toIterable())));
+    pt.check(forAll(intILists)((l) => l == new IList.from(l.toIterable())));
   });
 
   group("IList FoldableOps", () => checkFoldableOpsProperties(intILists));
 
   test("flattenOption", () {
-    qc.check(forall(intILists, (dynamicL) {
-      final l = dynamicL as IList<int>;
+    pt.check(forAll(intILists)((l) {
       final ol = l.map((i) => i % 2 == 0 ? some(i) : none<int>());
       final unitedL = IList.flattenOption(ol);
       final evenL = l.filter((i) => i % 2 == 0);
@@ -148,8 +142,7 @@ void main() {
   });
 
   test("flattenIList", () {
-    qc.check(forall(intILists, (dynamicL) {
-      final l = dynamicL as IList<int>;
+    pt.check(forAll(intILists)((l) {
       final ll = l.map((i) => i % 2 == 0 ? cons(i, nil<int>()) : nil<int>());
       final flattenedL = IList.flattenIList(ll);
       final evenL = l.filter((i) => i % 2 == 0);
@@ -158,8 +151,7 @@ void main() {
   });
 
   test("to option", () {
-    qc.check(forall(intILists, (dynamicL) {
-      final l = dynamicL as IList<int>;
+    pt.check(forAll(intILists)((l) {
       final empty = l.option.fold(() => true, (_) => false);
       return empty == (l == nil());
     }));
@@ -168,12 +160,11 @@ void main() {
   test("asCons, head and tail", () {
     int sumThroughAsCons(IList<int> l) => l.asCons().fold(() => 0, (c) => c.head + sumThroughAsCons(c.tail));
 
-    qc.check(forall(intILists, (dynamicL) {
-      final l = dynamicL as IList<int>;
+    pt.check(forAll(intILists)((l) {
       return sumThroughAsCons(l) == l.concatenate(IntSumMi);
     }));
   });
 
-  test("isEmpty", () => qc.check(forall(intILists, (IList<int> il) => (il.length() == 0) == il.isEmpty)));
+  test("isEmpty", () => pt.check(forAll(intILists)((il) => (il.length() == 0) == il.isEmpty)));
 
 }

@@ -239,8 +239,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     Option<IList<B>> result = some(nil());
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.fold(none, (a) => gb.fold(none, (h) => some(new Cons(h, a))));
+      final cc = current;
+      result = result.fold(none, (a) => f(cc._unsafeHead()).fold(none, (h) => some(new Cons(h, a))));
       current = current._unsafeTail();
     }
     return result.map((l) => l.reverse());
@@ -250,8 +250,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     Either<L, IList<B>> result = right(nil());
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.fold(left, (a) => gb.fold(left, (h) => right(new Cons(h, a))));
+      final cc = current;
+      result = result.fold(left, (a) => f(cc._unsafeHead()).fold(left, (h) => right(new Cons(h, a))));
       current = current._unsafeTail();
     }
     return result.map((l) => l.reverse());
@@ -261,8 +261,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     Future<IList<B>> result = new Future.microtask(nil);
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.then((a) => gb.then((h) => new Cons(h, a)));
+      final cc = current;
+      result = result.then((a) => f(cc._unsafeHead()).then((h) => new Cons(h, a)));
       current = current._unsafeTail();
     }
     return result.then((l) => l.reverse());
@@ -272,8 +272,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     State<S, IList<B>> result = new State((s) => tuple2(nil(), s));
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      final cc = current;
+      result = result.flatMap((a) => f(cc._unsafeHead()).map((h) => new Cons(h, a)));
       current = current._unsafeTail();
     }
     return result.map((l) => l.reverse());
@@ -283,8 +283,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     Evaluation<E, R, W, S, IList<B>> result = new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, nil()))));
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      final cc = current;
+      result = result.flatMap((a) => f(cc._unsafeHead()).map((h) => new Cons(h, a)));
       current = current._unsafeTail();
     }
     return result.map((l) => l.reverse());
@@ -294,8 +294,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     Free<F, IList<B>> result = new Pure(nil());
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      final cc = current;
+      result = result.flatMap((a) => f(cc._unsafeHead()).map((h) => new Cons(h, a)));
       current = current._unsafeTail();
     }
     return result.map((l) => l.reverse());
@@ -305,8 +305,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     var result = some(nil<B>());
     var current = this;
     while(current._isCons()) {
-      final gb = f(current._unsafeHead());
-      result = Option.map2(result, gb, (IList<B> a, IList<B> h) => a.plus(h));
+      final cc = current;
+      result = result.flatMap((a) => f(cc._unsafeHead()).map((h) => a.plus(h)));
       current = current._unsafeTail();
     }
     return result;

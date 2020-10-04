@@ -1,10 +1,7 @@
 import 'package:test/test.dart';
-//import 'package:enumerators/enumerators.dart';
-//import 'enumerators_stubs.dart';
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
 
@@ -44,9 +41,9 @@ void main() {
 
   group("OptionM+Foldable", () => checkFoldableMonadLaws(new OptionTraversable(), new OptionMonadPlus()));
 
-  group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), c.ints.map(some)));
+  group("OptionMi", () => checkMonoidLaws(new OptionMonoid(NumSumMi), Gen.ints.map(some)));
 
-  final intOptions = c.ints.map((i) => i%2==0 ? some(i) : none<int>());
+  final intOptions = Gen.ints.map((i) => i%2==0 ? some(i) : none<int>());
 
   group("OptionTr", () => checkTraversableLaws(new OptionTraversable(), intOptions));
 
@@ -63,4 +60,5 @@ void main() {
       expect(some.value, 2);
     });
   });
+
 }

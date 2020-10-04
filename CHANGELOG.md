@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.2
+
+- Replaced property testing engine, resulting in a much more robust test suite (issue #49)
+- Introduced IHashSet (issue #53)
+- Added IVector#insertAt, IVector#removeAt and IVector#remove (issue #50) 
+- Corrected some bugs and oddities in IHashMap
+- Added a couple of traverseXXX and sequenceXXX methods to IMap
+- Minor IMap optimizations
+
 ## 0.9.1
 
 - Dart 2.8.1 compatibility

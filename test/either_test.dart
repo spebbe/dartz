@@ -1,11 +1,8 @@
-//import 'package:enumerators/enumerators.dart';
-import 'enumerators_stubs.dart';
 import 'package:test/test.dart';
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
 //import 'dart:async';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
 
@@ -56,7 +53,7 @@ void main() {
 
   group("EitherM+Foldable", () => checkFoldableMonadLaws(EitherTr, EitherM));
 
-  final Enumeration<Either<int, int>> intEithers = c.ints.map((i) => i%2==0 ? right(i) : left(i));
+  final Gen<Either<int, int>> intEithers = Gen.ints.map((i) => i%2==0 ? right(i) : left(i));
 
   group("EitherTr", () => checkTraversableLaws(EitherTr, intEithers));
 

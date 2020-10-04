@@ -1,11 +1,10 @@
 import "package:test/test.dart";
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
-  final intLists = c.listsOf(c.ints);
+  final intLists = Gen.listOf(Gen.ints);
 
   bool bonkersEquality(a, b) {
     if (a == b) {

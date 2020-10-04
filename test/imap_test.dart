@@ -1,10 +1,7 @@
 import "package:test/test.dart";
-//import 'package:enumerators/combinators.dart' as c;
-import 'combinators_stubs.dart' as c;
-//import 'package:propcheck/propcheck.dart';
-import 'propcheck_stubs.dart';
 import 'package:dartz/dartz.dart';
 import 'laws.dart';
+import 'proptest/PropTest.dart';
 
 void main() {
   test("demo", () {
@@ -23,29 +20,25 @@ void main() {
     expect(boyz.foldMap(counterMonoid, (name) => parseName(name).map(constF<IList<String>, int>(1))), numberOfBoyzByLastName);
   });
 
-  final qc = new QuickCheck(maxSize: 300, seed: 42);
-  final intMaps = c.mapsOf(c.ints, c.ints);
+  final pt = new PropTest();
+  final intMaps = Gen.mapOf(Gen.ints, Gen.ints);
   final intIMaps = intMaps.map((m) => new IMap.from(IntOrder, m));
 
   test("create from Map", () {
-    qc.check(forall(intMaps, (dynamicM) {
-      final m = dynamicM as Map<int, int>;
+    pt.check(forAll(intMaps)((m) {
       final IMap<int, int> im = imap(m);
       return m.keys.length == im.keys().length() &&  m.keys.every((i) => some(m[i]) == im[i]);
     }));
   });
 
-  test("create from pairs", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("create from pairs", () => pt.check(forAll(intIMaps)((m) {
     final mPairs = m.pairs();
     final mFromPairs = new IMap.fromPairs(mPairs, IntOrder);
     return m == mFromPairs;
   })));
 
   test("deletion", () {
-    qc.check(forall2(intMaps, intMaps, (dynamicM1, dynamicM2) {
-      final m1 = dynamicM1 as Map<int, int>;
-      final m2 = dynamicM2 as Map<int, int>;
+    pt.check(forAll2(intMaps, intMaps)((m1, m2) {
       final Map<int, int> expected = new Map.from(m1);
       m2.keys.forEach((i) => expected.remove(i));
       final actual = m2.keys.fold(imap(m1), (IMap<int, int> p, k) => p.remove(k));
@@ -56,60 +49,50 @@ void main() {
   test("key lookup", () {
     final o = orderBy(IntOrder, (Tuple2<int, int> t) => t.value1);
     final complexIMaps = intIMaps.map((m) => m.foldLeftKV<IMap<Tuple2<int, int>, int>>(new IMap.empty(o), (acc, k, v) => acc.put(tuple2(k, -k), v)));
-    qc.check(forall(complexIMaps, (dynamicM) {
-      final m = dynamicM as IMap<Tuple2<int, int>, int>;
+    pt.check(forAll(complexIMaps)((m) {
       return m.keys().all((t) => m.getKey(tuple2(t.value1, 0)) == some(t));
     }));
   });
 
-  test("pair iterable", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("pair iterable", () => pt.check(forAll(intIMaps)((m) {
     return m.pairs() == ilist(m.pairIterable());
   })));
 
-  test("key iterable", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("key iterable", () => pt.check(forAll(intIMaps)((m) {
     return m.keys() == ilist(m.keyIterable());
   })));
 
-  test("value iterable", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("value iterable", () =>  pt.check(forAll(intIMaps)((m) {
     return  m.values() == ilist(m.valueIterable());
   })));
 
-  test("create from iterables", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("create from iterables", () =>  pt.check(forAll(intIMaps)((m) {
     return m == new IMap.fromIterables(m.keyIterable(), m.valueIterable(), IntOrder);
   })));
 
-  test("min", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("min", () =>  pt.check(forAll(intIMaps)((m) {
     return m.min() == m.keys().minimum(IntOrder).flatMap((k) => m[k].map((v) => tuple2(k, v)));
   })));
 
-  test("max", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("max", () =>  pt.check(forAll(intIMaps)((m) {
     return m.max() == m.keys().maximum(IntOrder).flatMap((k) => m[k].map((v) => tuple2(k, v)));
   })));
 
-  test("minGreaterThan", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("minGreaterThan", () =>  pt.check(forAll(intIMaps)((m) {
     final supremumEqualsMinimum = m.minKey().flatMap((minK) => m.minGreaterThan(minK-1)) == m.min();
     final correctSuccessorOfMinimum = m.minKey().flatMap((minK) => m.minGreaterThan(minK)) == m.pairs().tailOption.flatMap((l) => l.headOption);
     final noneGreaterThanMaximum = m.maxKey().flatMap((maxK) => m.minGreaterThan(maxK)) == none();
     return supremumEqualsMinimum && correctSuccessorOfMinimum && noneGreaterThanMaximum;
   })));
 
-  test("maxLessThan", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("maxLessThan", () =>  pt.check(forAll(intIMaps)((m) {
     final infimumEqualsMaximum = m.maxKey().flatMap((maxK) => m.maxLessThan(maxK+1)) == m.max();
     final correctPredecessorOfMaximum = m.maxKey().flatMap((maxK) => m.maxLessThan(maxK)) == m.pairs().reverse().tailOption.flatMap((l) => l.headOption);
     final noneLessThanMinimum = m.minKey().flatMap((minK) => m.maxLessThan(minK)) == none();
     return infimumEqualsMaximum && correctPredecessorOfMaximum && noneLessThanMinimum;
   })));
 
-  test("foldLeftKVBetween", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("foldLeftKVBetween", () =>  pt.check(forAll(intIMaps)((m) {
     final min = m.minKey()|0;
     final max = m.maxKey()|0;
     final canScanAll = m.foldLeftKVBetween(min, max, nil(), (acc, _, i) => acc.appendElement(i)) == m.values();
@@ -117,8 +100,7 @@ void main() {
     return canScanAll && canScanSome;
   })));
 
-  test("foldRightKVBetween", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("foldRightKVBetween", () =>  pt.check(forAll(intIMaps)((m) {
     final min = m.minKey()|0;
     final max = m.maxKey()|0;
     final canScanAll = m.foldRightKVBetween(min, max, nil(), (_, i, acc) => acc.appendElement(i)) == m.values().reverse();
@@ -126,20 +108,35 @@ void main() {
     return canScanAll && canScanSome;
   })));
 
-  test("cata", () => qc.check(forall(intIMaps, (dynamicM) {
-    final m = dynamicM as IMap<int, int>;
+  test("cata", () =>  pt.check(forAll(intIMaps)((m) {
     final cataed = m.cata<IMap<int, int>>(new IMap.empty(IntOrder), id, (acc, k, v, cataLeft, cataRight) => cataRight(cataLeft(acc.put(k, v))));
     return m == cataed;
   })));
 
   group("IMapTr", () => checkTraversableLaws(IMapTr, intIMaps));
 
-  group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoidWithOrder<int, IList<int>>(ilistMi<int>(), IntOrder), c.ints.map((i) => new IMap.from(IntOrder, {i: ilist([i])}))));
+  group("imapMonoid(IListMi)", () => checkMonoidLaws(imapMonoidWithOrder<int, IList<int>>(ilistMi<int>(), IntOrder), Gen.ints.map((i) => new IMap.from(IntOrder, {i: ilist([i])}))));
 
-  group("IMapMi", () => checkMonoidLaws(IMapMi, c.ints.map((i) => new IMap.from(comparableOrder(), {i: i}))));
+  group("IMapMi", () => checkMonoidLaws(IMapMi, Gen.ints.map((i) => new IMap.from(comparableOrder(), {i: i}))));
 
   group("IMap FoldableOps", () => checkFoldableOpsProperties(intIMaps));
 
-  test("isEmpty", () => qc.check(forall(intIMaps, (IMap<int, int> m) => (m.length() == 0) == m.isEmpty)));
+  test("isEmpty", () => pt.check(forAll(intIMaps)((m) => (m.length() == 0) == m.isEmpty)));
 
+  final _IntS = stateM<int>();
+
+  test("traverseState", () =>
+    pt.check(forAll(intIMaps)((m) =>
+    m.traverseState((k, v) => _IntS.modify((s) => s+v).replace("$k -> $v")).run(0) ==
+      tuple2(m.mapKV((k, v) => "$k -> $v"), m.concatenate(IntSumMi)))));
+
+  test("traverseState_", () =>
+    pt.check(forAll(intIMaps)((m) => m.traverseState_((k, v) => _IntS.modify((s) => s+v)).state(0) == m.concatenate(IntSumMi))));
+
+  final _IntE = new EvaluationMonad<Unit, Unit, Unit, int>(UnitMi);
+
+  test("traverseEvaluation_", () =>
+    pt.check(forAll(intIMaps)(
+        (m) async => await m.traverseEvaluation_(UnitMi, (k, v) => _IntE.modify((s) => s+v)).state(unit, 0) ==
+          right(m.concatenate(IntSumMi)))));
 }

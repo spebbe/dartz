@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2
+
+- mapXX and liftXX arities up to 20 on Option, Either and Free, courtesy of @cranst0n!
+
 ## 0.9.1
 
 - Dart 2.8.1 compatibility

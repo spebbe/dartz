@@ -101,7 +101,7 @@ abstract class Free<F, A> implements MonadOps<Free<F, dynamic>, A> {
 
   static Free<F, Unit> ifM<F>(Free<F, bool> fbool, Free<F, Unit> ifTrue) => fbool.flatMap((bool b) => b ? ifTrue : new Pure(unit));
 
-  @override Free<F, B> ap<B>(Free<F, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override Free<F, B> ap<B>(Free<F, Function1<A, B>> ff) => ff.bind(map); // TODO: optimize
 
   @override Free<F, Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
 

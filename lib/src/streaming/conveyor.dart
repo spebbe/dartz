@@ -206,7 +206,7 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   @override Conveyor<F, B> andThen<B>(Conveyor<F, B> next) => bind((_) => next);
 
-  @override Conveyor<F, B> ap<B>(Conveyor<F, Function1<O, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override Conveyor<F, B> ap<B>(Conveyor<F, Function1<O, B>> ff) => ff.bind(map); // TODO: optimize
 
   @override Conveyor<F, B> replace<B>(B replacement) => map((_) => replacement);
 }

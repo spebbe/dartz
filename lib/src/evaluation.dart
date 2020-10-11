@@ -69,7 +69,7 @@ class Evaluation<E, R, W, S, A> implements MonadOps<Evaluation<E, R, W, S, dynam
 
   @override Evaluation<E, R, W, S, Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 
-  @override Evaluation<E, R, W, S, B> ap<B>(Evaluation<E, R, W, S, Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override Evaluation<E, R, W, S, B> ap<B>(Evaluation<E, R, W, S, Function1<A, B>> ff) => ff.bind(map); // TODO: optimize
 }
 
 class EvaluationMonad<E, R, W, S> extends Object with Functor<Evaluation<E, R, W, S, dynamic>>, Applicative<Evaluation<E, R, W, S, dynamic>>, Monad<Evaluation<E, R, W, S, dynamic>> {

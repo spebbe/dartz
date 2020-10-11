@@ -352,7 +352,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
 
   @override bool any(bool f(A a)) => foldMap(BoolOrMi, f); // TODO: optimize
 
-  @override IList<B> ap<B>(IList<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override IList<B> ap<B>(IList<Function1<A, B>> ff) => ff.bind(map); // TODO: optimize
 
   @override A concatenate(Monoid<A> mi) => foldMap(mi, id);
 

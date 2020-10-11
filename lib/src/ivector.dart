@@ -176,13 +176,13 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
   void forEach(void sideEffect(A a)) => foldLeft(null, (_, a) => sideEffect(a));
 }
 
-IVector<A> ivector<A>(Iterable<A> iterable) => new IVector.from(iterable);
+IVector<A> ivector<A>(Iterable<A> iterable) => IVector.from(iterable);
 
-IVector<A> emptyVector<A>() => new IVector.emptyVector();
+IVector<A> emptyVector<A>() => IVector.emptyVector();
 
-final MonadPlus<IVector> IVectorMP = new MonadPlusOpsMonadPlus<IVector>((a) => emptyVector().appendElement(a), emptyVector);
+final MonadPlus<IVector> IVectorMP = MonadPlusOpsMonadPlus<IVector>((a) => emptyVector().appendElement(a), emptyVector);
 MonadPlus<IVector<A>> ivectorMP<A>() => cast(IVectorMP);
-final Traversable<IVector> IVectorTr = new TraversableOpsTraversable<IVector>();
+const Traversable<IVector> IVectorTr = TraversableOpsTraversable<IVector>();
 
 class IVectorMonoid<A> extends Monoid<IVector<A>> {
   @override IVector<A> zero() => emptyVector();

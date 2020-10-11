@@ -209,7 +209,9 @@ Option<A> some<A>(A a) => new Some(a);
 Option<A> option<A>(bool test, A value) => test ? some(value) : none();
 Option<A> optionOf<A>(A value) => value != null ? some(value) : none();
 
-class OptionMonadPlus extends MonadPlus<Option> with Monad<Option>, ApplicativePlus<Option>, Applicative<Option>, Functor<Option>, PlusEmpty<Option>, Plus<Option> {
+class OptionMonadPlus extends Functor<Option> with MonadPlus<Option>, Monad<Option>, ApplicativePlus<Option>, Applicative<Option>, PlusEmpty<Option>, Plus<Option> {
+  const OptionMonadPlus() : super._();
+  
   @override Option<B> map<A, B>(covariant Option<A> fa, B f(A a)) => fa.map(f);
   @override Option<B> ap<A, B>(covariant Option<A> fa, covariant Option<Function1<A, B>> ff) => fa.ap(ff);
   @override Option<B> bind<A, B>(covariant Option<A> fa, covariant Function1<A, Option<B>> f) => fa.bind(f);
@@ -219,6 +221,8 @@ class OptionMonadPlus extends MonadPlus<Option> with Monad<Option>, ApplicativeP
 }
 
 class OptionTraversable extends Traversable<Option> {
+  const OptionTraversable() : super._();
+
   @override B foldMap<A, B>(Monoid<B> bMonoid, covariant Option<A> fa, B f(A a)) => fa.foldMap(bMonoid, f);
   @override Option<B> map<A, B>(covariant Option<A> fa, B f(A a)) => fa.map(f);
 }

@@ -31,6 +31,7 @@ class State<S, A> implements MonadOps<State<S, dynamic>, A> {
 }
 
 class StateMonad<S> extends Functor<State<S, dynamic>> with Applicative<State<S, dynamic>>, Monad<State<S, dynamic>> {
+  const StateMonad() : super._();
   @override State<S, A> pure<A>(A a) => new State((S s) => new Tuple2(a, s));
   @override State<S, B> map<A, B>(covariant State<S, A> fa, covariant B f(A a)) => fa.map(f);
   @override State<S, B> bind<A, B>(covariant State<S, A> fa, covariant Function1<A, State<S, B>> f) => fa.bind(f);
@@ -72,7 +73,7 @@ class StateT<F, S, A> implements MonadOps<StateT<F, S, dynamic>, A> {
 class StateTMonad<F, S> extends Functor<StateT<F, S, dynamic>> with Applicative<StateT<F, S, dynamic>>, Monad<StateT<F, S, dynamic>> {
   final Monad<F> _FM;
 
-  StateTMonad(this._FM);
+  const StateTMonad(this._FM) : super._();
 
   @override StateT<F, S, A> pure<A>(A a) =>  new StateT(_FM, (S s) => _FM.pure(new Tuple2(a, s)));
   @override StateT<F, S, B> map<A, B>(covariant StateT<F, S, A> fa, covariant B f(A a)) => fa.map(f);

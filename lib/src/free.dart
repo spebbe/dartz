@@ -128,14 +128,15 @@ class Bind<F, A, B> extends Free<F, A> {
 }
 
 class FreeMonad<F> extends Functor<Free<F, dynamic>> with Applicative<Free<F, dynamic>>, Monad<Free<F, dynamic>> {
+  const FreeMonad() : super._();
 
-  @override Free<F, A> pure<A>(A a) => new Pure(a);
+  @override Free<F, A> pure<A>(A a) => Pure(a);
 
   @override Free<F, B> bind<A, B>(covariant Free<F, A> fa, covariant Function1<A, Free<F, B>> f) => fa.bind(f);
 
 }
 
-final FreeMonad FreeM = new FreeMonad();
-FreeMonad<F> freeM<F>() => new FreeMonad();
+const FreeMonad FreeM = FreeMonad();
+FreeMonad<F> freeM<F>() => FreeMonad();
 
-Free<F, A> liftF<F, A>(F fa) => new Suspend(fa);
+Free<F, A> liftF<F, A>(F fa) => Suspend(fa);

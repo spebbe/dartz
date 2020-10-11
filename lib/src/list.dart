@@ -6,6 +6,8 @@ part of dartz;
 // If possible, use IList and its associated instances instead.
 
 class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>, ApplicativePlus<List>, Monad<List>, MonadPlus<List>, TraversableMonad<List>, TraversableMonadPlus<List>, Plus<List> {
+  const ListTraversableMonadPlus() : super._();
+
   @override List<A> pure<A>(A a) => [a];
   @override List<B> bind<A, B>(covariant List<A> fa, covariant Function1<A, List<B>> f) => fa.expand(f).toList();
 
@@ -30,7 +32,7 @@ class ListMonoid<A> extends Monoid<List<A>> {
   @override List<A> append(List<A> l1, List<A> l2) => l1.isEmpty ? l2 : (l2.isEmpty ? l1 : new List.from(l1)..addAll(l2));
 }
 
-final ListTraversableMonadPlus ListMP = new ListTraversableMonadPlus();
+const ListTraversableMonadPlus ListMP = ListTraversableMonadPlus();
 MonadPlus<List<A>> listMP<A>() => cast(ListMP);
 final Traversable<List> ListTr = ListMP;
 
@@ -38,8 +40,9 @@ final Monoid<List> ListMi = new ListMonoid();
 Monoid<List<A>> listMi<A>() => new ListMonoid();
 
 class ListTMonad<M> extends Functor<M> with  Applicative<M>, Monad<M> {
-  Monad<M> _stackedM;
-  ListTMonad(this._stackedM);
+  final Monad<M> _stackedM;
+  const ListTMonad(this._stackedM) : super._();
+  
   Monad underlying() => ListMP;
 
   @override M pure<A>(A a) => _stackedM.pure([a]);

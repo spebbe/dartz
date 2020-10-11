@@ -194,7 +194,7 @@ Monoid<IMap<K, V>> imapMonoidWithOrder<K, V>(Semigroup<V> si, Order<K> order) =>
 final Monoid<IMap> IMapMi = imapMonoid(secondSemigroup());
 Monoid<IMap<K, V>> imapMi<K extends Comparable, V>() => imapMonoid(secondSemigroup());
 
-final Traversable<IMap> IMapTr = new TraversableOpsTraversable<IMap>();
+const Traversable<IMap> IMapTr = TraversableOpsTraversable<IMap>();
 
 abstract class _IMapAVLNode<K, V> implements FunctorOps<_IMapAVLNode<K, dynamic>, V> {
   const _IMapAVLNode();

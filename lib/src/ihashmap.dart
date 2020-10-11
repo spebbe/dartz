@@ -120,6 +120,6 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
   void forEachKV(void sideEffect(K k, V v)) => foldLeftKV(null, (_, k, v) => sideEffect(k, v));
 }
 
-final Traversable<IHashMap> IHashMapTr = new TraversableOpsTraversable<IHashMap>();
+const Traversable<IHashMap> IHashMapTr = TraversableOpsTraversable<IHashMap>();
 
 IHashMap<K, V> ihashmap<K, V>(Map<K, V> m) => new IHashMap.from(m);

@@ -447,9 +447,9 @@ class Nil<A> extends IList<A> {
 IList<A> nil<A>() => new Nil();
 IList<A> cons<A>(A head, IList<A> tail) => new Cons(head, tail);
 
-final MonadPlus<IList> IListMP = new MonadPlusOpsMonadPlus<IList>((a) => new Cons(a, nil()), nil);
+final MonadPlus<IList> IListMP =  MonadPlusOpsMonadPlus<IList>((a) => Cons(a, nil()), nil);
 MonadPlus<IList<A>> ilistMP<A>() => cast(IListMP);
-final Traversable<IList> IListTr = new TraversableOpsTraversable<IList>();
+const Traversable<IList> IListTr = TraversableOpsTraversable<IList>();
 
 class IListMonoid<A> extends Monoid<IList<A>> {
   @override IList<A> zero() => nil();
@@ -460,8 +460,9 @@ final Monoid<IList> IListMi = new IListMonoid();
 Monoid<IList<A>> ilistMi<A>() => new IListMonoid();
 
 class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
-  Monad<M> _stackedM;
-  IListTMonad(this._stackedM);
+  final Monad<M> _stackedM;
+  const IListTMonad(this._stackedM) : super._();
+
   Monad underlying() => IListMP;
 
   @override M pure<A>(A a) => _stackedM.pure(new Cons(a, nil()));

@@ -18,7 +18,7 @@ class MonadPlusOpsMonadPlus<F extends MonadPlusOps> extends Functor<F> with Appl
   final Function1<dynamic, F> _pure;
   final Function0<F> _empty;
 
-  MonadPlusOpsMonadPlus(this._pure, this._empty);
+  const MonadPlusOpsMonadPlus(this._pure, this._empty) : super._();
   @override F pure<A>(A a) => _pure(a);
   @override F bind<A, B>(F fa, F f(A a)) => cast<MonadPlusOps<F, dynamic>>(fa).bind(cast(f));
   @override F ap<A, B>(F fa, F ff) => cast<MonadPlusOps<F, dynamic>>(fa).ap(ff);

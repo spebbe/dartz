@@ -38,7 +38,7 @@ abstract class MonadOps<F, A> implements ApplicativeOps<F, A> {
 
 class MonadOpsMonad<F extends MonadOps> extends Functor<F> with Applicative<F>, Monad<F> {
   final Function1<dynamic, F> _pure;
-  MonadOpsMonad(this._pure);
+  const MonadOpsMonad(this._pure) : super._();
   @override F pure<A>(a) => _pure(a);
   @override F bind<A, B>(covariant F fa, covariant F f(_)) => cast(fa.bind(f));
   @override F ap<A, B>(F fa, F ff) => cast(fa.ap(ff));

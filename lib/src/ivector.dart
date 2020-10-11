@@ -158,7 +158,7 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
 
   @override IVector<B> andThen<B>(IVector<B> next) => bind((_) => next);
 
-  @override IVector<B> ap<B>(IVector<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override IVector<B> ap<B>(IVector<Function1<A, B>> ff) => ff.bind(map); // TODO: optimize
 
   @override IVector<B> replace<B>(B replacement) => map((_) => replacement);
 

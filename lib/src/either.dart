@@ -163,7 +163,7 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   @override Either<L, Tuple2<R, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 
-  @override Either<L, B> ap<B>(Either<L, Function1<R, B>> ff) => ff.bind((f) => map(f));
+  @override Either<L, B> ap<B>(Either<L, Function1<R, B>> ff) => ff.bind(map);
 
   // PURISTS BEWARE: side effecty stuff below -- proceed with caution!
 

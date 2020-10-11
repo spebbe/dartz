@@ -6,19 +6,24 @@ part of dartz;
 
 abstract class Trampoline<A> implements MonadOps<Trampoline, A> {
   Trampoline<B> pure<B>(B b) => new _TPure(b);
-  @override Trampoline<B> map<B>(B f(A a)) => bind((a) => pure(f(a)));
-  @override Trampoline<B> bind<B>(Function1<A, Trampoline<B>> f) => new _TBind(this, cast(f));
+  @override
+  Trampoline<B> map<B>(B f(A a)) => bind((a) => pure(f(a)));
+  @override
+  Trampoline<B> bind<B>(Function1<A, Trampoline<B>> f) =>
+      new _TBind(this, cast(f));
 
-  @override Trampoline<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
+  @override
+  Trampoline<Tuple2<B, A>> strengthL<B>(B b) => map((a) => tuple2(b, a));
 
-  @override Trampoline<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
+  @override
+  Trampoline<Tuple2<A, B>> strengthR<B>(B b) => map((a) => tuple2(a, b));
 
   A run() {
     _TBind<Object, Object> current = _unsafeGetTBind();
     if (current == null) {
       return _unsafeGetTPure()._a;
     }
-    while(true) {
+    while (true) {
       final fa = current._fa;
       final f = current._f;
       final fabind = fa._unsafeGetTBind();
@@ -36,13 +41,19 @@ abstract class Trampoline<A> implements MonadOps<Trampoline, A> {
     }
   }
 
-  @override Trampoline<B> andThen<B>(Trampoline<B> next) => bind((_) => next);
+  @override
+  Trampoline<B> andThen<B>(Trampoline<B> next) => bind((_) => next);
 
-  @override Trampoline<B> ap<B>(Trampoline<Function1<A, B>> ff) => ff.bind((f) => map(f)); // TODO: optimize
+  @override
+  Trampoline<B> ap<B>(Trampoline<Function1<A, B>> ff) =>
+      ff.bind(map); // TODO: optimize
 
-  @override Trampoline<B> flatMap<B>(Function1<A, Trampoline<B>> f) => new _TBind(this, cast(f));
+  @override
+  Trampoline<B> flatMap<B>(Function1<A, Trampoline<B>> f) =>
+      new _TBind(this, cast(f));
 
-  @override Trampoline<B> replace<B>(B replacement) => map((_) => replacement);
+  @override
+  Trampoline<B> replace<B>(B replacement) => map((_) => replacement);
 
   _TPure<A> _unsafeGetTPure();
 
@@ -53,7 +64,8 @@ class _TPure<A> extends Trampoline<A> {
   final A _a;
   _TPure(this._a);
 
-  @override _TPure<A> _unsafeGetTPure() => this;
+  @override
+  _TPure<A> _unsafeGetTPure() => this;
   _TBind<A, dynamic> _unsafeGetTBind() => null;
 }
 
@@ -71,4 +83,5 @@ final Monad<Trampoline> TrampolineM = new MonadOpsMonad((a) => new _TPure(a));
 Trampoline<T> treturn<T>(T t) => new _TPure(t);
 
 final Trampoline<Unit> tunit = new _TPure(unit);
-Trampoline<T> tcall<T>(Function0<Trampoline<T>> thunk) => new _TBind(cast(tunit), (_) => thunk());
+Trampoline<T> tcall<T>(Function0<Trampoline<T>> thunk) =>
+    new _TBind(cast(tunit), (_) => thunk());

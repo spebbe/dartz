@@ -112,8 +112,8 @@ void main() {
     final m = dynamicM as IMap<int, int>;
     final min = m.minKey()|0;
     final max = m.maxKey()|0;
-    final canScanAll = m.foldLeftKVBetween(min, max, nil(), (acc, _, i) => acc.appendElement(i)) == m.values();
-    final canScanSome = m.foldLeftKVBetween(min+1, max-1, nil(), (acc, _, i) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2);
+    final canScanAll = m.foldLeftKVBetween<IList<int>>(min, max, nil(), (acc, _, i) => acc.appendElement(i)) == m.values();
+    final canScanSome = m.foldLeftKVBetween<IList<int>>(min+1, max-1, nil(), (acc, _, i) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2);
     return canScanAll && canScanSome;
   })));
 
@@ -121,8 +121,8 @@ void main() {
     final m = dynamicM as IMap<int, int>;
     final min = m.minKey()|0;
     final max = m.maxKey()|0;
-    final canScanAll = m.foldRightKVBetween(min, max, nil(), (_, i, acc) => acc.appendElement(i)) == m.values().reverse();
-    final canScanSome = m.foldRightKVBetween(min+1, max-1, nil(), (_, i, acc) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2).reverse();
+    final canScanAll = m.foldRightKVBetween<IList<int>>(min, max, nil(), (_, i, acc) => acc.appendElement(i)) == m.values().reverse();
+    final canScanSome = m.foldRightKVBetween<IList<int>>(min+1, max-1, nil(), (_, i, acc) => acc.appendElement(i)) == m.pairs().filter((kv) => kv.value1 >= min+1 && kv.value1 <= max-1).map((kv) => kv.value2).reverse();
     return canScanAll && canScanSome;
   })));
 

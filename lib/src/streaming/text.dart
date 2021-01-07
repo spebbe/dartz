@@ -53,7 +53,7 @@ class Text {
     final regexp = new RegExp(regexpSource);
     final pipe = Pipe.consume<String, String>((s) {
       final matches = ilist(regexp.allMatches(s)).filter((m) => m.groupCount >= group);
-      return matches.foldRight(Pipe.halt(), (match, acc) => Pipe.produce(match.group(group), acc));
+      return matches.foldRight(Pipe.halt(), (match, acc) => Pipe.produce(match.group(group) ?? "", acc));
     });
     return pipe.repeatUntilExhausted();
   }

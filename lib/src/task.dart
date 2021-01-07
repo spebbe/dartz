@@ -15,7 +15,7 @@ class Task<A> implements MonadCatchOps<Task, A> {
 
   Task<B> pure<B>(B b) => new Task(() => new Future.value(b));
 
-  @override Task<Either<Object, A>> attempt() => new Task(() => run().then(right).catchError((err) => left<Object, A>(err)));
+  @override Task<Either<Object, A>> attempt() => new Task(() => run().then((a) => right<Object, A>(a)).catchError((err) => left<Object, A>(cast(err))));
 
   @override Task<A> fail(Object err) => new Task(() => new Future.error(err));
 

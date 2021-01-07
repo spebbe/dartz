@@ -21,7 +21,7 @@ void main() {
       .attempt();
 
     final result = await t.run();
-    expect(result.fold(id, null) is FormatException, true);
+    expect(result.fold(id, id) is FormatException, true);
   });
 
 }

@@ -97,7 +97,7 @@ abstract class _AVLNode<A> {
   int get balance;
   Option<Tuple2<_AVLNode<A>, A>> _removeMax();
   bool get empty;
-  _NonEmptyAVLNode<A> _unsafeGetNonEmpty();
+  _NonEmptyAVLNode<A>? _unsafeGetNonEmpty();
 }
 
 class _NonEmptyAVLNode<A> extends _AVLNode<A> {
@@ -145,15 +145,15 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(_left._unsafeGetNonEmpty());
+        return llRotate(_left._unsafeGetNonEmpty()!);
       } else {
-        return doubleLrRotate(_left._unsafeGetNonEmpty());
+        return doubleLrRotate(_left._unsafeGetNonEmpty()!);
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(_right._unsafeGetNonEmpty());
+        return rrRotate(_right._unsafeGetNonEmpty()!);
       } else {
-        return doubleRlRotate(_right._unsafeGetNonEmpty());
+        return doubleRlRotate(_right._unsafeGetNonEmpty()!);
       }
     } else {
       return this;
@@ -162,11 +162,11 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   _NonEmptyAVLNode<A> llRotate(_NonEmptyAVLNode<A> l) => new _NonEmptyAVLNode(l._a, l._left, new _NonEmptyAVLNode(_a, l._right, _right));
 
-  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()));
+  _NonEmptyAVLNode<A> doubleLrRotate(_NonEmptyAVLNode<A> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()!));
 
   _NonEmptyAVLNode<A> rrRotate(_NonEmptyAVLNode<A> r) => new _NonEmptyAVLNode(r._a, new _NonEmptyAVLNode(_a, _left, r._left), r._right);
 
-  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()));
+  _NonEmptyAVLNode<A> doubleRlRotate(_NonEmptyAVLNode<A> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()!));
 
   B foldLeft<B>(B z, B f(B previous, A a)) {
     final leftResult = _left.foldLeft(z, f);
@@ -236,7 +236,7 @@ class _NonEmptyAVLNode<A> extends _AVLNode<A> {
 
   bool get empty => false;
 
-  _NonEmptyAVLNode<A> _unsafeGetNonEmpty() => this;
+  _NonEmptyAVLNode<A>? _unsafeGetNonEmpty() => this;
 }
 
 class _EmptyAVLNode<A> extends _AVLNode<A> {
@@ -272,7 +272,7 @@ class _EmptyAVLNode<A> extends _AVLNode<A> {
 
   bool get empty => true;
 
-  _NonEmptyAVLNode<A> _unsafeGetNonEmpty() => null;
+  _NonEmptyAVLNode<A>? _unsafeGetNonEmpty() => null;
 }
 
 _AVLNode<A> emptyAVLNode<A>() => new _EmptyAVLNode();
@@ -298,12 +298,12 @@ class _AVLTreeIterable<A> extends Iterable<A> {
 class _AVLTreeIterator<A> extends Iterator<A> {
 
   bool _started = false;
-  _NonEmptyAVLNode<A> _currentNode;
+  _NonEmptyAVLNode<A>? _currentNode;
   IList<_NonEmptyAVLNode<A>> _path = nil();
 
   _AVLTreeIterator(this._currentNode);
 
-  @override A get current => _currentNode != null ? _currentNode._a : null;
+  @override A get current => _currentNode != null ? _currentNode!._a : null as A;
 
   @override bool moveNext() {
     if (_currentNode != null) {
@@ -321,8 +321,8 @@ class _AVLTreeIterator<A> extends Iterator<A> {
   }
 
   bool _descend() {
-    if (!_currentNode._right.empty) {
-      _currentNode = _currentNode._right._unsafeGetNonEmpty();
+    if (!_currentNode!._right.empty) {
+      _currentNode = _currentNode!._right._unsafeGetNonEmpty();
       _descendLeft();
       return true;
     } else {
@@ -337,11 +337,11 @@ class _AVLTreeIterator<A> extends Iterator<A> {
   }
 
   void _descendLeft() {
-    var current = _currentNode;
+    var current = _currentNode!;
     var currentLeft = current._left;
     while(true) {
       if (!currentLeft.empty) {
-        final _NonEmptyAVLNode<A> cl = currentLeft._unsafeGetNonEmpty();
+        final _NonEmptyAVLNode<A> cl = currentLeft._unsafeGetNonEmpty()!;
         _path = cons(current, _path);
         current = cl;
         currentLeft = cl._left;

@@ -60,8 +60,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     if (!_isCons()) {
       return bNil;
     }
-    Cons<B> result;
-    IList<B> resultHead;
+    Cons<B>? result = null;
+    IList<B>? resultHead = null;
     var current = this;
     var sub = f(current._unsafeHead());
     while(current._isCons() && !sub._isCons()) {
@@ -76,7 +76,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
       sub = sub._unsafeTail();
       while(sub._isCons()) {
         final next = new Cons(sub._unsafeHead(), bNil);
-        result._unsafeSetTail(next);
+        result!._unsafeSetTail(next);
         result = next;
         sub = sub._unsafeTail();
       }
@@ -86,7 +86,7 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
       sub = f(current._unsafeHead());
       while(sub._isCons()) {
         final next = new Cons(sub._unsafeHead(), bNil);
-        result._unsafeSetTail(next);
+        result!._unsafeSetTail(next);
         result = next;
         sub = sub._unsafeTail();
       }
@@ -466,7 +466,7 @@ class IListTMonad<M> extends Functor<M> with Applicative<M>, Monad<M> {
 
   @override M pure<A>(A a) => _stackedM.pure(new Cons(a, nil()));
 
-  M _concat(M a, M b) => _stackedM.bind(a, (l1) => _stackedM.map(b, (l2) => l1.plus(l2)));
+  M _concat(M a, M b) => _stackedM.bind(a, (IList l1) => _stackedM.map(b, (IList l2) => l1.plus(l2)));
 
   @override M bind<A, B>(M mla, M f(A a)) => _stackedM.bind(mla, (IList l) => l.map<M>(cast(f)).foldLeft(_stackedM.pure(nil()), _concat));
 }
@@ -491,11 +491,11 @@ class _IListIterable<A> extends Iterable<A> {
 class _IListIterator<A> extends Iterator<A> {
   bool _started = false;
   IList<A> _l;
-  A _current;
+  A? _current;
 
   _IListIterator(this._l);
 
-  @override A get current => _current;
+  @override A get current => _current!;
 
   bool moveNext() {
     final IList<A> curr = _l;

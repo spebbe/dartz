@@ -1,4 +1,4 @@
-// ignore_for_file: unnecessary_new
+// ignore_for_file: unnecessary_new, null_check_always_fails
 
 part of dartz;
 
@@ -10,7 +10,7 @@ class IMap<K, V> implements TraversableOps<IMap<K, dynamic>, V> {
 
   IMap.empty(this._order): _tree = new _EmptyIMapAVLNode();
 
-  factory IMap.from(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.empty(kOrder), (p, K k) => p.put(k, m[k]));
+  factory IMap.from(Order<K> kOrder, Map<K, V> m) => m.keys.fold(new IMap.empty(kOrder), (p, K k) => p.put(k, m[k]!));
 
   factory IMap.fromIterables(Iterable<K> keys, Iterable<V> values, Order<K> kOrder) {
     IMap<K, V> result = new IMap.empty(kOrder);
@@ -220,7 +220,7 @@ abstract class _IMapAVLNode<K, V> implements FunctorOps<_IMapAVLNode<K, dynamic>
   bool get empty;
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b)));
 
-  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty();
+  _NonEmptyIMapAVLNode<K, V>? _unsafeGetNonEmpty();
 
   @override _IMapAVLNode<K, Tuple2<B, V>> strengthL<B>(B b) => map((v) => tuple2(b, v));
 
@@ -273,15 +273,15 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
     final b = balance;
     if (b < -1) {
       if (_left.balance < 0) {
-        return llRotate(_left._unsafeGetNonEmpty());
+        return llRotate(_left._unsafeGetNonEmpty()!);
       } else {
-        return doubleLrRotate(_left._unsafeGetNonEmpty());
+        return doubleLrRotate(_left._unsafeGetNonEmpty()!);
       }
     } else if (b > 1) {
       if (_right.balance > 0) {
-        return rrRotate(_right._unsafeGetNonEmpty());
+        return rrRotate(_right._unsafeGetNonEmpty()!);
       } else {
-        return doubleRlRotate(_right._unsafeGetNonEmpty());
+        return doubleRlRotate(_right._unsafeGetNonEmpty()!);
       }
     } else {
       return this;
@@ -290,11 +290,11 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   _NonEmptyIMapAVLNode<K, V> llRotate(_NonEmptyIMapAVLNode<K, V> l) => new _NonEmptyIMapAVLNode(l._k, l._v, l._left, new _NonEmptyIMapAVLNode(_k, _v, l._right, _right));
 
-  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()));
+  _NonEmptyIMapAVLNode<K, V> doubleLrRotate(_NonEmptyIMapAVLNode<K, V> l) => llRotate(l.rrRotate(l._right._unsafeGetNonEmpty()!));
 
   _NonEmptyIMapAVLNode<K, V> rrRotate(_NonEmptyIMapAVLNode<K, V> r) => new _NonEmptyIMapAVLNode(r._k, r._v, new _NonEmptyIMapAVLNode(_k, _v, _left, r._left), r._right);
 
-  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()));
+  _NonEmptyIMapAVLNode<K, V> doubleRlRotate(_NonEmptyIMapAVLNode<K, V> r) => rrRotate(r.llRotate(r._left._unsafeGetNonEmpty()!));
 
   B foldLeft<B>(B z, B f(B previous, K k, V v)) {
     final leftResult = _left.foldLeft(z, f);
@@ -364,9 +364,9 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._k);
       } else if (o == Ordering.LT) {
-        current = current._left._unsafeGetNonEmpty();
+        current = current._left._unsafeGetNonEmpty()!;
       } else {
-        current = current._right._unsafeGetNonEmpty();
+        current = current._right._unsafeGetNonEmpty()!;
       }
     }
     return none();
@@ -422,7 +422,7 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) =>
       ifNonEmpty(z, _k, _v, (b) => _left.cata(b, ifEmpty, ifNonEmpty), (b) => _right.cata(b, ifEmpty, ifNonEmpty));
 
-  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty() => this;
+  _NonEmptyIMapAVLNode<K, V>? _unsafeGetNonEmpty() => this;
 }
 
 class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
@@ -472,7 +472,7 @@ class _EmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
 
   B cata<B>(B z, B ifEmpty(B b), B ifNonEmpty(B b, K k, V v, B cataLeft(B b), B cataRight(B b))) => ifEmpty(z);
 
-  _NonEmptyIMapAVLNode<K, V> _unsafeGetNonEmpty() => null;
+  _NonEmptyIMapAVLNode<K, V>? _unsafeGetNonEmpty() => null;
 }
 
 _IMapAVLNode<K, V> _emptyIMapAVLNode<K, V>() => new _EmptyIMapAVLNode();
@@ -500,7 +500,7 @@ class _IMapValueIterable<K, V> extends _IMapIterable<K, V, V> {
 abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
 
   bool _started = false;
-  _NonEmptyIMapAVLNode<K, V> _currentNode;
+  _NonEmptyIMapAVLNode<K, V>? _currentNode;
   IList<_NonEmptyIMapAVLNode<K, V>> _path = nil();
 
   _IMapAVLNodeIterator(this._currentNode);
@@ -521,7 +521,7 @@ abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
   }
 
   bool _descend() {
-    final right = _currentNode._right._unsafeGetNonEmpty();
+    final right = _currentNode!._right._unsafeGetNonEmpty();
     if (right != null) {
       _currentNode = right;
       _descendLeft();
@@ -538,7 +538,7 @@ abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
   }
 
   void _descendLeft() {
-    var current = _currentNode;
+    var current = _currentNode!;
     var currentLeft = current._left._unsafeGetNonEmpty();
     while(true) {
       if (currentLeft != null) {
@@ -555,16 +555,16 @@ abstract class _IMapAVLNodeIterator<K, V, A> extends Iterator<A> {
 }
 
 class _IMapPairIterator<K, V> extends _IMapAVLNodeIterator<K, V, Tuple2<K, V>> {
-  _IMapPairIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
-  @override Tuple2<K, V> get current => _currentNode != null ? tuple2(_currentNode._k, _currentNode._v) : null;
+  _IMapPairIterator(_NonEmptyIMapAVLNode<K, V>? root) : super(root);
+  @override Tuple2<K, V> get current => _currentNode != null ? tuple2(_currentNode!._k, _currentNode!._v) : null!;
 }
 
 class _IMapKeyIterator<K, V> extends _IMapAVLNodeIterator<K, V, K> {
-  _IMapKeyIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
-  @override K get current => _currentNode != null ? _currentNode._k : null;
+  _IMapKeyIterator(_NonEmptyIMapAVLNode<K, V>? root) : super(root);
+  @override K get current => _currentNode != null ? _currentNode!._k : null!;
 }
 
 class _IMapValueIterator<K, V> extends _IMapAVLNodeIterator<K, V, V> {
-  _IMapValueIterator(_NonEmptyIMapAVLNode<K, V> root) : super(root);
-  @override V get current => _currentNode != null ? _currentNode._v : null;
+  _IMapValueIterator(_NonEmptyIMapAVLNode<K, V>? root) : super(root);
+  @override V get current => _currentNode != null ? _currentNode!._v : null!;
 }

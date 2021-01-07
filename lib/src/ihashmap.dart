@@ -13,7 +13,7 @@ class IHashMap<K, V> implements TraversableOps<IHashMap<K, dynamic>, V> {
 
   factory IHashMap.empty() => new IHashMap.internal(new IMap.empty(IntOrder));
 
-  factory IHashMap.from(Map<K, V> m) => m.keys.fold(new IHashMap.empty(), (IHashMap<K, V> p, K k) => p.put(k, m[k]));
+  factory IHashMap.from(Map<K, V> m) => m.keys.fold(new IHashMap.empty(), (IHashMap<K, V> p, K k) => p.put(k, m[k]!));
 
   factory IHashMap.fromPairs(FoldableOps<dynamic, Tuple2<K, V>> foldableOps, Order<K> kOrder) =>
     foldableOps.foldLeft(new IHashMap.empty(), (acc, kv) => kv.apply(acc.put));

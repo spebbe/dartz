@@ -244,6 +244,6 @@ class _SingletonIterator<A> extends Iterator<A> {
   final A _singleton;
   int _moves = 0;
   _SingletonIterator(this._singleton);
-  @override A get current => _moves == 1 ? _singleton : null;
+  @override A get current => _moves == 1 ? _singleton : null!; // ignore: null_check_always_fails
   @override bool moveNext() => ++_moves == 1;
 }

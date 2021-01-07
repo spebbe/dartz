@@ -87,7 +87,7 @@ MonadCatch<Free<IOOp, A>> iomc<A>() => cast(IOMC);
 class IOOps<F> extends FreeOps<F, IOOp> {
   IOOps(FreeComposer<F, IOOp> composer) : super(composer);
 
-  Free<F, String> readln() => liftOp(new Readln());
+  Free<F, String?> readln() => liftOp(new Readln());
 
   Free<F, Unit> println(String s) => liftOp(new Println(s));
 

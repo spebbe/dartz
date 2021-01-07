@@ -110,7 +110,7 @@ class IVector<A> implements TraversableMonadPlusOps<IVector, A> {
 
   static final Option<int> _NOT_FOUND = none();
 
-  Option<int> indexOf(A element, {int start = 0, Eq<A> eq}) {
+  Option<int> indexOf(A element, {int start = 0, Eq<A>? eq}) {
     final effectiveEq = eq ?? ObjectEq;
     return _elementsByIndex.cata(_NOT_FOUND, (_) => _NOT_FOUND, (result, index, v, cataLeft, cataRight) {
       if ((index-_offset) < start) {

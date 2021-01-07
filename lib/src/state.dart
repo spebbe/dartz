@@ -51,8 +51,8 @@ class StateT<F, S, A> implements MonadOps<StateT<F, S, dynamic>, A> {
   StateT(this._FM, this._run);
 
   F run(S s) => _run(s);
-  F value(S s) => _FM.map(_run(s), (t) => t.value1);
-  F state(S s) => _FM.map(_run(s), (t) => t.value2);
+  F value(S s) => _FM.map(_run(s), (Tuple2 t) => t.value1);
+  F state(S s) => _FM.map(_run(s), (Tuple2 t) => t.value2);
 
   StateT<F, S, B> pure<B>(B b) => new StateT(_FM, (S s) => _FM.pure(new Tuple2(b, s)));
   @override StateT<F, S, B> map<B>(B f(A a)) => new StateT(_FM, (S s) => _FM.map(_run(s), (Tuple2<A, B> t) => t.map1(f)));

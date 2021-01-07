@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0-nullsafety.0
+
+- Basic null safety support
+- Requires Dart >= 2.12. Dart 1 is no longer supported at all.
+
 ## 0.9.2
 
 - mapXX and liftXX arities up to 20 on Option, Either and Free, courtesy of @cranst0n!

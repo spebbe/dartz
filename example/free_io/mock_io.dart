@@ -14,10 +14,11 @@ class _MockFileRef implements FileRef {
   _MockFileRef(this.name);
 }
 
-Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, String> mockReadFile(String fileName) =>
+Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, String?> mockReadFile(String fileName) =>
     MockM.gets((counters) => counters[fileName]|0).bind((i) =>
         MockM.asks((inputs) => inputs[fileName]|emptyVector<String>()).bind((vs) =>
-        MockM.pure(vs[i]|null).bind((x) => MockM.modify((counters) => counters.put(fileName, i+1)).replace(x))));
+        // ignore: unnecessary_cast
+        MockM.pure(vs[i].map((s) => s as String?)|null).bind((x) => MockM.modify((counters) => counters.put(fileName, i+1)).replace(x))));
 
 Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, int>, A> _interpret<A>(Free<IOOp, A> op) =>
   op.foldMap(MockM, mockIOInterpreter);
@@ -33,7 +34,7 @@ Evaluation<String, IMap<String, IVector<String>>, IVector<String>, IMap<String, 
     return MockM.write(ivector(["stdout: ${io.s}"]));
 
   } else if (io is Attempt) {
-    return _interpret(io.fa).map(right).handleError((e) => MockM.pure(left(e)));
+    return _interpret(io.fa).map(io.succeed).handleError((e) => MockM.pure(io.fail(e)));
 
   } else if (io is Fail) {
     return MockM.raiseError(io.failure.toString());

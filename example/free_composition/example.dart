@@ -15,7 +15,7 @@ final unsafePerformIOAndRand = ioAndRand.interpreter<Future>(FutureM, unsafeIOIn
 // Technique: Construct RT program, sequencing both RandOp and IOOp through the composed algebra
 final thinkOfNumber = randOps.nextIntBetween(1, 5);
 final promptUser = ioOps.println("I'm thinking of a number between 1 and 5. Guess which one!");
-final readUserGuess = ioOps.readln().map<Option<int>>((s) => catching(() => int.parse(s)).toOption());
+final readUserGuess = ioOps.readln().map<Option<int>>((s) => catching(() => int.parse(s!)).toOption());
 final checkUserGuess = (int myNumber) => (Option<int> maybeUserGuess) => maybeUserGuess.map<Free<Either<IOOp, RandOp>, Unit>>(
     (userGuess) => (userGuess == myNumber)
         ? ioOps.println("O... M... G... you're like telepathic!!!")

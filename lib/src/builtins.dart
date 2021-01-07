@@ -71,10 +71,9 @@ final Order<double> DoubleOrder = new ComparableOrder<double>();
 
 final Order<String> StringOrder = new ComparableOrder<String>();
 
+@pragma('dart2js:as:trust')
 A cast<A>(dynamic a) {
-  // ignore: invalid_assignment
-  final A ca = a;
-  return ca;
+  return a as A;
 }
 
 class IteratorEq<A> extends Eq<Iterator<A>> {
@@ -99,5 +98,5 @@ class IteratorEq<A> extends Eq<Iterator<A>> {
   }
 }
 
-final Eq<Iterator<Object>> ObjectIteratorEq = new IteratorEq(ObjectEq);
+final Eq<Iterator<dynamic>> ObjectIteratorEq = new IteratorEq(ObjectEq);
 Eq<Iterator<A>> iteratorEq<A>(Eq<A> aEq) => new IteratorEq(aEq);

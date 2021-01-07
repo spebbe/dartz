@@ -22,4 +22,4 @@ class _AnonymousEq<A> extends Eq<A> {
 Eq<A> eq<A>(EqF<A> f) => new _AnonymousEq(f);
 
 final Eq<Object> ObjectEq = eq((o1, o2) => o1 == o2);
-Eq<A> objectEq<A extends Object>() => eq((o1, o2) => o1 == o2);
+Eq<A> objectEq<A>() => eq((o1, o2) => o1 == o2);

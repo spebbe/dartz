@@ -57,12 +57,12 @@ void main() {
   });
 
   test('length', () {
-    qc.check(forall(intLists, (l) => (l as List<int>).length == ilist(l as List<int>).length()));
+    qc.check(forall(intLists, (l) => (l as List<int>).length == ilist(l).length()));
   });
 
   test('reverse', () {
     qc.check(forall2(intILists, intILists,
-        (xs, ys) => xs.plus(ys).reverse() == ys.reverse().plus(xs.reverse())));
+        (IList<int> xs, IList<int> ys) => xs.plus(ys).reverse() == ys.reverse().plus(xs.reverse())));
   });
 
   test('bind', () {

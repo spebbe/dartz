@@ -26,7 +26,7 @@ class ListTraversableMonadPlus extends Traversable<List> with Applicative<List>,
 }
 
 class ListMonoid<A> extends Monoid<List<A>> {
-  @override List<A> zero() => new List();
+  @override List<A> zero() => const [];
   @override List<A> append(List<A> l1, List<A> l2) => l1.isEmpty ? l2 : (l2.isEmpty ? l1 : new List.from(l1)..addAll(l2));
 }
 

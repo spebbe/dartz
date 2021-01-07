@@ -14,9 +14,9 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   A interpret<A>(A ifProduce(O head, Conveyor<F, O> tail), covariant A ifConsume(F req, Function1<Either<Object, dynamic>, Conveyor<F, O>> recv), A ifHalt(Object err));
 
-  static Conveyor<F, O> produce<F, O>(O head, [Conveyor<F, O> tail]) => new _Produce(head, tail ?? halt(End));
+  static Conveyor<F, O> produce<F, O>(O head, [Conveyor<F, O>? tail]) => new _Produce(head, tail ?? halt(End));
   static Conveyor<F, O> consume<F, A, O>(F req, Function1<Either<Object, A>, Conveyor<F, O>> recv) => new _Consume(req, recv);
-  static Conveyor<F, O> halt<F, O>([Object err]) => new _Halt(err ?? End);
+  static Conveyor<F, O> halt<F, O>([Object? err]) => new _Halt(err ?? End);
 
   static final End = new _End();
   static final Kill = new _Kill();
@@ -169,7 +169,7 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   Conveyor<F, IVector<O>> chunk(int n) => pipe(Pipe.chunk(n));
 
-  Conveyor<F, O> skipDuplicates([Eq<O> eq]) => pipe(Pipe.skipDuplicates(eq));
+  Conveyor<F, O> skipDuplicates([Eq<O>? eq]) => pipe(Pipe.skipDuplicates(eq));
 
   Conveyor<F, IVector<O>> window(int n) => pipe(Pipe.window(n));
 
@@ -194,9 +194,9 @@ abstract class Conveyor<F, O> implements MonadPlusOps<Conveyor<F, dynamic>, O> {
 
   Conveyor<F, O> interleave(Conveyor<F, O> c2) => tee(c2, Tee.interleave());
 
-  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, f) => f(o)).flatMap((a) => cast<Conveyor<F, Unit>>(a));
+  Conveyor<F, Unit> to(Conveyor<F, SinkF<F, O>> sink) => zipWith(sink, (o, SinkF<F, O> f) => f(o)).flatMap((a) => cast<Conveyor<F, Unit>>(a));
 
-  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, f) => f(o)).flatMap((a) => cast<Conveyor<F, O2>>(a));
+  Conveyor<F, O2> through<O2>(Conveyor<F, ChannelF<F, O, O2>> channel) => zipWith(channel, (o, ChannelF<F, O, O2> f) => f(o)).flatMap((a) => cast<Conveyor<F, O2>>(a));
 
   Conveyor<F, O2> onto<O2>(Conveyor<F, O2> f(Conveyor<F, O> c)) => f(this);
 

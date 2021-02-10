@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0-nullsafety.1
+
+- Corrected signature of `optionOf` to `A? => Option<A>` (issue #74, thanks @rich-j)
+- Added `toNullable()` to `Option` (issue #74, thanks @apiep)
+
 ## 0.10.0-nullsafety.0
 
 - Basic null safety support

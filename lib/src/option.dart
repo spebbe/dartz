@@ -186,6 +186,8 @@ abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
   Iterator<A> iterator() => toIterable().iterator;
 
   void forEach(void sideEffect(A a)) => fold(() => null, sideEffect);
+
+  A? toNullable() => fold(() => null, id);
 }
 
 class Some<A> extends Option<A> {
@@ -207,7 +209,7 @@ class None<A> extends Option<A> {
 Option<A> none<A>() => new None();
 Option<A> some<A>(A a) => new Some(a);
 Option<A> option<A>(bool test, A value) => test ? some(value) : none();
-Option<A> optionOf<A>(A value) => value != null ? some(value) : none();
+Option<A> optionOf<A>(A? value) => value != null ? some(value) : none();
 
 class OptionMonadPlus extends MonadPlus<Option> with Monad<Option>, ApplicativePlus<Option>, Applicative<Option>, Functor<Option>, PlusEmpty<Option>, Plus<Option> {
   @override Option<B> map<A, B>(covariant Option<A> fa, B f(A a)) => fa.map(f);

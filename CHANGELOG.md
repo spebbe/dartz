@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.0
+
+- Updating dev_dependency plugin test to 0.17.1 so dartz can be published as null-safety release version
 ## 0.10.0-nullsafety.1
 
 - Corrected signature of `optionOf` to `A? => Option<A>` (issue #74, thanks @rich-j)

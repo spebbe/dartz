@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.10.0
+## 0.10.0-nullsafety.2
 
-- Updating dev_dependency plugin test to 0.17.1 so dartz can be published as null-safety release version
+- Updating dev_dependency plugin test to 0.17.1
+
 ## 0.10.0-nullsafety.1
 
 - Corrected signature of `optionOf` to `A? => Option<A>` (issue #74, thanks @rich-j)
@@ -36,7 +37,7 @@
 - Polished pana score
 
 ## 0.8.8
- 
+
  - Dart 2.6.0 compatibility
 
 ## 0.8.7
@@ -129,7 +130,7 @@
   - getKey
   - mapKV
   - traverseKV
-  - traverseKV_  
+  - traverseKV_
 
 ## 0.6.3
 
@@ -191,7 +192,7 @@
 
 - Added modifyE to EvaluationMonad, for state updates that can fail
 - Either, Option, Evaluation, State, StateT and Free:
-  - Tightened types of various derived operations, such as flatMap, andThen and << 
+  - Tightened types of various derived operations, such as flatMap, andThen and <<
 
 ## 0.5.3
 

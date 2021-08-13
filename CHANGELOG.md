@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- Stable release of null safety
+- Dart 2.12+ is now required
+
 ## 0.10.0-nullsafety.2
 
 - Updating dev_dependency plugin test to 0.17.1

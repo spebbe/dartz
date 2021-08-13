@@ -20,8 +20,8 @@ You can also take a look at [Category Theory for Programmers](https://github.com
 
 ##### Status
 
-* Dart 2 is the main target, but most things still work on Dart 1
-* Next major release will target Dart 2 only
+* Starting with version 0.10.0, Dart 2.12+ is required
+* 0.9.x supports Dart 1 and older Dart 2 versions
 * Basic type class structure and collection classes are relatively stable, but might see restructuring in future releases
 * Optimized for dart2js/node/v8, with performance on the dart vm being of distant secondary concern
 * Most things are stack safe and reasonably efficient, but there are a couple of exceptions and plenty of room for further optimizations

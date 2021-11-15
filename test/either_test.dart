@@ -48,6 +48,29 @@ void main() {
     expect(Either.sequenceIList(IList.sequenceEither(l2)), ilist([left("out of ints...")]));
   });
 
+  test("cond", () {
+    final r = Either.cond(() => true, () => "foo", () => 42);
+    final l = Either.cond(() => false, () => "foo", () => 42);
+
+    expect(r, right("foo"));
+    expect(l, left(42));
+  });
+
+  test("bimap", () {
+    final r = right<String, int>(1);
+    final l = left<String, int>("42");
+
+    expect(r.bimap((s) => "foo", (i) => i + 1), right(2));
+    expect(l.bimap((s) => "foo", (i) => i + 1), left("foo"));
+  });
+
+  test("filter", () {
+    final r = right(42);
+
+    expect(r.ensure((x) => x % 2 == 0, () => 0), right(42));
+    expect(r.ensure((x) => x < 0, () => 0), right(0));
+  });
+
   group("EitherM", () => checkMonadLaws(EitherM));
 
   //group("EitherTMonad+Id", () => checkMonadLaws(eitherTMonad(IdM)));

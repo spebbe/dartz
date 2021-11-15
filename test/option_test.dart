@@ -36,6 +36,11 @@ void main() {
     expect(Option.sequenceIList(IList.sequenceOption(l2)), ilist([none()]));
   });
 
+  test("when/unless", () {
+    expect(Option.when(true, 42), some(42));
+    expect(Option.unless(true, 42), none());
+  });
+
   group("OptionM", () => checkMonadLaws(new OptionMonadPlus()));
 
   //group("OptionTMonad+Id", () => checkMonadLaws(optionTMonad(IdM)));

@@ -16,6 +16,9 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   bool isRight() => fold((_) => false, (_) => true);
   Either<R, L> swap() => fold(right, left);
 
+  Either<LL, RR> bimap<LL, RR>(LL ifLeft(L l), RR ifRight(R r)) =>
+    fold((l) => left(ifLeft(l)), (r) => right(ifRight(r)));
+
   @override Either<L, R2> map<R2>(R2 f(R r)) => fold(left, (R r) => right(f(r)));
   @override Either<L, R2> bind<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);
   @override Either<L, R2> flatMap<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);
@@ -37,7 +40,11 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   static State<S, Either<L, R>> sequenceState<S, L, R>(Either<L, State<S, R>> esr) => esr.traverseState(id);
 
+  static Either<L, R> cond<L, R>(bool predicate(), Function0<R> r, Function0<L> l) =>
+    predicate() ? right(r()) : left(l());
+
   Either<L, R> filter(bool predicate(R r), L fallback()) => fold((_) => this, (r) => predicate(r) ? this : left(fallback()));
+  Either<L, R> ensure(bool predicate(R r), R fallback()) => fold((_) => this, (r) => predicate(r) ? this : right(fallback()));
   Either<L, R> where(bool predicate(R r), L fallback()) => filter(predicate, fallback);
 
   static Either<L, C> map2<L, A, A2 extends A, B, B2 extends B, C>(Either<L, A2> fa, Either<L, B2> fb, C fun(A a, B b)) =>

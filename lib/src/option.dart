@@ -42,6 +42,9 @@ abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
 
   static Free<F, Option<A>> sequenceFree<F, A>(Option<Free<F, A>> ofa) => ofa.traverseFree(id);
 
+  static Option<A> when<A>(bool test, A value) => option(test, value);
+  static Option<A> unless<A>(bool test, A value) => option(!test, value);
+
   @override Option<A> plus(Option<A> o2) => orElse(() => o2);
 
   @override Option<A> filter(bool predicate(A a)) => fold(none, (a) => predicate(a) ? this : none());

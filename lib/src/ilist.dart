@@ -279,6 +279,17 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     return result.map((l) => l.reverse());
   }
 
+  Task<IList<B>> traverseTask<B>(Task<B> f(A a)) {
+    Task<IList<B>> result = Task.value(nil());
+    var current = this;
+    while(current._isCons()) {
+      final gb = f(current._unsafeHead());
+      result = result.flatMap((a) => gb.map((h) => new Cons(h, a)));
+      current = current._unsafeTail();
+    }
+    return result.map((l) => l.reverse());
+  }
+
   Evaluation<E, R, W, S, IList<B>> traverseEvaluation<B, E, R, W, S>(Monoid<W> WMi, Evaluation<E, R, W, S, B> f(A a)) {
     Evaluation<E, R, W, S, IList<B>> result = new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, nil()))));
     var current = this;
@@ -319,6 +330,8 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
   static Future<IList<A>> sequenceFuture<A>(IList<Future<A>> lfa) => lfa.traverseFuture(id);
 
   static State<S, IList<A>> sequenceState<A, S>(IList<State<S, A>> lsa) => lsa.traverseState(id);
+
+  static Task<IList<A>> sequenceTask<A>(IList<Task<A>> lfa) => lfa.traverseTask(id);
 
   static Free<F, IList<A>> sequenceFree<F, A>(IList<Free<F, A>> lfa) => lfa.traverseFree(id);
 

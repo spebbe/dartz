@@ -14,6 +14,14 @@ class Tuple2<T1, T2> {
 
   const Tuple2(this.value1, this.value2);
 
+  T1 get head => value1;
+  T2 get tail => value2;
+
+  T1 get init => value1;
+  T2 get last => value2;
+
+  Tuple3<T1, T2, T3> append<T3>(T3 value3) => Tuple3(value1, value2, value3);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -93,6 +101,14 @@ class Tuple3<T1, T2, T3> {
 //<editor-fold desc="Data Methods" defaultstate="collapsed">
 
   const Tuple3(this.value1, this.value2, this.value3);
+  
+  T1 get head => value1;
+  Tuple2<T2, T3> get tail => Tuple2(value2, value3);
+
+  Tuple2<T1, T2> get init => Tuple2(value1, value2);
+  T3 get last => value3;
+
+  Tuple4<T1, T2, T3, T4> append<T4>(T4 value4) => Tuple4(value1, value2, value3, value4);
 
   @override
   bool operator ==(Object other) =>
@@ -188,6 +204,14 @@ class Tuple4<T1, T2, T3, T4> {
     this.value3,
     this.value4,
   );
+
+  T1 get head => value1;
+  Tuple3<T2, T3, T4> get tail => Tuple3(value2, value3, value4);
+
+  Tuple3<T1, T2, T3> get init => Tuple3(value1, value2, value3);
+  T4 get last => value4;
+
+  Tuple5<T1, T2, T3, T4, T5> append<T5>(T5 value5) => Tuple5(value1, value2, value3, value4, value5);
 
   @override
   bool operator ==(Object other) =>
@@ -295,6 +319,14 @@ class Tuple5<T1, T2, T3, T4, T5> {
     this.value5,
   );
 
+  T1 get head => value1;
+  Tuple4<T2, T3, T4, T5> get tail => Tuple4(value2, value3, value4, value5);
+
+  Tuple4<T1, T2, T3, T4> get init => Tuple4(value1, value2, value3, value4);
+  T5 get last => value5;
+
+  Tuple6<T1, T2, T3, T4, T5, T6> append<T6>(T6 value6) => Tuple6(value1, value2, value3, value4, value5, value6);
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -377,6 +409,14 @@ class Tuple6<T1, T2, T3, T4, T5, T6> {
     this.value5,
     this.value6,
   );
+
+  T1 get head => value1;
+  Tuple5<T2, T3, T4, T5, T6> get tail => Tuple5(value2, value3, value4, value5, value6);
+
+  Tuple5<T1, T2, T3, T4, T5> get init => Tuple5(value1, value2, value3, value4, value5);
+  T6 get last => value6;
+
+  Tuple7<T1, T2, T3, T4, T5, T6, T7> append<T7>(T7 value7) => Tuple7(value1, value2, value3, value4, value5, value6, value7);
 
   @override
   bool operator ==(Object other) =>
@@ -468,6 +508,14 @@ class Tuple7<T1, T2, T3, T4, T5, T6, T7> {
     this.value6,
     this.value7,
   );
+
+  T1 get head => value1;
+  Tuple6<T2, T3, T4, T5, T6, T7> get tail => Tuple6(value2, value3, value4, value5, value6, value7);
+
+  Tuple6<T1, T2, T3, T4, T5, T6> get init => Tuple6(value1, value2, value3, value4, value5, value6);
+  T7 get last => value7;
+
+  Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> append<T8>(T8 value8) => Tuple8(value1, value2, value3, value4, value5, value6, value7, value8);
 
   @override
   bool operator ==(Object other) =>
@@ -567,6 +615,14 @@ class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> {
     this.value7,
     this.value8,
   );
+
+  T1 get head => value1;
+  Tuple7<T2, T3, T4, T5, T6, T7, T8> get tail => Tuple7(value2, value3, value4, value5, value6, value7, value8);
+
+  Tuple7<T1, T2, T3, T4, T5, T6, T7> get init => Tuple7(value1, value2, value3, value4, value5, value6, value7);
+  T8 get last => value8;
+
+  Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> append<T9>(T9 value9) => Tuple9(value1, value2, value3, value4, value5, value6, value7, value8, value9);
 
   @override
   bool operator ==(Object other) =>
@@ -674,6 +730,14 @@ class Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
     this.value8,
     this.value9,
   );
+
+  T1 get head => value1;
+  Tuple8<T2, T3, T4, T5, T6, T7, T8, T9> get tail => Tuple8(value2, value3, value4, value5, value6, value7, value8, value9);
+
+  Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> get init => Tuple8(value1, value2, value3, value4, value5, value6, value7, value8);
+  T9 get last => value9;
+
+  Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> append<T10>(T10 value10) => Tuple10(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
 
   @override
   bool operator ==(Object other) =>
@@ -789,6 +853,14 @@ class Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
     this.value9,
     this.value10,
   );
+
+  T1 get head => value1;
+  Tuple9<T2, T3, T4, T5, T6, T7, T8, T9, T10> get tail => Tuple9(value2, value3, value4, value5, value6, value7, value8, value9, value10);
+
+  Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> get init => Tuple9(value1, value2, value3, value4, value5, value6, value7, value8, value9);
+  T10 get last => value10;
+
+  Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> append<T11>(T11 value11) => Tuple11(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
 
   @override
   bool operator ==(Object other) =>
@@ -912,6 +984,14 @@ class Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> {
     this.value10,
     this.value11,
   );
+
+  T1 get head => value1;
+  Tuple10<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> get tail => Tuple10(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+
+  Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> get init => Tuple10(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10);
+  T11 get last => value11;
+
+  Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> append<T12>(T12 value12) => Tuple12(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
 
   @override
   bool operator ==(Object other) =>
@@ -1043,6 +1123,14 @@ class Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> {
     this.value11,
     this.value12,
   );
+
+  T1 get head => value1;
+  Tuple11<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> get tail => Tuple11(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+
+  Tuple11<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> get init => Tuple11(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11);
+  T12 get last => value12;
+
+  Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> append<T13>(T13 value13) => Tuple13(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
 
   @override
   bool operator ==(Object other) =>
@@ -1182,6 +1270,14 @@ class Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> {
     this.value12,
     this.value13,
   );
+
+  T1 get head => value1;
+  Tuple12<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> get tail => Tuple12(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+
+  Tuple12<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> get init => Tuple12(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12);
+  T13 get last => value13;
+
+  Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> append<T14>(T14 value14) => Tuple14(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
 
   @override
   bool operator ==(Object other) =>
@@ -1329,6 +1425,14 @@ class Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> {
     this.value13,
     this.value14,
   );
+
+  T1 get head => value1;
+  Tuple13<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> get tail => Tuple13(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+
+  Tuple13<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> get init => Tuple13(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13);
+  T14 get last => value14;
+
+  Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> append<T15>(T15 value15) => Tuple15(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
 
   @override
   bool operator ==(Object other) =>
@@ -1484,6 +1588,14 @@ class Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> 
     this.value14,
     this.value15,
   );
+
+  T1 get head => value1;
+  Tuple14<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> get tail => Tuple14(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+
+  Tuple14<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> get init => Tuple14(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14);
+  T15 get last => value15;
+
+  Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> append<T16>(T16 value16) => Tuple16(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16);
 
   @override
   bool operator ==(Object other) =>
@@ -1647,6 +1759,14 @@ class Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
     this.value15,
     this.value16,
   );
+
+  T1 get head => value1;
+  Tuple15<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> get tail => Tuple15(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16);
+
+  Tuple15<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> get init => Tuple15(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15);
+  T16 get last => value16;
+
+  Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> append<T17>(T17 value17) => Tuple17(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17);
 
   @override
   bool operator ==(Object other) =>
@@ -1818,6 +1938,14 @@ class Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
     this.value16,
     this.value17,
   );
+
+  T1 get head => value1;
+  Tuple16<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> get tail => Tuple16(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17);
+
+  Tuple16<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> get init => Tuple16(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16);
+  T17 get last => value17;
+
+  Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> append<T18>(T18 value18) => Tuple18(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18);
 
   @override
   bool operator ==(Object other) =>
@@ -1997,6 +2125,14 @@ class Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
     this.value17,
     this.value18,
   );
+
+  T1 get head => value1;
+  Tuple17<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> get tail => Tuple17(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18);
+
+  Tuple17<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17> get init => Tuple17(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17);
+  T18 get last => value18;
+
+  Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> append<T19>(T19 value19) => Tuple19(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18, value19);
 
   @override
   bool operator ==(Object other) =>
@@ -2184,6 +2320,14 @@ class Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
     this.value18,
     this.value19,
   );
+
+  T1 get head => value1;
+  Tuple18<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> get tail => Tuple18(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18, value19);
+
+  Tuple18<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18> get init => Tuple18(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18);
+  T19 get last => value19;
+
+  Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> append<T20>(T20 value20) => Tuple20(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18, value19, value20);
 
   @override
   bool operator ==(Object other) =>
@@ -2379,6 +2523,12 @@ class Tuple20<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, 
     this.value19,
     this.value20,
   );
+
+  T1 get head => value1;
+  Tuple19<T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20> get tail => Tuple19(value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18, value19, value20);
+
+  Tuple19<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19> get init => Tuple19(value1, value2, value3, value4, value5, value6, value7, value8, value9, value10, value11, value12, value13, value14, value15, value16, value17, value18, value19);
+  T20 get last => value20;
 
   @override
   bool operator ==(Object other) =>

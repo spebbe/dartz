@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.1
+
+- ALL additions in 0.10.1 were written by @cranst0n! (PRs #88, #91 and #93)
+- Added bimap, cond and ensure to Either
+- Added when and unless to Option
+- Added head, tail, init, last and append to Tuple2 through Tuple20
+- Added traverseTask and sequenceTask to Option, Either and IList
+- Added a whole slew of useful combinators to Task (See #93 for details)
+
 ## 0.10.0
 
 - Stable release of null safety

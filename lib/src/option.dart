@@ -30,6 +30,8 @@ abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
 
   State<S, Option<B>> traverseState<S, B>(State<S, B> f(A a)) => fold(() => new State((s) => tuple2(none(), s)), (a) => f(a).map(some));
 
+  Task<Option<B>> traverseTask<B>(Task<B> f(A a)) => fold(() => Task.value(none()), (a) => f(a).map(some));
+
   Free<F, Option<B>> traverseFree<F, B>(Free<F, B> f(A a)) => fold(() => new Pure(none()), (a) => f(a).map(some));
 
   static IList<Option<A>> sequenceIList<A>(Option<IList<A>> ola) => ola.traverseIList(id);
@@ -39,6 +41,8 @@ abstract class Option<A> implements TraversableMonadPlusOps<Option, A> {
   static Future<Option<A>> sequenceFuture<A>(Option<Future<A>> ofa) => ofa.traverseFuture(id);
 
   static State<S, Option<A>> sequenceState<S, A>(Option<State<S, A>> osa) => osa.traverseState(id);
+
+  static Task<Option<A>> sequenceTask<A>(Option<Task<A>> ofa) => ofa.traverseTask(id);
 
   static Free<F, Option<A>> sequenceFree<F, A>(Option<Free<F, A>> ofa) => ofa.traverseFree(id);
 

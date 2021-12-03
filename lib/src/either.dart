@@ -32,6 +32,8 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   State<S, Either<L, R2>> traverseState<S, R2>(State<S, R2> f(R r)) => fold((l) => new State((s) => tuple2(left(l), s)), (r) => f(r).map(right));
 
+  Task<Either<L, R2>> traverseTask<R2>(Task<R2> f(R r)) => fold((l) => Task.delay(() => left(l)), (R r) => f(r).map(right));
+
   static IList<Either<L, R>> sequenceIList<L, R>(Either<L, IList<R>> elr) => elr.traverseIList(id);
 
   static IVector<Either<L, R>> sequenceIVector<L, R>(Either<L, IVector<R>> evr) => evr.traverseIVector(id);
@@ -39,6 +41,8 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   static Future<Either<L, R>> sequenceFuture<L, R>(Either<L, Future<R>> efr) => efr.traverseFuture(id);
 
   static State<S, Either<L, R>> sequenceState<S, L, R>(Either<L, State<S, R>> esr) => esr.traverseState(id);
+
+  static Task<Either<L, R>> sequenceTask<L, R>(Either<L, Task<R>> efr) => efr.traverseTask(id);
 
   static Either<L, R> cond<L, R>(bool predicate(), Function0<R> r, Function0<L> l) =>
     predicate() ? right(r()) : left(l());

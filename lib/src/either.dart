@@ -9,6 +9,7 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
 
   Either<L, R> orElse(Either<L, R> other()) => fold((_) => other(), (_) => this);
   R getOrElse(R dflt()) => fold((_) => dflt(), id);
+  R? get orNull => fold((_) => null, id);
   R operator |(R dflt) => getOrElse(() => dflt);
   Either<L2, R> leftMap<L2>(L2 f(L l)) => fold((L l) => left(f(l)), right);
   Option<R> toOption() => fold((_) => none(), some);

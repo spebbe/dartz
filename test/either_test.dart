@@ -71,6 +71,11 @@ void main() {
     expect(r.ensure((x) => x < 0, () => 0), right(0));
   });
 
+  test('getOrElseNull', () {
+    expect(left<String, int>('error').orNull, isNull);
+    expect(right<String, int>(42).orNull, 42);
+  });
+
   group("EitherM", () => checkMonadLaws(EitherM));
 
   //group("EitherTMonad+Id", () => checkMonadLaws(eitherTMonad(IdM)));

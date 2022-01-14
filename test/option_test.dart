@@ -41,6 +41,11 @@ void main() {
     expect(Option.unless(true, 42), none());
   });
 
+  test('orNull', () {
+    expect(none().orNull, isNull);
+    expect(some(42).orNull, 42);
+  });
+
   group("OptionM", () => checkMonadLaws(new OptionMonadPlus()));
 
   //group("OptionTMonad+Id", () => checkMonadLaws(optionTMonad(IdM)));

@@ -44,7 +44,7 @@ class Task<A> implements MonadCatchOps<Task, A> {
   @override Task<B> replace<B>(B replacement) => map((_) => replacement);
 
   Task<Tuple2<A, B>> both<B>(Task<B> that) => Task(() =>
-    Future.wait([_run(), that._run()])
+    Future.wait([_run(), that._run()], eagerError: true)
       .then((value) => tuple2(cast(value[0]), cast(value[1])))
   );
 

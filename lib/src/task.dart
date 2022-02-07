@@ -100,6 +100,66 @@ class Task<A> implements MonadCatchOps<Task, A> {
   Task<A> timeoutTo(Duration timeLimit, Task<A> fallback) => timeout(timeLimit).redeemWith((err) => err is TimeoutException ? fallback : Task.failed(err), Task.value);
 
   Task<void> get voided => replace(null);
+
+  static Task<Tuple2<A, B>> tupled2<A, B>(Task<A> a, Task<B> b) =>
+    a.flatMap((a) => b.map((b) => tuple2(a, b)));
+
+  static Task<Tuple3<A, B, C>> tupled3<A, B, C>(Task<A> a, Task<B> b, Task<C> c) =>
+    tupled2(a, b).flatMap((ab) => c.map((c) => ab.append(c)));
+
+  static Task<Tuple4<A, B, C, D>> tupled4<A, B, C, D>(Task<A> a, Task<B> b, Task<C> c, Task<D> d) =>
+    tupled3(a, b, c).flatMap((abc) => d.map((d) => abc.append(d)));
+
+  static Task<Tuple5<A, B, C, D, E>> tupled5<A, B, C, D, E>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e) =>
+    tupled4(a, b, c, d).flatMap((abcd) => e.map((e) => abcd.append(e)));
+
+  static Task<Tuple6<A, B, C, D, E, F>> tupled6<A, B, C, D, E, F>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, Task<F> f) =>
+    tupled5(a, b, c, d, e).flatMap((abcde) => f.map((f) => abcde.append(f)));
+
+  static Task<C> map2<A, B, C>(Task<A> a, Task<B> b, C Function(A a, B b) fn) =>
+    tupled2(a, b).map((ab) => ab.apply(fn));
+
+  static Task<D> map3<A, B, C, D>(Task<A> a, Task<B> b, Task<C> c, D Function(A a, B b, C c) fn) =>
+    tupled3(a, b, c).map((abc) => abc.apply(fn));
+  
+  static Task<E> map4<A, B, C, D, E>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, E Function(A a, B b, C c, D d) fn) =>
+    tupled4(a, b, c, d).map((abcd) => abcd.apply(fn));
+
+  static Task<F> map5<A, B, C, D, E, F>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, F Function(A a, B b, C c, D d, E e) fn) =>
+    tupled5(a, b, c, d, e).map((abcde) => abcde.apply(fn));
+
+  static Task<G> map6<A, B, C, D, E, F, G>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, Task<F> f, G Function(A a, B b, C c, D d, E e, F f) fn) =>
+    tupled6(a, b, c, d, e, f).map((abcdef) => abcdef.apply(fn));
+
+  static Task<Tuple2<A, B>> parTupled2<A, B>(Task<A> a, Task<B> b) =>
+    a.both(b);
+  
+  static Task<Tuple3<A, B, C>> parTupled3<A, B, C>(Task<A> a, Task<B> b, Task<C> c) =>
+    parTupled2(a, b).both(c).map((t) => t.value1.append(t.value2));
+
+  static Task<Tuple4<A, B, C, D>> parTupled4<A, B, C, D>(Task<A> a, Task<B> b, Task<C> c, Task<D> d) =>
+    parTupled3(a, b, c).both(d).map((t) => t.value1.append(t.value2));
+
+  static Task<Tuple5<A, B, C, D, E>> parTupled5<A, B, C, D, E>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e) =>
+    parTupled4(a, b, c, d).both(e).map((t) => t.value1.append(t.value2));
+
+  static Task<Tuple6<A, B, C, D, E, F>> parTupled6<A, B, C, D, E, F>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, Task<F> f) =>
+    parTupled5(a, b, c, d, e).both(f).map((t) => t.value1.append(t.value2));
+
+  static Task<C> parMap2<A, B, C>(Task<A> a, Task<B> b, C Function(A a, B b) fn) =>
+    parTupled2(a, b).map((ab) => ab.apply(fn));
+
+  static Task<D> parMap3<A, B, C, D>(Task<A> a, Task<B> b, Task<C> c, D Function(A a, B b, C c) fn) =>
+    parTupled3(a, b, c).map((abc) => abc.apply(fn));
+
+  static Task<E> parMap4<A, B, C, D, E>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, E Function(A a, B b, C c, D d) fn) =>
+    parTupled4(a, b, c, d).map((abcd) => abcd.apply(fn));
+
+  static Task<F> parMap5<A, B, C, D, E, F>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, F Function(A a, B b, C c, D d, E e) fn) =>
+    parTupled5(a, b, c, d, e).map((abcde) => abcde.apply(fn));
+
+  static Task<G> parMap6<A, B, C, D, E, F, G>(Task<A> a, Task<B> b, Task<C> c, Task<D> d, Task<E> e, Task<F> f, G Function(A a, B b, C c, D d, E e, F f) fn) =>
+    parTupled6(a, b, c, d, e, f).map((abcdef) => abcdef.apply(fn));
 }
 
 class TaskMonadCatch extends Functor<Task> with Applicative<Task>, Monad<Task>, MonadCatch<Task> {

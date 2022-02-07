@@ -36,6 +36,25 @@ void main() {
     expect(result.value1 < Duration(milliseconds: 1100), true);
   });
 
+  test("Task.both will fail on first error", () async {
+    final one = Task.value(1).delayBy(Duration(seconds: 3));
+    final two = Task.failed<int>('boom!').delayBy(Duration(seconds: 1));
+
+    final result = await one
+        .both(two)
+        .map((t) => t.value1 + t.value2)
+        .attempt()
+        .timed
+        .run();
+
+    final elapsed = result.value1;
+    final value = result.value2;
+
+    expect(value, left('boom!'));
+    expect(elapsed >= Duration(seconds: 1), true);
+    expect(elapsed < Duration(milliseconds: 1100), true);
+  });
+
   test("Task.bracket", () async {
     var count = 0;
 

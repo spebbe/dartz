@@ -215,9 +215,9 @@ Either<dynamic, A> catching<A>(Function0<A> thunk) {
 
 Future<Either<dynamic, A>> catchAsync<A>(Function0<Future<A>> f) async {
   try {
-    return Right(await f());
+    return right(await f());
   } catch (e) {
-    return Left(e);
+    return left(e);
   }
 }
 

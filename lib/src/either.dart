@@ -213,6 +213,14 @@ Either<dynamic, A> catching<A>(Function0<A> thunk) {
   }
 }
 
+Future<Either<dynamic, A>> catchAsync<A>(Function0<Future<A>> f) async {
+  try {
+    return Right(await f());
+  } catch (e) {
+    return Left(e);
+  }
+}
+
 class EitherMonad<L> extends MonadOpsMonad<Either<L, dynamic>> {
   EitherMonad(): super(right);
 }

@@ -103,4 +103,20 @@ void main() {
       expect(right.value, 2);
     });
   });
+
+  group("catchAsync", () {
+    test("successful future", () async {
+      expect(await catchAsync(() => Future.value(2)), right(2));
+    });
+
+    test("failed future", () async {
+      final error = Exception("foobar");
+      expect(await catchAsync(() => Future.error(error)), left(error));
+    });
+
+    test("throwing synchronous function body", () async {
+      final error = Exception("foobar");
+      expect(await catchAsync(() => throw error), left(error));
+    });
+  });
 }

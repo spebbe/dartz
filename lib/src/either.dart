@@ -213,7 +213,7 @@ Either<dynamic, A> catching<A>(Function0<A> thunk) {
   }
 }
 
-Future<Either<dynamic, A>> catchAsync<A>(Function0<Future<A>> f) async {
+Future<Either<dynamic, A>> catchAsync<A>(Function0<FutureOr<A>> f) async {
   try {
     return right(await f());
   } catch (e) {

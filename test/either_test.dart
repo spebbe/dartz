@@ -118,5 +118,13 @@ void main() {
       final error = Exception("foobar");
       expect(await catchAsync(() => throw error), left(error));
     });
+
+    test("value from async function", () async {
+      expect(await catchAsync(() async => 2), right(2));
+    });
+
+    test("value from sync function", () async {
+      expect(await catchAsync(() => 2), right(2));
+    });
   });
 }

@@ -24,6 +24,19 @@ void main() {
     expect(result.fold(id, id) is FormatException, true);
   });
 
+  test("Task flatTap", () async {
+    var count = 0;
+
+    final one = Task.value(1);
+    final inc = (int i) => Task.delay(() => count += i).voided;
+
+    await one.flatTap(inc).run();
+    expect(count, 1);
+
+    await one.flatTap(inc).flatTap(inc).run();
+    expect(count, 3);
+  });
+
   test("Task.both (concurrent)", () async {
     final one = Task.value(1).delayBy(Duration(seconds: 1));
     final two = Task.value(2).delayBy(Duration(seconds: 1));

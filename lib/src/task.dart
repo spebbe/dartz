@@ -11,6 +11,8 @@ class Task<A> implements MonadCatchOps<Task, A> {
 
   static Task<A> failed<A>(Object err) => new Task(() => new Future.error(err));
 
+  static Task<A> fromEither<A>(Either<Object, A> e) => e.fold((l) => Task.failed<A>(l), (r) => Task.value(r));
+
   static Task<void> sleep(Duration duration) => Task(() => Future.delayed(duration));
 
   static Task<void> print(String s) => Task.delay(() => _consolePrint(s));

@@ -16,6 +16,21 @@ void main() {
     expect(result1, result2);
   });
 
+  test('Task.fromEither', () async {
+    final taskLeft = await Task.value(1000)
+        .productR(Task.fromEither(left<String, int>('boom')))
+        .attempt()
+        .run();
+
+    final taskRight = await Task.fromEither(right<String, int>(42))
+        .replace(1000)
+        .attempt()
+        .run();
+
+    expect(taskLeft, left('boom'));
+    expect(taskRight, right(1000));
+  });
+
   test("Task attempt", () async {
     final Task<Either<Object, num>> t =
         Task.delay(() => "notanumber").map(num.parse).attempt();

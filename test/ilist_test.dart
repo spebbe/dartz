@@ -176,4 +176,22 @@ void main() {
 
   test("isEmpty", () => qc.check(forall(intILists, (IList<int> il) => (il.length() == 0) == il.isEmpty)));
 
+  test("traverseTask is serial", () async {
+    final t = IList.from([1, 2, 3]).traverseTask(
+      (i) => Task.value(i).delayBy(const Duration(seconds: 1)));
+
+    final result = await t.timed.run();
+
+    expect(result.value1 >= const Duration(seconds: 3), true);
+  });
+
+  test("parTraverseTask is concurrent", () async {
+    final t = IList.from([1, 2, 3, 4, 5]).parTraverseTask(
+      (i) => Task.value(i).delayBy(const Duration(seconds: 1)));
+
+    final result = await t.timed.run();
+
+    expect(result.value1 <= const Duration(milliseconds: 1100), true);
+  });
+
 }

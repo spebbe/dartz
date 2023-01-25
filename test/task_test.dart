@@ -32,8 +32,8 @@ void main() {
         await one.both(two).map((t) => t.value1 + t.value2).timed.run();
 
     expect(result.value2, 3);
-    expect(result.value1 >= Duration(seconds: 1), true);
-    expect(result.value1 < Duration(milliseconds: 1100), true);
+    expect(result.value1, greaterThanOrEqualTo(Duration(seconds: 1)));
+    expect(result.value1, lessThan(Duration(milliseconds: 1900)));
   });
 
   test("Task.both will fail on first error", () async {

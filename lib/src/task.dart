@@ -52,7 +52,7 @@ class Task<A> implements MonadCatchOps<Task, A> {
 
   Task<A> delayBy(Duration duration) => sleep(duration).productR(this);
 
-  Task<A> flatTap<B>(Task<B> that) => productL(that);
+  Task<A> flatTap<B>(Function1<A, Task<B>> f) => flatMap((a) => f(a).replace(a));
 
   Task<A> guarantee(Task<void> finalizer) => Task(() => _run().whenComplete(() => finalizer._run()));
 

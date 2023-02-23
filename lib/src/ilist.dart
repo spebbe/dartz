@@ -290,6 +290,14 @@ abstract class IList<A> implements TraversableMonadPlusOps<IList, A> {
     return result.map((l) => l.reverse());
   }
 
+  Task<IList<B>> parTraverseTask<B>(Task<B> f(A a)) {
+    return map(f).foldLeft(
+      Task.value(nil()),
+      (previous, next) =>
+        previous.both(next).map((a) => a.value1.appendElement(a.value2))
+    );
+  }
+
   Evaluation<E, R, W, S, IList<B>> traverseEvaluation<B, E, R, W, S>(Monoid<W> WMi, Evaluation<E, R, W, S, B> f(A a)) {
     Evaluation<E, R, W, S, IList<B>> result = new Evaluation(WMi, (r, s) => new Future.value(new Right(new Tuple3(WMi.zero(), s, nil()))));
     var current = this;

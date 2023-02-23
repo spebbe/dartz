@@ -103,4 +103,80 @@ void main() {
       expect(right.value, 2);
     });
   });
+
+  group('tap', () {
+    test('executes function with value if right', () {
+      final either = right(42);
+      final results = [];
+
+      final result = either.tap((value) => results.add(value));
+
+      expect(results, [42]);
+      expect(result, equals(either));
+    });
+
+    test('does not execute function if left', () {
+      final either = left('error');
+      final results = [];
+
+      final result = either.tap((value) => results.add(value));
+
+      expect(results, isEmpty);
+      expect(result, equals(either));
+    });
+  });
+
+  group('tapLeft', () {
+    test('executes function with error if left', () {
+      final either = left('error');
+      final results = [];
+
+      final result = either.tapLeft((error) => results.add(error));
+
+      expect(results, ['error']);
+      expect(result, equals(either));
+    });
+
+    test('does not execute function if right', () {
+      final either = right(42);
+      final results = [];
+
+      final result = either.tapLeft((error) => results.add(error));
+
+      expect(results, isEmpty);
+      expect(result, equals(either));
+    });
+  });
+
+  group('tapBoth', () {
+    test('executes left function if left', () {
+      final either = left('error');
+      final resultsLeft = [];
+      final resultsRight = [];
+
+      final result = either.tapBoth(
+        (error) => resultsLeft.add(error),
+        (value) => resultsRight.add(value),
+      );
+
+      expect(resultsLeft, ['error']);
+      expect(resultsRight, isEmpty);
+      expect(result, equals(either));
+    });
+
+    test('executes right function if right', () {
+      final either = right(42);
+      final resultsLeft = [];
+      final resultsRight = [];
+
+      final result = either.tapBoth(
+        (error) => resultsLeft.add(error),
+        (value) => resultsRight.add(value),
+      );
+
+      expect(resultsLeft, isEmpty);
+      expect(resultsRight, [42]);
+      expect(result, equals(either));
+    });
+  });
 }

@@ -19,6 +19,28 @@ abstract class Either<L, R> implements TraversableMonadOps<Either<L, dynamic>, R
   Either<LL, RR> bimap<LL, RR>(LL ifLeft(L l), RR ifRight(R r)) =>
     fold((l) => left(ifLeft(l)), (r) => right(ifRight(r)));
 
+  Either<L, R> tap(void Function(R) f) =>
+    flatMap((r) {
+      f(r);
+      return right(r);
+    });
+
+  Either<L, R> tapLeft(void Function(L) f) =>
+    fold((l) {
+      f(l);
+      return left(l);
+    }, (r) => right(r));
+
+  Either<L, R> tapBoth(void Function(L) f1, void Function(R) f2) =>
+    fold((l) {
+      f1(l);
+      return left(l);
+    }, (r) {
+      f2(r);
+      return right(r);
+    }
+  );
+
   @override Either<L, R2> map<R2>(R2 f(R r)) => fold(left, (R r) => right(f(r)));
   @override Either<L, R2> bind<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);
   @override Either<L, R2> flatMap<R2>(Function1<R, Either<L, R2>> f) => fold(left, f);

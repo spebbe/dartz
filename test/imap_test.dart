@@ -60,6 +60,11 @@ void main() {
       final m = dynamicM as IMap<Tuple2<int, int>, int>;
       return m.keys().all((t) => m.getKey(tuple2(t.value1, 0)) == some(t));
     }));
+    qc.check(forall(complexIMaps, (dynamicM) {
+      final m = dynamicM as IMap<Tuple2<int, int>, int>;
+      return m.keys().any((t) => m.getKey(tuple2(t.value1 + 1, 0)) == none());
+    }));
+
   });
 
   test("pair iterable", () => qc.check(forall(intIMaps, (dynamicM) {

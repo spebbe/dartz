@@ -364,9 +364,19 @@ class _NonEmptyIMapAVLNode<K, V> extends _IMapAVLNode<K, V> {
       if (o == Ordering.EQ) {
         return some(current._k);
       } else if (o == Ordering.LT) {
-        current = current._left._unsafeGetNonEmpty()!;
+        final l = current._left._unsafeGetNonEmpty();
+        if (l != null) {
+          current = l;
+        } else {
+          return none();
+        }
       } else {
-        current = current._right._unsafeGetNonEmpty()!;
+        final r = current._right._unsafeGetNonEmpty();
+        if (r != null) {
+          current = r;
+        } else {
+          return none();
+        }
       }
     }
     return none();
